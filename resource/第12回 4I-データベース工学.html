@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)https://takeshiwada1980.github.io/DB-2025/lecture12.html -->
+<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="robots" content="noindex,nofollow,noarchive">
+    <meta name="referrer" content="no-referrer">
+
+    <script>
+      MathJax = {
+        chtml: {
+          displayAlign: "left",
+          displayIndent: "1em",
+        },
+      };
+    </script>
+
+     <script src="./第12回 4I-データベース工学_files/tex-chtml-full.js.ダウンロード" type="text/javascript"></script><style type="text/css">.CtxtMenu_InfoClose {  top:.2em; right:.2em;}
+.CtxtMenu_InfoContent {  overflow:auto; text-align:left; font-size:80%;  padding:.4em .6em; border:1px inset; margin:1em 0px;  max-height:20em; max-width:30em; background-color:#EEEEEE;  white-space:normal;}
+.CtxtMenu_Info.CtxtMenu_MousePost {outline:none;}
+.CtxtMenu_Info {  position:fixed; left:50%; width:auto; text-align:center;  border:3px outset; padding:1em 2em; background-color:#DDDDDD;  color:black;  cursor:default; font-family:message-box; font-size:120%;  font-style:normal; text-indent:0; text-transform:none;  line-height:normal; letter-spacing:normal; word-spacing:normal;  word-wrap:normal; white-space:nowrap; float:none; z-index:201;  border-radius: 15px;                     /* Opera 10.5 and IE9 */  -webkit-border-radius:15px;               /* Safari and Chrome */  -moz-border-radius:15px;                  /* Firefox */  -khtml-border-radius:15px;                /* Konqueror */  box-shadow:0px 10px 20px #808080;         /* Opera 10.5 and IE9 */  -webkit-box-shadow:0px 10px 20px #808080; /* Safari 3 & Chrome */  -moz-box-shadow:0px 10px 20px #808080;    /* Forefox 3.5 */  -khtml-box-shadow:0px 10px 20px #808080;  /* Konqueror */  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color="gray", Positive="true"); /* IE */}
+</style><style type="text/css">.CtxtMenu_MenuClose {  position:absolute;  cursor:pointer;  display:inline-block;  border:2px solid #AAA;  border-radius:18px;  -webkit-border-radius: 18px;             /* Safari and Chrome */  -moz-border-radius: 18px;                /* Firefox */  -khtml-border-radius: 18px;              /* Konqueror */  font-family: "Courier New", Courier;  font-size:24px;  color:#F0F0F0}
+.CtxtMenu_MenuClose span {  display:block; background-color:#AAA; border:1.5px solid;  border-radius:18px;  -webkit-border-radius: 18px;             /* Safari and Chrome */  -moz-border-radius: 18px;                /* Firefox */  -khtml-border-radius: 18px;              /* Konqueror */  line-height:0;  padding:8px 0 6px     /* may need to be browser-specific */}
+.CtxtMenu_MenuClose:hover {  color:white!important;  border:2px solid #CCC!important}
+.CtxtMenu_MenuClose:hover span {  background-color:#CCC!important}
+.CtxtMenu_MenuClose:hover:focus {  outline:none}
+</style><style type="text/css">.CtxtMenu_Menu {  position:absolute;  background-color:white;  color:black;  width:auto; padding:5px 0px;  border:1px solid #CCCCCC; margin:0; cursor:default;  font: menu; text-align:left; text-indent:0; text-transform:none;  line-height:normal; letter-spacing:normal; word-spacing:normal;  word-wrap:normal; white-space:nowrap; float:none; z-index:201;  border-radius: 5px;                     /* Opera 10.5 and IE9 */  -webkit-border-radius: 5px;             /* Safari and Chrome */  -moz-border-radius: 5px;                /* Firefox */  -khtml-border-radius: 5px;              /* Konqueror */  box-shadow:0px 10px 20px #808080;         /* Opera 10.5 and IE9 */  -webkit-box-shadow:0px 10px 20px #808080; /* Safari 3 & Chrome */  -moz-box-shadow:0px 10px 20px #808080;    /* Forefox 3.5 */  -khtml-box-shadow:0px 10px 20px #808080;  /* Konqueror */}
+.CtxtMenu_MenuItem {  padding: 1px 2em;  background:transparent;}
+.CtxtMenu_MenuArrow {  position:absolute; right:.5em; padding-top:.25em; color:#666666;  font-family: null; font-size: .75em}
+.CtxtMenu_MenuActive .CtxtMenu_MenuArrow {color:white}
+.CtxtMenu_MenuArrow.CtxtMenu_RTL {left:.5em; right:auto}
+.CtxtMenu_MenuCheck {  position:absolute; left:.7em;  font-family: null}
+.CtxtMenu_MenuCheck.CtxtMenu_RTL { right:.7em; left:auto }
+.CtxtMenu_MenuRadioCheck {  position:absolute; left: .7em;}
+.CtxtMenu_MenuRadioCheck.CtxtMenu_RTL {  right: .7em; left:auto}
+.CtxtMenu_MenuInputBox {  padding-left: 1em; right:.5em; color:#666666;  font-family: null;}
+.CtxtMenu_MenuInputBox.CtxtMenu_RTL {  left: .1em;}
+.CtxtMenu_MenuComboBox {  left:.1em; padding-bottom:.5em;}
+.CtxtMenu_MenuSlider {  left: .1em;}
+.CtxtMenu_SliderValue {  position:absolute; right:.1em; padding-top:.25em; color:#333333;  font-size: .75em}
+.CtxtMenu_SliderBar {  outline: none; background: #d3d3d3}
+.CtxtMenu_MenuLabel {  padding: 1px 2em 3px 1.33em;  font-style:italic}
+.CtxtMenu_MenuRule {  border-top: 1px solid #DDDDDD;  margin: 4px 3px;}
+.CtxtMenu_MenuDisabled {  color:GrayText}
+.CtxtMenu_MenuActive {  background-color: #606872;  color: white;}
+.CtxtMenu_MenuDisabled:focus {  background-color: #E8E8E8}
+.CtxtMenu_MenuLabel:focus {  background-color: #E8E8E8}
+.CtxtMenu_ContextMenu:focus {  outline:none}
+.CtxtMenu_ContextMenu .CtxtMenu_MenuItem:focus {  outline:none}
+.CtxtMenu_SelectionMenu {  position:relative; float:left;  border-bottom: none; -webkit-box-shadow:none; -webkit-border-radius:0px; }
+.CtxtMenu_SelectionItem {  padding-right: 1em;}
+.CtxtMenu_Selection {  right: 40%; width:50%; }
+.CtxtMenu_SelectionBox {  padding: 0em; max-height:20em; max-width: none;  background-color:#FFFFFF;}
+.CtxtMenu_SelectionDivider {  clear: both; border-top: 2px solid #000000;}
+.CtxtMenu_Menu .CtxtMenu_MenuClose {  top:-10px; left:-10px}
+</style> 
+
+    <link rel="icon" href="https://takeshiwada1980.github.io/DB-2025/favicon.ico" sizes="any">
+    <link rel="stylesheet" href="./第12回 4I-データベース工学_files/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="./第12回 4I-データベース工学_files/css">
+    <link rel="stylesheet" href="./第12回 4I-データベース工学_files/style.css">
+
+    <title>第12回 4I-データベース工学</title>
+  <style id="MJX-CHTML-styles">
+mjx-container[jax="CHTML"] {
+  line-height: 0;
+}
+
+mjx-container [space="1"] {
+  margin-left: .111em;
+}
+
+mjx-container [space="2"] {
+  margin-left: .167em;
+}
+
+mjx-container [space="3"] {
+  margin-left: .222em;
+}
+
+mjx-container [space="4"] {
+  margin-left: .278em;
+}
+
+mjx-container [space="5"] {
+  margin-left: .333em;
+}
+
+mjx-container [rspace="1"] {
+  margin-right: .111em;
+}
+
+mjx-container [rspace="2"] {
+  margin-right: .167em;
+}
+
+mjx-container [rspace="3"] {
+  margin-right: .222em;
+}
+
+mjx-container [rspace="4"] {
+  margin-right: .278em;
+}
+
+mjx-container [rspace="5"] {
+  margin-right: .333em;
+}
+
+mjx-container [size="s"] {
+  font-size: 70.7%;
+}
+
+mjx-container [size="ss"] {
+  font-size: 50%;
+}
+
+mjx-container [size="Tn"] {
+  font-size: 60%;
+}
+
+mjx-container [size="sm"] {
+  font-size: 85%;
+}
+
+mjx-container [size="lg"] {
+  font-size: 120%;
+}
+
+mjx-container [size="Lg"] {
+  font-size: 144%;
+}
+
+mjx-container [size="LG"] {
+  font-size: 173%;
+}
+
+mjx-container [size="hg"] {
+  font-size: 207%;
+}
+
+mjx-container [size="HG"] {
+  font-size: 249%;
+}
+
+mjx-container [width="full"] {
+  width: 100%;
+}
+
+mjx-box {
+  display: inline-block;
+}
+
+mjx-block {
+  display: block;
+}
+
+mjx-itable {
+  display: inline-table;
+}
+
+mjx-row {
+  display: table-row;
+}
+
+mjx-row > * {
+  display: table-cell;
+}
+
+mjx-mtext {
+  display: inline-block;
+}
+
+mjx-mstyle {
+  display: inline-block;
+}
+
+mjx-merror {
+  display: inline-block;
+  color: red;
+  background-color: yellow;
+}
+
+mjx-mphantom {
+  visibility: hidden;
+}
+
+_::-webkit-full-page-media, _:future, :root mjx-container {
+  will-change: opacity;
+}
+
+mjx-assistive-mml {
+  position: absolute !important;
+  top: 0px;
+  left: 0px;
+  clip: rect(1px, 1px, 1px, 1px);
+  padding: 1px 0px 0px 0px !important;
+  border: 0px !important;
+  display: block !important;
+  width: auto !important;
+  overflow: hidden !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+mjx-assistive-mml[display="block"] {
+  width: 100% !important;
+}
+
+mjx-math {
+  display: inline-block;
+  text-align: left;
+  line-height: 0;
+  text-indent: 0;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  letter-spacing: normal;
+  border-collapse: collapse;
+  word-wrap: normal;
+  word-spacing: normal;
+  white-space: nowrap;
+  direction: ltr;
+  padding: 1px 0;
+}
+
+mjx-container[jax="CHTML"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="CHTML"][display="true"][width="full"] {
+  display: flex;
+}
+
+mjx-container[jax="CHTML"][display="true"] mjx-math {
+  padding: 0;
+}
+
+mjx-container[jax="CHTML"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="CHTML"][justify="right"] {
+  text-align: right;
+}
+
+mjx-mo {
+  display: inline-block;
+  text-align: left;
+}
+
+mjx-stretchy-h {
+  display: inline-table;
+  width: 100%;
+}
+
+mjx-stretchy-h > * {
+  display: table-cell;
+  width: 0;
+}
+
+mjx-stretchy-h > * > mjx-c {
+  display: inline-block;
+  transform: scalex(1.0000001);
+}
+
+mjx-stretchy-h > * > mjx-c::before {
+  display: inline-block;
+  width: initial;
+}
+
+mjx-stretchy-h > mjx-ext {
+  /* IE */ overflow: hidden;
+  /* others */ overflow: clip visible;
+  width: 100%;
+}
+
+mjx-stretchy-h > mjx-ext > mjx-c::before {
+  transform: scalex(500);
+}
+
+mjx-stretchy-h > mjx-ext > mjx-c {
+  width: 0;
+}
+
+mjx-stretchy-h > mjx-beg > mjx-c {
+  margin-right: -.1em;
+}
+
+mjx-stretchy-h > mjx-end > mjx-c {
+  margin-left: -.1em;
+}
+
+mjx-stretchy-v {
+  display: inline-block;
+}
+
+mjx-stretchy-v > * {
+  display: block;
+}
+
+mjx-stretchy-v > mjx-beg {
+  height: 0;
+}
+
+mjx-stretchy-v > mjx-end > mjx-c {
+  display: block;
+}
+
+mjx-stretchy-v > * > mjx-c {
+  transform: scaley(1.0000001);
+  transform-origin: left center;
+  overflow: hidden;
+}
+
+mjx-stretchy-v > mjx-ext {
+  display: block;
+  height: 100%;
+  box-sizing: border-box;
+  border: 0px solid transparent;
+  /* IE */ overflow: hidden;
+  /* others */ overflow: visible clip;
+}
+
+mjx-stretchy-v > mjx-ext > mjx-c::before {
+  width: initial;
+  box-sizing: border-box;
+}
+
+mjx-stretchy-v > mjx-ext > mjx-c {
+  transform: scaleY(500) translateY(.075em);
+  overflow: visible;
+}
+
+mjx-mark {
+  display: inline-block;
+  height: 0px;
+}
+
+mjx-c {
+  display: inline-block;
+}
+
+mjx-utext {
+  display: inline-block;
+  padding: .75em 0 .2em 0;
+}
+
+mjx-c::before {
+  display: block;
+  width: 0;
+}
+
+.MJX-TEX {
+  font-family: MJXZERO, MJXTEX;
+}
+
+.TEX-B {
+  font-family: MJXZERO, MJXTEX-B;
+}
+
+.TEX-I {
+  font-family: MJXZERO, MJXTEX-I;
+}
+
+.TEX-MI {
+  font-family: MJXZERO, MJXTEX-MI;
+}
+
+.TEX-BI {
+  font-family: MJXZERO, MJXTEX-BI;
+}
+
+.TEX-S1 {
+  font-family: MJXZERO, MJXTEX-S1;
+}
+
+.TEX-S2 {
+  font-family: MJXZERO, MJXTEX-S2;
+}
+
+.TEX-S3 {
+  font-family: MJXZERO, MJXTEX-S3;
+}
+
+.TEX-S4 {
+  font-family: MJXZERO, MJXTEX-S4;
+}
+
+.TEX-A {
+  font-family: MJXZERO, MJXTEX-A;
+}
+
+.TEX-C {
+  font-family: MJXZERO, MJXTEX-C;
+}
+
+.TEX-CB {
+  font-family: MJXZERO, MJXTEX-CB;
+}
+
+.TEX-FR {
+  font-family: MJXZERO, MJXTEX-FR;
+}
+
+.TEX-FRB {
+  font-family: MJXZERO, MJXTEX-FRB;
+}
+
+.TEX-SS {
+  font-family: MJXZERO, MJXTEX-SS;
+}
+
+.TEX-SSB {
+  font-family: MJXZERO, MJXTEX-SSB;
+}
+
+.TEX-SSI {
+  font-family: MJXZERO, MJXTEX-SSI;
+}
+
+.TEX-SC {
+  font-family: MJXZERO, MJXTEX-SC;
+}
+
+.TEX-T {
+  font-family: MJXZERO, MJXTEX-T;
+}
+
+.TEX-V {
+  font-family: MJXZERO, MJXTEX-V;
+}
+
+.TEX-VB {
+  font-family: MJXZERO, MJXTEX-VB;
+}
+
+mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
+  font-family: MJXZERO, MJXTEX-S1, MJXTEX-S4, MJXTEX, MJXTEX-A ! important;
+}
+
+@font-face /* 0 */ {
+  font-family: MJXZERO;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Zero.woff") format("woff");
+}
+
+@font-face /* 1 */ {
+  font-family: MJXTEX;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Regular.woff") format("woff");
+}
+
+@font-face /* 2 */ {
+  font-family: MJXTEX-B;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Bold.woff") format("woff");
+}
+
+@font-face /* 3 */ {
+  font-family: MJXTEX-I;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-Italic.woff") format("woff");
+}
+
+@font-face /* 4 */ {
+  font-family: MJXTEX-MI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Italic.woff") format("woff");
+}
+
+@font-face /* 5 */ {
+  font-family: MJXTEX-BI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-BoldItalic.woff") format("woff");
+}
+
+@font-face /* 6 */ {
+  font-family: MJXTEX-S1;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size1-Regular.woff") format("woff");
+}
+
+@font-face /* 7 */ {
+  font-family: MJXTEX-S2;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size2-Regular.woff") format("woff");
+}
+
+@font-face /* 8 */ {
+  font-family: MJXTEX-S3;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size3-Regular.woff") format("woff");
+}
+
+@font-face /* 9 */ {
+  font-family: MJXTEX-S4;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size4-Regular.woff") format("woff");
+}
+
+@font-face /* 10 */ {
+  font-family: MJXTEX-A;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_AMS-Regular.woff") format("woff");
+}
+
+@font-face /* 11 */ {
+  font-family: MJXTEX-C;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Calligraphic-Regular.woff") format("woff");
+}
+
+@font-face /* 12 */ {
+  font-family: MJXTEX-CB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Calligraphic-Bold.woff") format("woff");
+}
+
+@font-face /* 13 */ {
+  font-family: MJXTEX-FR;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Fraktur-Regular.woff") format("woff");
+}
+
+@font-face /* 14 */ {
+  font-family: MJXTEX-FRB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Fraktur-Bold.woff") format("woff");
+}
+
+@font-face /* 15 */ {
+  font-family: MJXTEX-SS;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Regular.woff") format("woff");
+}
+
+@font-face /* 16 */ {
+  font-family: MJXTEX-SSB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Bold.woff") format("woff");
+}
+
+@font-face /* 17 */ {
+  font-family: MJXTEX-SSI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Italic.woff") format("woff");
+}
+
+@font-face /* 18 */ {
+  font-family: MJXTEX-SC;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Script-Regular.woff") format("woff");
+}
+
+@font-face /* 19 */ {
+  font-family: MJXTEX-T;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Typewriter-Regular.woff") format("woff");
+}
+
+@font-face /* 20 */ {
+  font-family: MJXTEX-V;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Vector-Regular.woff") format("woff");
+}
+
+@font-face /* 21 */ {
+  font-family: MJXTEX-VB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Vector-Bold.woff") format("woff");
+}
+
+mjx-c.mjx-cD7::before {
+  padding: 0.491em 0.778em 0 0;
+  content: "\D7";
+}
+</style></head>
+
+  <body cz-shortcut-listen="true">
+    <div class="openbtn"><span></span><span></span><span></span></div>
+    <nav id="g-nav">
+      <div id="g-nav-list">
+        <!-- ---------------------------------------- -->
+         <ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E9%80%A3%E7%B5%A1%E3%81%A8%E6%BA%96%E5%82%99" id="toc-連絡と準備"><span class="toc-section-number">1</span>
+連絡と準備</a>
+<ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E3%83%8F%E3%83%B3%E3%82%BA%E3%82%AA%E3%83%B3%E5%AD%A6%E7%BF%92%E3%81%AE%E6%BA%96%E5%82%99" id="toc-ハンズオン学習の準備"><span class="toc-section-number">1.1</span> ハンズオン学習の準備</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E4%BB%8A%E5%9B%9E%E3%81%AE%E8%AC%9B%E7%BE%A9%E3%81%AE%E6%A6%82%E8%A6%81" id="toc-今回の講義の概要"><span class="toc-section-number">1.2</span> 今回の講義の概要</a></li>
+</ul></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E5%A4%96%E9%83%A8%E7%B5%90%E5%90%88%E3%81%A8where%E5%8F%A5%E3%82%92%E7%B5%84%E3%81%BF%E5%90%88%E3%81%9B%E3%82%8B%E5%A0%B4%E5%90%88%E3%81%AE%E6%B3%A8%E6%84%8F" id="toc-外部結合とwhere句を組み合せる場合の注意"><span class="toc-section-number">2</span>
+外部結合とWHERE句を組み合せる場合の注意</a>
+<ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#where-%E5%8F%A5%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E5%87%A6%E7%90%86-%E4%B8%8D%E9%81%A9%E5%88%87%E3%81%AA%E5%87%A6%E7%90%86" id="toc-where-句を用いた処理-不適切な処理"><span class="toc-section-number">2.1</span> WHERE 句を用いた処理 (不適切な処理)</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#on-%E5%8F%A5%E3%81%A7%E6%9D%A1%E4%BB%B6%E6%8A%BD%E5%87%BA%E5%87%A6%E7%90%86" id="toc-on-句で条件抽出処理"><span class="toc-section-number">2.2</span> ON 句で条件抽出処理</a></li>
+</ul></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#csv%E3%81%AE%E3%82%A4%E3%83%B3%E3%83%9D%E3%83%BC%E3%83%88%E3%81%A8%E3%82%A8%E3%82%AF%E3%82%B9%E3%83%9D%E3%83%BC%E3%83%88" id="toc-csvのインポートとエクスポート"><span class="toc-section-number">3</span> CSVのインポートとエクスポート</a>
+<ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#select%E6%96%87%E3%81%AE%E5%87%BA%E5%8A%9B%E3%82%92csv%E3%81%AB%E3%82%A8%E3%82%AF%E3%82%B9%E3%83%9D%E3%83%BC%E3%83%88" id="toc-select文の出力をcsvにエクスポート"><span class="toc-section-number">3.1</span> SELECT文の出力をCSVにエクスポート</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E8%A3%9C%E8%B6%B3-csv%E9%96%A2%E9%80%A3%E3%81%AEvscode%E6%8B%A1%E5%BC%B5%E6%A9%9F%E8%83%BD" id="toc-補足-csv関連のvscode拡張機能"><span class="toc-section-number">3.2</span> 補足: CSV関連のVSCode拡張機能</a></li>
+</ul></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E3%82%B5%E3%83%96%E3%82%AF%E3%82%A8%E3%83%AA%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AE%E6%8C%BF%E5%85%A5" id="toc-サブクエリを用いたレコードの挿入"><span class="toc-section-number">4</span> サブクエリを用いたレコードの挿入</a>
+<ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E6%BA%96%E5%82%99" id="toc-準備"><span class="toc-section-number">4.1</span> 準備</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#values-%E5%8F%A5%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB%E6%8C%BF%E5%85%A5" id="toc-values-句を用いたリテラル挿入"><span class="toc-section-number">4.2</span> VALUES 句を用いたリテラル挿入</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E3%82%B5%E3%83%96%E3%82%AF%E3%82%A8%E3%83%AA%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AE%E6%8C%BF%E5%85%A5-1" id="toc-サブクエリを用いたレコードの挿入-1"><span class="toc-section-number">4.3</span> サブクエリを用いたレコードの挿入</a></li>
+</ul></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E3%82%B5%E3%83%96%E3%82%AF%E3%82%A8%E3%83%AA%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AE%E6%9B%B4%E6%96%B0" id="toc-サブクエリを用いたレコードの更新"><span class="toc-section-number">5</span> サブクエリを用いたレコードの更新</a>
+<ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AE%E6%9B%B4%E6%96%B0-%E5%9B%BA%E5%AE%9A%E5%80%A4" id="toc-レコードの更新-固定値"><span class="toc-section-number">5.1</span> レコードの更新 (固定値)</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AE%E6%9B%B4%E6%96%B0-%E7%8F%BE%E5%9C%A8%E5%80%A4%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%9F%E6%9B%B4%E6%96%B0" id="toc-レコードの更新-現在値を利用した更新"><span class="toc-section-number">5.2</span>
+レコードの更新 (現在値を利用した更新)</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E3%82%B5%E3%83%96%E3%82%AF%E3%82%A8%E3%83%AA%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E6%9B%B4%E6%96%B0" id="toc-サブクエリを用いた更新"><span class="toc-section-number">5.3</span> サブクエリを用いた更新</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#from%E5%8F%A5%E3%81%AE%E5%88%A9%E7%94%A8" id="toc-from句の利用"><span class="toc-section-number">5.4</span>
+FROM句の利用</a></li>
+</ul></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E3%83%90%E3%83%83%E3%82%AF%E3%82%A2%E3%83%83%E3%83%97%E3%81%A8%E3%83%AA%E3%82%B9%E3%83%88%E3%82%A2" id="toc-バックアップとリストア"><span class="toc-section-number">6</span> バックアップとリストア</a>
+<ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E3%83%90%E3%83%83%E3%82%AF%E3%82%A2%E3%83%83%E3%83%97" id="toc-バックアップ"><span class="toc-section-number">6.1</span>
+バックアップ</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E3%83%AA%E3%82%B9%E3%83%88%E3%82%A2" id="toc-リストア"><span class="toc-section-number">6.2</span>
+リストア</a></li>
+</ul></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#%E6%8E%88%E6%A5%AD%E6%99%82%E9%96%93%E5%A4%96%E5%AD%A6%E7%BF%92%E3%81%AE%E6%8C%87%E7%A4%BA" id="toc-授業時間外学習の指示"><span class="toc-section-number">7</span> 授業時間外学習の指示</a></li>
+</ul> 
+        <!-- ---------------------------------------- -->
+      </div>
+    </nav>
+
+    <header class="markdown-body">
+      <p>2025-4I データベース工学 第12回 講義資料</p>
+      <p>2026年01月15日 (木) 3-4時限</p>
+    </header>
+
+    <main class="markdown-body">
+      <!-- ---------------------------------------- -->
+      <h1 data-number="1" id="連絡と準備"><span class="header-section-number">1</span>
+      連絡と準備</h1>
+      <ul>
+      <li><strong>小テスト❾</strong> を実施します。
+      <ul>
+      <li>シラバス記載のように、小テストは最終評価の <span class="masked">35%</span>
+      に相当します。</li>
+      <li>遅刻・欠席等により追試験を希望する場合は<a href="https://takeshiwada1980.github.io/DB-2025/lecture01.html#%E6%88%90%E7%B8%BE%E8%A9%95%E4%BE%A1%E6%B3%95%E3%81%A8%E5%B1%A5%E4%BF%AE%E4%B8%8A%E3%81%AE%E6%B3%A8%E6%84%8F">第01回講義で案内した手続き</a>をしてください。</li>
+      </ul></li>
+      </ul>
+      <h2 data-number="1.1" id="ハンズオン学習の準備"><span class="header-section-number">1.1</span>
+      ハンズオン学習の準備</h2>
+      <p>次の手順でSQL演習環境の立ち上げと、教材の更新を取得してください。</p>
+      <ul>
+      <li><a href="https://takeshiwada1980.github.io/DB-2025/lecture04.html#sql%E6%BC%94%E7%BF%92%E7%92%B0%E5%A2%83%E3%81%AE%E5%8B%95%E4%BD%9C%E7%A2%BA%E8%AA%8D-%E5%89%8D%E5%9B%9E%E5%BE%A9%E7%BF%92">SQL演習環境の動作確認</a>@
+      第04回講義</li>
+      <li><a href="https://takeshiwada1980.github.io/DB-2025/lecture04.html#%E6%95%99%E6%9D%90%E3%81%AE%E6%9B%B4%E6%96%B0%E3%81%AE%E5%8F%96%E5%BE%97">教材の更新の取得</a>@ 第04回講義</li>
+      </ul>
+      <p>今回の講義では <code>from-teacher/12/init-y_db.sql</code>
+      で作成するテーブルを使用します。あらかじめ実行して以下のテーブル群 (<code>y_****</code>)
+      を作成しておいてください。</p>
+      <ul>
+      <li>y_jobs</li>
+      <li>y_items</li>
+      <li>y_characters</li>
+      <li>y_character_items</li>
+      </ul>
+      <figure>
+      <img src="./第12回 4I-データベース工学_files/LER-01.png" alt="img">
+      <figcaption aria-hidden="true">img</figcaption>
+      </figure>
+      <hr>
+      <p>また、<strong>第10回講義で使用したテーブル群</strong> (<code>x_****</code>)
+      も使用します。演習環境の <code>from-teacher/10/create-x_db.sql</code> および
+      <code>insert-x_db_01.sql</code> を再実行し、次のテーブル群を初期化しておいてください。</p>
+      <ul>
+      <li>x_items</li>
+      <li>x_jobs</li>
+      <li>x_characters</li>
+      <li>x_guilds</li>
+      <li>x_guild_characters</li>
+      <li>x_character_items</li>
+      <li>x_gold_transfers</li>
+      </ul>
+      <figure>
+      <img src="./第12回 4I-データベース工学_files/LER-01(1).png" alt="img">
+      <figcaption aria-hidden="true">img</figcaption>
+      </figure>
+      <h2 data-number="1.2" id="今回の講義の概要"><span class="header-section-number">1.2</span>
+      今回の講義の概要</h2>
+      <p>今回の講義では、</p>
+      <ul>
+      <li><code>LEFT JOIN</code> <strong>と</strong> <code>WHERE</code>
+      <strong>を組み合せる場合の注意</strong></li>
+      <li><strong>SELECT文の出力をCSVにエクスポートする方法</strong></li>
+      <li><strong>サブクエリを用いてレコードを挿入・更新する方法</strong></li>
+      <li><strong>データベースのバックアップ (ダンプ) とリストア</strong></li>
+      </ul>
+      <p>…について学んでいきます。</p>
+      <h1 data-number="2" id="外部結合とwhere句を組み合せる場合の注意"><span class="header-section-number">2</span> 外部結合とWHERE句を組み合せる場合の注意</h1>
+      <p>前回講義では、<strong>外部結合</strong>
+      (<code>LEFT JOIN</code>、<code>RIGHT JOIN</code>、<code>FULL JOIN</code>)
+      について学びました。これら外部結合を含む SQL において、<code>WHERE</code>
+      句を使用するときは十分に注意してください。</p>
+      <p>「何をどのように注意すべきか」を実例 (<code>y_****</code> のテーブル群)
+      を使って考えていきます。</p>
+      <p>まず、<strong>ジョブを基準にすべてのキャラを列挙する処理</strong> を考えてみます。これは
+      <code>LEFT JOIN</code> を使って、次のような SQL で記述することができます。</p>
+      <div class="sourceCode" id="cb1" data-caption="select-outer_join_01.sql（前半部分）"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb1-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb1-1"></a><span class="kw">SELECT</span></span>
+<span id="cb1-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb1-2"></a>  j.job_id,</span>
+<span id="cb1-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb1-3"></a>  j.name <span class="kw">AS</span> <span class="ot">"job"</span>,</span>
+<span id="cb1-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb1-4"></a>  c.name,</span>
+<span id="cb1-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb1-5"></a>  c.deleted_at,</span>
+<span id="cb1-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb1-6"></a>  <span class="cf">CASE</span></span>
+<span id="cb1-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb1-7"></a>    <span class="cf">WHEN</span> c.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="cf">THEN</span> <span class="st">''</span></span>
+<span id="cb1-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb1-8"></a>    <span class="cf">ELSE</span> <span class="st">'YES'</span></span>
+<span id="cb1-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb1-9"></a>  <span class="cf">END</span> <span class="kw">AS</span> <span class="ot">"is_deleted"</span></span>
+<span id="cb1-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb1-10"></a><span class="kw">FROM</span></span>
+<span id="cb1-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb1-11"></a>  y_jobs <span class="kw">AS</span> j</span>
+<span id="cb1-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb1-12"></a>  <span class="kw">LEFT</span> <span class="kw">JOIN</span> y_characters <span class="kw">AS</span> c <span class="kw">ON</span> j.job_id <span class="op">=</span> c.job_id <span class="co">-- ◀ 外部結合</span></span>
+<span id="cb1-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb1-13"></a><span class="kw">ORDER</span> <span class="kw">BY</span></span>
+<span id="cb1-14"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb1-14"></a>  j.job_id;</span></code></pre></div>
+      <p>実行結果は、次のようになります。</p>
+      <pre><code> job_id |   job   |  name   |     deleted_at      | is_deleted 
+--------+---------+---------+---------------------+------------
+      1 | Fighter | Tom     |                     |
+      1 | Fighter | Oscar   |                     |
+      2 | Monk    |         |                     |
+      3 | Ninja   | Zach    | 2025-12-31 07:10:00 | YES
+      4 | Samurai |         |                     |
+      5 | Priest  | Alice   | 2025-12-31 07:10:00 | YES
+      5 | Priest  | Marvin  |                     |
+      6 | Wizard  | Charlie |    </code></pre>
+      <p>以上のように <code>LEFT JOIN</code> を使うことで、<span class="masked">そのジョブに就いているキャラが存在しなくても</span>、<strong>当該ジョブの行 (＝
+      Monk や Samurai ) を結果セットのなかに含めること</strong>が可能になりました。</p>
+      <ul>
+      <li>このことの意味が分からないときは、<strong>第11行目</strong> の <code>LEFT JOIN</code>
+      (左外部結合) を <code>JOIN</code> (内部結合) に変更して結果セットを比べてみてください。</li>
+      </ul>
+      <p>ところで、この結果セットには <strong>Alice</strong> と <strong>Zach</strong> という
+      <u>論理削除されたキャラ</u> (＝<strong>deleted_at</strong> に値が入っているキャラ)
+      が含まれています。</p>
+      <div class="note type-tips">
+      <p><strong>論理削除</strong></p>
+      <p><strong>y_characters</strong> テーブルには、NULL 許容の <code>TIMESTAMP</code> 型の
+      <strong>deleted_at</strong> というカラムがあり、このカラムに値が入っていれば <span class="masked">その日時で削除されたキャラ</span>、NULL であれば <span class="masked">まだ削除されていないキャラ (＝現在も有効なキャラ)</span>
+      という意味を持たせています。</p>
+      <ul>
+      <li>このように「削除日時を保持するカラム」をテーブルに持たせることによって<strong>レコードの有効/無効を管理する方法</strong>は、論理削除を実装するための典型的なパターンとなります。</li>
+      </ul>
+      </div>
+      <p><strong>(プロンプト例)</strong></p>
+      <blockquote>
+      <p>RDBMS および SQL
+      に関する質問です。「論理削除」とは、どのようなテクニックですか。物理削除と比較してのメリットとデメリットについて解説してください。</p>
+      </blockquote>
+      <blockquote>
+      <p>RDBMS および SQL
+      に関する質問です。論理削除の代表的な実装パターンについて解説してください。</p>
+      </blockquote>
+      <p>また、<strong>ジョブを基準にキャラ人数 (論理削除済みのキャラも含む) を集計する処理</strong>
+      は、次のような SQL で記述することができます。</p>
+      <div class="sourceCode" id="cb3" data-caption="select-outer_join_01.sql（後半部分）"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb3-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb3-1"></a><span class="kw">SELECT</span></span>
+<span id="cb3-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb3-2"></a>  j.job_id,</span>
+<span id="cb3-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb3-3"></a>  <span class="fu">MAX</span>(j.name) <span class="kw">AS</span> <span class="ot">"job"</span>,</span>
+<span id="cb3-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb3-4"></a>  <span class="fu">COUNT</span>(c.character_id)</span>
+<span id="cb3-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb3-5"></a><span class="kw">FROM</span></span>
+<span id="cb3-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb3-6"></a>  y_jobs <span class="kw">AS</span> j</span>
+<span id="cb3-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb3-7"></a>  <span class="kw">LEFT</span> <span class="kw">JOIN</span> y_characters <span class="kw">AS</span> c <span class="kw">ON</span> j.job_id <span class="op">=</span> c.job_id</span>
+<span id="cb3-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb3-8"></a><span class="kw">GROUP</span> <span class="kw">BY</span></span>
+<span id="cb3-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb3-9"></a>  j.job_id</span>
+<span id="cb3-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb3-10"></a><span class="kw">ORDER</span> <span class="kw">BY</span></span>
+<span id="cb3-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb3-11"></a>  j.job_id;</span></code></pre></div>
+      <p>実行結果は、次のようになります。結果が 0
+      名になるものを含めて、各ジョブに就いているキャラ人数がカウントできています。</p>
+      <pre><code> job_id |   job   | count
+--------+---------+-------
+      1 | Fighter |     2
+      2 | Monk    |     0
+      3 | Ninja   |     1
+      4 | Samurai |     0
+      5 | Priest  |     2
+      6 | Wizard  |     1</code></pre>
+      <p>いずれの結果も、<strong>論理削除済みのキャラ (Alice と Zach) を含んだ</strong>
+      列挙や集計の結果セットとなっています。ここからは、<u><strong>論理削除済みのキャラを除外して列挙・集計する処理</strong></u>
+      を「どのように行なうか」を考えていきます。</p>
+      <h2 data-number="2.1" id="where-句を用いた処理-不適切な処理"><span class="header-section-number">2.1</span> WHERE 句を用いた処理 (不適切な処理)</h2>
+      <p>「<strong>論理削除済みのキャラ</strong>」つまり「<code>y_characters.deleted_at</code>
+      <strong>に値 (日時) が格納されているキャラ</strong>」を <strong><em>除外</em></strong>
+      した列挙・集計するような SQL、つまり <span class="masked"><code>y_characters.deleted_at = NULL</code> のキャラだけを対象に列挙・集計する
+      SQL</span> を考えていきます。</p>
+      <p>このような要求には、<code>WHERE</code> が利用できそうであり、たとえば、次のような SQL
+      (先ほどの <code>select-outer_join_01.sql</code> に <code>WHERE c.deleted_at IS NULL</code>
+      を追加したような SQL) を記述したくなります。</p>
+      <div class="sourceCode" id="cb5" data-caption="select-outer_join_02.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb5-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-1"></a><span class="co">-- ジョブを基準にキャラを列挙 (論理削除済みキャラを含めない) </span></span>
+<span id="cb5-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-2"></a><span class="co">-- NG な SQL の例</span></span>
+<span id="cb5-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-3"></a><span class="kw">SELECT</span></span>
+<span id="cb5-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-4"></a>  j.job_id,</span>
+<span id="cb5-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-5"></a>  j.name <span class="kw">AS</span> <span class="ot">"job"</span>,</span>
+<span id="cb5-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-6"></a>  c.name,</span>
+<span id="cb5-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-7"></a>  <span class="cf">CASE</span></span>
+<span id="cb5-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-8"></a>    <span class="cf">WHEN</span> c.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="cf">THEN</span> <span class="st">''</span></span>
+<span id="cb5-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-9"></a>    <span class="cf">ELSE</span> <span class="st">'YES'</span></span>
+<span id="cb5-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-10"></a>  <span class="cf">END</span> <span class="kw">AS</span> <span class="ot">"is_deleted"</span></span>
+<span id="cb5-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-11"></a><span class="kw">FROM</span></span>
+<span id="cb5-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-12"></a>  y_jobs <span class="kw">AS</span> j</span>
+<span id="cb5-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-13"></a>  <span class="kw">LEFT</span> <span class="kw">JOIN</span> y_characters <span class="kw">AS</span> c <span class="kw">ON</span> j.job_id <span class="op">=</span> c.job_id</span>
+<span id="cb5-14"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-14"></a><span class="kw">WHERE</span></span>
+<span id="cb5-15"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-15"></a>  c.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="co">-- ◀ WHERE句で論理削除されていないキャラだけを選択</span></span>
+<span id="cb5-16"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-16"></a><span class="kw">ORDER</span> <span class="kw">BY</span></span>
+<span id="cb5-17"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-17"></a>  j.job_id;</span>
+<span id="cb5-18"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-18"></a></span>
+<span id="cb5-19"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-19"></a><span class="co">-- ジョブを基準にキャラ人数を集計 (論理削除済みキャラを含めない) </span></span>
+<span id="cb5-20"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-20"></a><span class="co">-- NG な SQL の例</span></span>
+<span id="cb5-21"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-21"></a><span class="kw">SELECT</span></span>
+<span id="cb5-22"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-22"></a>  j.job_id,</span>
+<span id="cb5-23"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-23"></a>  <span class="fu">MAX</span>(j.name) <span class="kw">AS</span> <span class="ot">"job"</span>,</span>
+<span id="cb5-24"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-24"></a>  <span class="fu">COUNT</span>(c.character_id)</span>
+<span id="cb5-25"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-25"></a><span class="kw">FROM</span></span>
+<span id="cb5-26"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-26"></a>  y_jobs <span class="kw">AS</span> j</span>
+<span id="cb5-27"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-27"></a>  <span class="kw">LEFT</span> <span class="kw">JOIN</span> y_characters <span class="kw">AS</span> c <span class="kw">ON</span> j.job_id <span class="op">=</span> c.job_id</span>
+<span id="cb5-28"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-28"></a><span class="kw">WHERE</span></span>
+<span id="cb5-29"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-29"></a>  c.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="co">-- ◀ WHERE句で論理削除されていないキャラだけを選択</span></span>
+<span id="cb5-30"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-30"></a><span class="kw">GROUP</span> <span class="kw">BY</span></span>
+<span id="cb5-31"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-31"></a>  j.job_id</span>
+<span id="cb5-32"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-32"></a><span class="kw">ORDER</span> <span class="kw">BY</span></span>
+<span id="cb5-33"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb5-33"></a>  j.job_id;</span></code></pre></div>
+      <p>しかし、この SQL を実際に実行してみると、次のように期待する結果が得られません。</p>
+      <pre><code> job_id |   job   |  name   | is_deleted 
+--------+---------+---------+------------
+      1 | Fighter | Tom     |
+      1 | Fighter | Oscar   |
+      2 | Monk    |         |
+      4 | Samurai |         |
+      5 | Priest  | Marvin  |
+      6 | Wizard  | Charlie |
+(6 行)
+
+ job_id |   job   | count
+--------+---------+-------
+      1 | Fighter |     2
+      2 | Monk    |     0
+      4 | Samurai |     0
+      5 | Priest  |     1
+      6 | Wizard  |     1
+(5 行)</code></pre>
+      <p><code>LEFT JOIN</code> を使って、<strong>左側テーブル (ジョブ側)
+      の行は全て結果セットに含めるように意図</strong>していましたが、実際には <span class="masked">job_id が <code>3</code> (＝Ninja) が欠落した結果</span>
+      となってしまいました。</p>
+      <p>なお、ここで欠けてしまった行は <span class="masked">論理削除されたキャラだけが、当該ジョブに就いていたケース</span>
+      となります。</p>
+      <p>以上のように <code>LEFT JOIN</code> と <code>WHERE</code>
+      を組み合わせる場合、外部結合を適用した結果セットに対して <code>WHERE</code>
+      が適用されるため、(初学者には) 意図せぬ結果となることがあるので注意してください。特に
+      <code>LEFT JOIN</code> の右側テーブル (ここでの例では y_character)
+      のカラムを参照する抽出条件を与えると問題が起きやすいので注意してください。</p>
+      <h2 data-number="2.2" id="on-句で条件抽出処理"><span class="header-section-number">2.2</span>
+      ON 句で条件抽出処理</h2>
+      <p>論理削除済みのキャラを除外して適切に列挙・集計を行なうためには、<code>LEFT JOIN</code> の
+      <code>ON</code> 句のなかで <code>c.deleted_at IS NULL</code>
+      という条件抽出条件を指定します。</p>
+      <p>具体的には、以下のような SQL を記述します。</p>
+      <div class="sourceCode" id="cb7" data-caption="select-outer_join_03.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb7-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-1"></a><span class="co">-- ジョブを基準にキャラを列挙 (論理削除済みキャラを含めない) </span></span>
+<span id="cb7-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-2"></a><span class="kw">SELECT</span></span>
+<span id="cb7-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-3"></a>  j.job_id,</span>
+<span id="cb7-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-4"></a>  j.name <span class="kw">AS</span> <span class="ot">"job"</span>,</span>
+<span id="cb7-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-5"></a>  c.name,</span>
+<span id="cb7-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-6"></a>  <span class="cf">CASE</span></span>
+<span id="cb7-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-7"></a>    <span class="cf">WHEN</span> c.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="cf">THEN</span> <span class="st">''</span></span>
+<span id="cb7-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-8"></a>    <span class="cf">ELSE</span> <span class="st">'YES'</span></span>
+<span id="cb7-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-9"></a>  <span class="cf">END</span> <span class="kw">AS</span> <span class="ot">"is_deleted"</span></span>
+<span id="cb7-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-10"></a><span class="kw">FROM</span></span>
+<span id="cb7-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-11"></a>  y_jobs <span class="kw">AS</span> j</span>
+<span id="cb7-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-12"></a>  <span class="kw">LEFT</span> <span class="kw">JOIN</span> y_characters <span class="kw">AS</span> c <span class="kw">ON</span> (</span>
+<span id="cb7-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-13"></a>    j.job_id <span class="op">=</span> c.job_id <span class="kw">AND</span></span>
+<span id="cb7-14"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-14"></a>    c.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="co">-- ◀ ON句で論理削除してないキャラのみを選択</span></span>
+<span id="cb7-15"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-15"></a>  ) <span class="co">-- ◀ 括弧は省略可</span></span>
+<span id="cb7-16"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-16"></a><span class="kw">ORDER</span> <span class="kw">BY</span></span>
+<span id="cb7-17"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-17"></a>  j.job_id;</span>
+<span id="cb7-18"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-18"></a></span>
+<span id="cb7-19"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-19"></a><span class="co">-- ジョブを基準にキャラ人数を集計 (論理削除済みキャラを含めない) </span></span>
+<span id="cb7-20"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-20"></a><span class="kw">SELECT</span></span>
+<span id="cb7-21"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-21"></a>  j.job_id,</span>
+<span id="cb7-22"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-22"></a>  <span class="fu">MAX</span>(j.name) <span class="kw">AS</span> <span class="ot">"job"</span>,</span>
+<span id="cb7-23"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-23"></a>  <span class="fu">COUNT</span>(c.character_id)</span>
+<span id="cb7-24"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-24"></a><span class="kw">FROM</span></span>
+<span id="cb7-25"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-25"></a>  y_jobs <span class="kw">AS</span> j</span>
+<span id="cb7-26"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-26"></a>  <span class="kw">LEFT</span> <span class="kw">JOIN</span> y_characters <span class="kw">AS</span> c <span class="kw">ON</span> (</span>
+<span id="cb7-27"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-27"></a>    j.job_id <span class="op">=</span> c.job_id <span class="kw">AND</span></span>
+<span id="cb7-28"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-28"></a>    c.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="co">-- ◀ ON句で論理削除してないキャラのみを選択</span></span>
+<span id="cb7-29"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-29"></a>  ) <span class="co">-- ◀ 括弧は省略可</span></span>
+<span id="cb7-30"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-30"></a><span class="kw">GROUP</span> <span class="kw">BY</span></span>
+<span id="cb7-31"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-31"></a>  j.job_id</span>
+<span id="cb7-32"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-32"></a><span class="kw">ORDER</span> <span class="kw">BY</span></span>
+<span id="cb7-33"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb7-33"></a>  j.job_id;</span></code></pre></div>
+      <p>実行結果は、以下のようになります。論理削除済みキャラ (Alice と Zach)
+      を除外したうえで、ジョブを基準にキャラを適切に列挙・集計できていることが分かります。</p>
+      <pre><code> job_id |   job   |  name   | is_deleted 
+--------+---------+---------+------------
+      1 | Fighter | Tom     |
+      1 | Fighter | Oscar   |
+      2 | Monk    |         |
+      3 | Ninja   |         |
+      4 | Samurai |         |
+      5 | Priest  | Marvin  |
+      6 | Wizard  | Charlie |
+(7 行)
+
+ job_id |   job   | count
+--------+---------+-------
+      1 | Fighter |     2
+      2 | Monk    |     0
+      3 | Ninja   |     0
+      4 | Samurai |     0
+      5 | Priest  |     1
+      6 | Wizard  |     1
+(6 行)</code></pre>
+      <h3 data-number="2.2.1" id="sqlドリル"><span class="header-section-number">2.2.1</span>
+      SQLドリル💻</h3>
+      <p>以下、<code>y_****</code> テーブル群を使用する演習問題です。</p>
+      <ul>
+      <li><code>ex-01_1</code> 👉 (削除されたキャラのジョブ傾向を分析するために) ジョブを基準に
+      <u>論理削除されたキャラだけ</u> を列挙・集計をしたい。この要求に対して、次のような SQL
+      を記述したが、実行してみると期待する実行結果とはならなかった。「期待する実行結果」が得られるように
+      SQL を修正せよ。</li>
+      </ul>
+      <div class="sourceCode" id="cb9" data-caption="ジョブを基準に論理削除されたキャラだけを列挙・集計"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb9-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-1"></a><span class="co">-- 論理削除済みキャラのみを対象として、ジョブを基準にキャラを列挙</span></span>
+<span id="cb9-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-2"></a><span class="kw">SELECT</span></span>
+<span id="cb9-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-3"></a>  j.job_id,</span>
+<span id="cb9-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-4"></a>  j.name <span class="kw">AS</span> <span class="ot">"job"</span>,</span>
+<span id="cb9-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-5"></a>  c.name,</span>
+<span id="cb9-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-6"></a>  <span class="cf">CASE</span></span>
+<span id="cb9-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-7"></a>    <span class="cf">WHEN</span> c.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="cf">THEN</span> <span class="st">''</span></span>
+<span id="cb9-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-8"></a>    <span class="cf">ELSE</span> <span class="st">'YES'</span></span>
+<span id="cb9-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-9"></a>  <span class="cf">END</span> <span class="kw">AS</span> <span class="ot">"is_deleted"</span></span>
+<span id="cb9-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-10"></a><span class="kw">FROM</span></span>
+<span id="cb9-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-11"></a>  y_jobs <span class="kw">AS</span> j</span>
+<span id="cb9-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-12"></a>  <span class="kw">LEFT</span> <span class="kw">JOIN</span> y_characters <span class="kw">AS</span> c <span class="kw">ON</span> j.job_id <span class="op">=</span> c.job_id</span>
+<span id="cb9-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-13"></a><span class="kw">WHERE</span></span>
+<span id="cb9-14"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-14"></a>  c.deleted_at <span class="kw">IS</span> <span class="kw">NOT</span> <span class="kw">NULL</span></span>
+<span id="cb9-15"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-15"></a><span class="kw">ORDER</span> <span class="kw">BY</span></span>
+<span id="cb9-16"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-16"></a>  j.job_id;</span>
+<span id="cb9-17"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-17"></a></span>
+<span id="cb9-18"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-18"></a><span class="co">-- 論理削除済みキャラのみを対象として、ジョブを基準にキャラ人数を集計</span></span>
+<span id="cb9-19"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-19"></a><span class="kw">SELECT</span></span>
+<span id="cb9-20"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-20"></a>  j.job_id,</span>
+<span id="cb9-21"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-21"></a>  <span class="fu">MAX</span>(j.name) <span class="kw">AS</span> <span class="ot">"job"</span>,</span>
+<span id="cb9-22"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-22"></a>  <span class="fu">COUNT</span>(c.character_id)</span>
+<span id="cb9-23"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-23"></a><span class="kw">FROM</span></span>
+<span id="cb9-24"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-24"></a>  y_jobs <span class="kw">AS</span> j</span>
+<span id="cb9-25"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-25"></a>  <span class="kw">LEFT</span> <span class="kw">JOIN</span> y_characters <span class="kw">AS</span> c <span class="kw">ON</span> j.job_id <span class="op">=</span> c.job_id</span>
+<span id="cb9-26"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-26"></a><span class="kw">WHERE</span></span>
+<span id="cb9-27"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-27"></a>  c.deleted_at <span class="kw">IS</span> <span class="kw">NOT</span> <span class="kw">NULL</span></span>
+<span id="cb9-28"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-28"></a><span class="kw">GROUP</span> <span class="kw">BY</span></span>
+<span id="cb9-29"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-29"></a>  j.job_id</span>
+<span id="cb9-30"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-30"></a><span class="kw">ORDER</span> <span class="kw">BY</span></span>
+<span id="cb9-31"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb9-31"></a>  j.job_id;</span></code></pre></div>
+      <p><strong>▼ 上記の SQL を実行した結果</strong></p>
+      <pre><code> job_id |  job   | name  | is_deleted 
+--------+--------+-------+------------
+      3 | Ninja  | Zach  | YES
+      5 | Priest | Alice | YES
+(2 行)
+
+ job_id |  job   | count
+--------+--------+-------
+      3 | Ninja  |     1
+      5 | Priest |     1
+(2 行)</code></pre>
+      <p><strong>▼ 期待する実行結果</strong></p>
+      <pre><code> job_id |   job   | name  | is_deleted 
+--------+---------+-------+------------
+      1 | Fighter |       |
+      2 | Monk    |       |
+      3 | Ninja   | Zach  | YES
+      4 | Samurai |       |
+      5 | Priest  | Alice | YES
+      6 | Wizard  |       |
+(6 行)
+
+ job_id |   job   | count
+--------+---------+-------
+      1 | Fighter |     0
+      2 | Monk    |     0
+      3 | Ninja   |     1
+      4 | Samurai |     0
+      5 | Priest  |     1
+      6 | Wizard  |     0
+(6 行)</code></pre>
+      <ul>
+      <li><code>ex-01_2</code> 👉
+      次に示すように「すべてのアイテムについて、その所持キャラを列挙」したい。ただし、論理削除済みのキャラを除く。この要件を満たすような
+      SQL を記述せよ。</li>
+      </ul>
+      <pre><code> item_id |  item   |  name  | qty 
+---------+---------+--------+-----
+       1 | Potion  | Marvin |   3
+       1 | Potion  | Tom    |   2
+       2 | Map     |        |   0
+       3 | Compass | Marvin |   1
+       4 | Rope    |        |   0
+       5 | Knife   |        |   0</code></pre>
+      <ul>
+      <li><code>ex-01_3</code> 👉 次に示すように「すべてのアイテムについて、キャラ通算の総所持数
+      (total_qty) と、所持キャラ人数 (holder_cnt)
+      を集計」したい。ただし、論理削除済みのキャラを除く。この要件を満たすような SQL
+      を記述せよ。</li>
+      </ul>
+      <pre><code>
+ item_id |  item   | total_qty | holder_cnt 
+---------+---------+-----------+------------
+       1 | Potion  |         5 |          2
+       2 | Map     |         0 |          0
+       3 | Compass |         1 |          1
+       4 | Rope    |         0 |          0
+       5 | Knife   |         0 |          0</code></pre>
+      <h1 data-number="3" id="csvのインポートとエクスポート"><span class="header-section-number">3</span> CSVのインポートとエクスポート</h1>
+      <p><a href="https://takeshiwada1980.github.io/DB-2025/lecture05.html#csv%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%8B%E3%82%89%E3%81%AEinsert">第05回講義</a>では、<strong>CSVファイル
+      から PostgreSQL にレコードを取り込む方法</strong> (インポートする方法)
+      を学びました。本科目の演習環境 (PostgreSQL 17 の Dockerコンテナ) において <strong>CSV
+      ファイルをテーブルにレコードとして取り込む手順</strong>は、以下のようなものでした。</p>
+      <ol type="1">
+      <li>ホストOS環境 (ローカル環境) 側で「CSVファイル」を準備する。
+      <ul>
+      <li>CSVファイルは <span class="masked">文字コード「UTF-8」、改行コード「LF」</span>
+      を原則とする。</li>
+      </ul></li>
+      <li><strong>docker cp</strong> コマンドを使って Docker コンテナ (<code>pg17</code>) に CSV
+      をコピーする。
+      <ul>
+      <li><code>docker cp from-teacher/05/insert-s_users.csv pg17:/tmp/</code></li>
+      </ul></li>
+      <li>次のような SQL (<code>COPY</code> 文) を用いて CSV からテーブルにレコードを挿入する。</li>
+      </ol>
+      <div class="sourceCode" id="cb14" data-caption="CSVファイルからレコードを挿入.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb14-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb14-1"></a><span class="kw">COPY</span> <span class="kw">public</span>.s_users (<span class="kw">id</span>, name, age)</span>
+<span id="cb14-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb14-2"></a><span class="kw">FROM</span></span>
+<span id="cb14-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb14-3"></a>  <span class="st">'/tmp/insert-s_users.csv'</span></span>
+<span id="cb14-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb14-4"></a><span class="kw">WITH</span></span>
+<span id="cb14-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb14-5"></a>  (FORMAT csv, <span class="kw">HEADER</span> <span class="kw">TRUE</span>, <span class="kw">NULL</span> <span class="st">'NULL'</span>, ENCODING <span class="st">'UTF8'</span>);</span></code></pre></div>
+      <p>今回の講義では、<code>SELECT</code>
+      文の実行結果を「<strong>CSVファイルに出力する方法</strong>」について紹介します。</p>
+      <h2 data-number="3.1" id="select文の出力をcsvにエクスポート"><span class="header-section-number">3.1</span> SELECT文の出力をCSVにエクスポート</h2>
+      <p>次のように <code>COPY (...) TO ... WITH (...)</code> という構文を使って、任意の
+      <code>SELECT</code> の出力 (結果セット) を
+      <strong>CSVファイルにエクスポートすること</strong>ができます。</p>
+      <div class="sourceCode" id="cb15" data-caption="copy-csv_01.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb15-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb15-1"></a><span class="kw">COPY</span> (</span>
+<span id="cb15-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb15-2"></a>  <span class="kw">SELECT</span></span>
+<span id="cb15-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb15-3"></a>    <span class="op">*</span></span>
+<span id="cb15-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb15-4"></a>  <span class="kw">FROM</span></span>
+<span id="cb15-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb15-5"></a>    x_characters</span>
+<span id="cb15-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb15-6"></a>) <span class="kw">TO</span> <span class="st">'/tmp/x_characters.csv'</span></span>
+<span id="cb15-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb15-7"></a><span class="kw">WITH</span></span>
+<span id="cb15-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb15-8"></a>  (FORMAT csv, <span class="kw">HEADER</span> <span class="kw">TRUE</span>, ENCODING <span class="st">'UTF8'</span>);</span></code></pre></div>
+      <p>上記を実行して成功すると、コンソールには次のような応答が表示されます。</p>
+      <pre><code>COPY 19</code></pre>
+      <p>ここで <code>19</code> は <span class="masked">19件分のレコードを出力したこと</span>
+      を表しています。</p>
+      <p>CSVファイルは、<strong>Docker コンテナ内部の</strong> <code>TO</code>
+      <strong>で指定したパス</strong> (ここでは <strong>第06行目</strong> で指定した
+      <code>/tmp/x_characters.csv</code> )
+      に作成されます。これをホストOS側にコピーするためには、VSCode
+      のターミナルから以下のコマンドを実行します。</p>
+      <pre><code>docker cp pg17:/tmp/x_characters.csv ./data</code></pre>
+      <p>これにより、<code>docker ps</code> コマンドを実行した位置 (＝<span class="masked">VSCodeプロジェクトのルート</span>) を基点に <code>data</code>
+      というフォルダのなかに <code>x_characters.csv</code> がコピー (作成)
+      されます。実際に実行してみてください。</p>
+      <figure>
+      <img src="./第12回 4I-データベース工学_files/vscode-01.png" alt="img">
+      <figcaption aria-hidden="true">img</figcaption>
+      </figure>
+      <p><strong>プロンプト例</strong></p>
+      <blockquote>
+      <p>PostgreSQL において <code>COPY</code> コマンドを使用して結果セットを CSVファイル
+      に出力する際、<code>WITH</code> 句には、どのようなオプションが設定可能か
+      (どのような出力内容の制御が可能か) 教えてください。</p>
+      </blockquote>
+      <h3 data-number="3.1.1" id="定着確認"><span class="header-section-number">3.1.1</span>
+      定着確認</h3>
+      <ul>
+      <li>Docker コンテナ <code>pg</code> の <code>/tmp/out.csv</code>
+      を、ホストOSのカレントフォルダに <code>out_0115.csv</code>
+      という名前で複製したい。この操作を行うための Docker コマンド (ホストOS側で実行)
+      を1行で記述せよ。
+      <ul>
+      <li><strong>答え</strong>: <span class="masked"><code>docker cp pg:/tmp/out.csv ./out_0115.csv</code></span></li>
+      </ul></li>
+      <li>PostgreSQL において、<code>SELECT * FROM table1</code>
+      による結果セットをデータベースサーバ上の <code>/tmp/table.csv</code> に CSV
+      形式で保存したい。次の SQL 文の【1】〜【3】に記述すべき語を答えよ。
+      <ul>
+      <li><strong>答え</strong>: <span class="masked">【1】<code>COPY</code>、【2】<code>TO</code>、【3】<code>WITH</code></span></li>
+      </ul></li>
+      </ul>
+      <div class="sourceCode" id="cb18" data-caption="copy-csv_01.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb18-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb18-1"></a>【<span class="dv">1</span>】(<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> table1)【<span class="dv">2</span>】<span class="st">'/tmp/table.csv'</span>【<span class="dv">3</span>】(FORMAT csv, <span class="kw">HEADER</span> <span class="kw">TRUE</span>, ENCODING <span class="st">'UTF8'</span>);</span></code></pre></div>
+      <h2 data-number="3.2" id="補足-csv関連のvscode拡張機能"><span class="header-section-number">3.2</span> 補足: CSV関連のVSCode拡張機能</h2>
+      <p>VSCode に <a href="https://marketplace.visualstudio.com/items?itemName=mechatroner.rainbow-csv">Rainbow
+      CSV</a> や <a href="https://marketplace.visualstudio.com/items?itemName=ReprEng.csv">CSV</a>
+      などの拡張機能を導入すると、CSVファイルの内容が確認しやすくなります。必要に応じて導入してみてください。</p>
+      <p>▼ <strong>Rainbow CSV</strong> (識別子: <code>mechatroner.rainbow-csv</code>) の導入例</p>
+      <figure>
+      <img src="./第12回 4I-データベース工学_files/vscode-02.png" alt="img">
+      <figcaption aria-hidden="true">img</figcaption>
+      </figure>
+      <p>▼ <strong>CSV</strong> (識別子: <code>repreng.csv</code>) の導入例</p>
+      <figure>
+      <img src="./第12回 4I-データベース工学_files/vscode-03.png" alt="img">
+      <figcaption aria-hidden="true">img</figcaption>
+      </figure>
+      <p>両方の拡張機能をインストール・有効化したときは <span class="masked">Rainbow CSV</span>
+      が優先適用されるので注意してください。</p>
+      <h3 data-number="3.2.1" id="定着確認-1"><span class="header-section-number">3.2.1</span>
+      定着確認</h3>
+      <ul>
+      <li>Docker コンテナ <code>hoge</code> に存在する <code>/tmp/fuga.txt</code> を、ホスト側 OS
+      のカレントフォルダ配下に <code>data/fuga.txt</code>
+      として保存したい。このときに使用するコマンドを答えよ。
+      <ul>
+      <li><strong>答え</strong>: <span class="masked"><code>docker cp hoge:/tmp/fuga.txt data/fuga.txt</code></span></li>
+      </ul></li>
+      </ul>
+      <h1 data-number="4" id="サブクエリを用いたレコードの挿入"><span class="header-section-number">4</span> サブクエリを用いたレコードの挿入</h1>
+      <p><a href="https://takeshiwada1980.github.io/DB-2025/lecture04.html#insert%E6%96%87-%E8%B6%85%E5%9F%BA%E7%A4%8E%E7%B7%A8">第04回講義</a>では、<strong>INSERT文
+      (超基礎編)</strong> として、以下のように <code>VALUES</code>
+      句を用いて<u>値を直接指定して、1件ずつレコードを挿入する方法</u>を学びました。このように、挿入する値を明示的に記述する方法は「<strong>リテラル挿入</strong>」とよばれます。</p>
+      <p>このセクションでは <code>VALUES</code>
+      句を用いたリテラル挿入ではなく、<strong>サブクエリを用いたレコードの挿入</strong>
+      (つまり、<span class="masked">既存のテーブルに格納されているレコードを参照し、その取得結果をもとに新しいレコードを挿入する方法</span>)
+      について学んでいきます。</p>
+      <h2 data-number="4.1" id="準備"><span class="header-section-number">4.1</span> 準備</h2>
+      <p>このセクションでは、<code>from-teacher/10/create-x_db.sql</code>
+      で以下のように定義されている <strong>x_gold_transfers</strong>
+      というテーブルを使用します。</p>
+      <p>このテーブルは、キャラクタ同士、あるいはシステムとのあいだで行われた「<strong>ゴールドの送受信履歴</strong>」を記録するトランザクションテーブル
+      となります。</p>
+      <div class="sourceCode" id="cb19" data-caption="create-x_db.sql 抜粋（x_gold_transfersの定義）" data-startfrom="77" style="counter-reset: pg-line 76;"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql" style="counter-reset: source-line 76;"><span id="cb19-77"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-77"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> x_gold_transfers (</span>
+<span id="cb19-78"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-78"></a>  transfer_id UUID <span class="kw">DEFAULT</span> GEN_RANDOM_UUID() <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb19-79"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-79"></a>  from_character_id <span class="dt">INTEGER</span> <span class="kw">REFERENCES</span> x_characters (character_id),</span>
+<span id="cb19-80"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-80"></a>  to_character_id <span class="dt">INTEGER</span> <span class="kw">REFERENCES</span> x_characters (character_id),</span>
+<span id="cb19-81"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-81"></a>  amount <span class="dt">INTEGER</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">CHECK</span> (amount <span class="op">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb19-82"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-82"></a>  transferred_at <span class="dt">TIMESTAMP</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="fu">LOCALTIMESTAMP</span>(<span class="dv">0</span>),</span>
+<span id="cb19-83"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-83"></a>  <span class="kw">CHECK</span> (</span>
+<span id="cb19-84"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-84"></a>    from_character_id <span class="kw">IS</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">OR</span></span>
+<span id="cb19-85"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-85"></a>    to_character_id <span class="kw">IS</span> <span class="kw">NOT</span> <span class="kw">NULL</span></span>
+<span id="cb19-86"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-86"></a>  ),</span>
+<span id="cb19-87"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-87"></a>  <span class="kw">CHECK</span> (</span>
+<span id="cb19-88"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-88"></a>    from_character_id <span class="kw">IS</span> <span class="kw">NULL</span> <span class="kw">OR</span></span>
+<span id="cb19-89"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-89"></a>    to_character_id <span class="kw">IS</span> <span class="kw">NULL</span> <span class="kw">OR</span></span>
+<span id="cb19-90"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-90"></a>    from_character_id <span class="op">&lt;&gt;</span> to_character_id</span>
+<span id="cb19-91"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-91"></a>  )</span>
+<span id="cb19-92"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb19-92"></a>);</span></code></pre></div>
+      <p>このテーブルでは、<strong>from_character_id</strong> または
+      <strong>to_character_id</strong> カラムが <code>NULL</code>
+      の場合、その送受信相手は「<strong>システム</strong>」であることを表しています。なお、from と
+      to の両方が <code>NULL</code> になることは、CHECK制約により許可されていません。</p>
+      <p>たとえば、</p>
+      <pre><code>(from_character_id, to_character_id, amount) = (NULL, 6, 1000)</code></pre>
+      <p>は、<strong>システムから character_id =</strong> <code>6</code> <strong>のキャラに
+      1000ゴールドが付与されたこと</strong> (たとえば <span class="masked">クエスト達成時の報酬が運営から支給されたこと</span> など) を表します。</p>
+      <ul>
+      <li><strong>第83行目</strong> から <strong>第86行目</strong> は、from_character_id と
+      to_character_id の <strong>どちらか一方は必ず値が指定されていなければならない</strong>
+      (＝非NULLでなければならない) という制約を与えています。</li>
+      <li><strong>第87行目</strong> から <strong>第91行目</strong> は、from_character_id と
+      to_character_id の両方が 非NULL のとき、<span class="masked">両者が同じ値であること</span>
+      を禁止するという制約 (送金者＝受領者を禁止する制約) を与えています。</li>
+      </ul>
+      <p>以下の演習の準備として <code>SELECT * FROM x_gold_transfers</code>
+      を実行し、現状で「テーブルのレコードが空であること」を確認しておいてください。</p>
+      <h2 data-number="4.2" id="values-句を用いたリテラル挿入"><span class="header-section-number">4.2</span> VALUES 句を用いたリテラル挿入</h2>
+      <p><code>VALUES</code>
+      句を用いた「リテラル挿入」の記述について、一度整理しておきます。たとえば…</p>
+      <ul>
+      <li><strong>Alice</strong> (character_id=<code>6</code>) から <strong>Bob</strong>
+      (character_id=<code>8</code>) に <strong>1,600G</strong> を送金</li>
+      <li><strong>Carol</strong> (character_id=<code>18</code>) から <strong>Dave</strong>
+      (character_id=<code>12</code>) に <strong>28,000G</strong> を送金</li>
+      <li>システムから <strong>Eve</strong> (character_id=<code>14</code>) に
+      <strong>10,000G</strong> を支給</li>
+      </ul>
+      <p>…という処理は<a href="https://takeshiwada1980.github.io/DB-2025/lecture04.html#insert%E6%96%87-%E8%B6%85%E5%9F%BA%E7%A4%8E%E7%B7%A8">第04回講義</a>で紹介したように、<code>INSERT INTO ... VALUES ...</code>
+      の構文を使用して、次の <strong>第08行目</strong> から <strong>第13行目</strong>
+      のように記述することができます。</p>
+      <div class="sourceCode" id="cb21" data-caption="insert-value_01.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb21-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-1"></a><span class="co">-- レコードの全削除（念のため）</span></span>
+<span id="cb21-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-2"></a><span class="kw">TRUNCATE</span> <span class="kw">TABLE</span> x_gold_transfers RESTART IDENTITY;</span>
+<span id="cb21-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-3"></a></span>
+<span id="cb21-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-4"></a><span class="co">-- トランザクションの開始</span></span>
+<span id="cb21-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-5"></a><span class="kw">START</span> <span class="kw">TRANSACTION</span>;</span>
+<span id="cb21-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-6"></a></span>
+<span id="cb21-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-7"></a><span class="co">-- リテラル挿入（VALUES句を用いた挿入）</span></span>
+<span id="cb21-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-8"></a><span class="kw">INSERT</span> <span class="kw">INTO</span></span>
+<span id="cb21-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-9"></a>  x_gold_transfers (from_character_id, to_character_id, amount, transferred_at)</span>
+<span id="cb21-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-10"></a><span class="kw">VALUES</span></span>
+<span id="cb21-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-11"></a>  (<span class="dv">6</span>, <span class="dv">8</span>, <span class="dv">1600</span>, <span class="st">'2025-12-28 10:22'</span>),</span>
+<span id="cb21-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-12"></a>  (<span class="dv">18</span>, <span class="dv">12</span>, <span class="dv">28000</span>, <span class="st">'2025-12-30 01:43'</span>),</span>
+<span id="cb21-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-13"></a>  (<span class="kw">NULL</span>, <span class="dv">14</span>, <span class="dv">10000</span>, <span class="st">'2026-01-01 00:01'</span>);</span>
+<span id="cb21-14"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-14"></a></span>
+<span id="cb21-15"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-15"></a><span class="co">-- 確認</span></span>
+<span id="cb21-16"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-16"></a><span class="kw">SELECT</span></span>
+<span id="cb21-17"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-17"></a>  <span class="kw">LEFT</span>(transfer_id:<span class="ch">:TEXT</span>, <span class="dv">8</span>) <span class="kw">AS</span> <span class="ot">"id"</span>,</span>
+<span id="cb21-18"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-18"></a>  <span class="fu">COALESCE</span>(from_character_id:<span class="ch">:TEXT</span>, <span class="st">'NULL'</span>) <span class="kw">AS</span> <span class="ot">"from"</span>,</span>
+<span id="cb21-19"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-19"></a>  <span class="fu">COALESCE</span>(to_character_id:<span class="ch">:TEXT</span>, <span class="st">'NULL'</span>) <span class="kw">AS</span> <span class="ot">"to"</span>,</span>
+<span id="cb21-20"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-20"></a>  <span class="fu">TO_CHAR</span>(amount, <span class="st">'999,999'</span>) <span class="kw">AS</span> <span class="ot">"amount"</span>,</span>
+<span id="cb21-21"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-21"></a>  transferred_at</span>
+<span id="cb21-22"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-22"></a><span class="kw">FROM</span></span>
+<span id="cb21-23"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-23"></a>  x_gold_transfers;</span>
+<span id="cb21-24"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-24"></a></span>
+<span id="cb21-25"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-25"></a><span class="co">-- ロールバックによる処理の取り消し</span></span>
+<span id="cb21-26"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb21-26"></a><span class="kw">ROLLBACK</span>;</span></code></pre></div>
+      <ul>
+      <li><strong>第17行目</strong> の <code>LEFT(transfer_id::TEXT, 8)</code> は、UUID型である
+      <strong>transfer_id</strong> を <span class="masked">TEXT型にキャスト</span>
+      したうえで、<strong>左から8文字分のみを取得</strong>する処理になります。UUID
+      全体を表示するとカラム幅が大きくなるので8文字だけ表示するようにしています。
+      <ul>
+      <li><code>::TEXT</code> は、PostgreSQL 独自のキャスト記法です。</li>
+      <li><code>LEFT(CAST(transfer_id AS TEXT), 8)</code>
+      のように書いても同じ結果になります。<code>CAST</code> は 標準SQLの型キャスト構文です。</li>
+      </ul></li>
+      <li><strong>第18行目</strong> の <code>COALESCE(from_character_id::TEXT, 'NULL')</code>
+      は、INTEGER型である <strong>from_character_id</strong> をTEXT型にキャストし、値が
+      <code>NULL</code> の場合には <u>文字列としての</u> <code>'NULL'</code> に置き換えています。
+      <ul>
+      <li><code>COALESCE</code> 関数は <span class="masked">最初に見つかった「非NULL値」を返す関数であり、すべての引数は互換性のあるデータ型である必要</span>
+      があります。</li>
+      </ul></li>
+      </ul>
+      <div class="note type-senior">
+      <p><strong>TO_CHAR の FM接頭辞</strong></p>
+      <p><code>TO_CHAR</code> では、数値を文字列に変換する際に <span class="masked">指定した書式に合わせて空白による桁合わせ (空白文字によるパディング)</span>
+      が行われます。この桁合わせ (fill) を無効化したいときは <strong>FM接頭辞</strong>
+      (FMプレフィックス) を使用します。</p>
+      <p>たとえば、FM接頭辞の有無により、次のように出力結果が変化します。</p>
+      <p>▼ <code>TO_CHAR(amount, '999,999')</code></p>
+      <pre><code>    id    | from | to |  amount  |   transferred_at
+----------+------+----+----------+---------------------
+ 2c3444f8 | 6    | 8  |    1,600 | 2025-12-28 10:22:00
+ d72c7645 | 18   | 12 |   28,000 | 2025-12-30 01:43:00
+ d38bb426 | NULL | 14 |   10,000 | 2026-01-01 00:01:00</code></pre>
+      <p>▼ <code>TO_CHAR(amount, 'FM999,999')</code></p>
+      <pre><code>    id    | from | to | amount |   transferred_at
+----------+------+----+--------+---------------------
+ 4d93d4db | 6    | 8  | 1,600  | 2025-12-28 10:22:00
+ 728ab2aa | 18   | 12 | 28,000 | 2025-12-30 01:43:00
+ e6878e93 | NULL | 14 | 10,000 | 2026-01-01 00:01:00</code></pre>
+      <p>対話的に結果セットを確認する場合 (＝<strong>現在のように VSCode
+      のコンソールで結果セットを確認する場合</strong>など)
+      では「FM接頭辞なし」のほうが可読性に優れます。</p>
+      <p>一方で、結果セットをCSVファイルエクスポートするときに「FM接頭辞なし」とすると、<code>␠␠␠1,600</code>
+      のように <span class="masked">先頭に空白文字を含む文字列</span> が出力されます (<code>␠</code>
+      は半角スペースの意味)。このようにスペースを含むと、後続のデータ処理で不具合の原因になりやすいため注意してください。</p>
+      <ul>
+      <li>CSVファイルエクスポートを前提とする場合は、<code>TO_CHAR</code> 関数などで
+      <u>数値側を文字列型に変換するようなことはせず</u>に、そのまま数値型として出力するようにしてください。</li>
+      </ul>
+      </div>
+      <p>実行結果は、次のようになります。</p>
+      <pre><code>TRUNCATE TABLE
+START TRANSACTION
+INSERT 0 3
+    id    | from | to |  amount  |   transferred_at
+----------+------+----+----------+---------------------
+ acb42523 | 6    | 8  |    1,600 | 2025-12-28 10:22:00
+ daac3f23 | 18   | 12 |   28,000 | 2025-12-30 01:43:00
+ 7907a775 | NULL | 14 |   10,000 | 2026-01-01 00:01:00
+(3 行)</code></pre>
+      <p>以上のように <u>データを1件ずつ明示的に指定できる</u>
+      という点でリテラル挿入は直感的で分かりやすく、使いやすい方法と言えます。一方で <span class="masked">条件に合致する複数のレコードをまとめて挿入したい</span>
+      ような場合には、記述量が増え、管理も煩雑になるという問題がでてきます。</p>
+      <p>たとえば、「ギルドクエストの達成報酬」として、次のような処理を行なう場合を考えてみます。</p>
+      <ul>
+      <li>ギルド「<strong>Yamato</strong>」に所属するメンバー全員に 5,000G を支給する</li>
+      <li>ギルドのオーナー (所有者) には、上記に追加して 10,000G を支給する (つまり 15,000G
+      を支給する)</li>
+      </ul>
+      <p>この処理を「リテラル挿入」で実行しようとすると、まずは対象となるキャラ (＝ Yamato
+      のメンバの <strong>character_id</strong> ) を、以下のような <code>SELECT</code>
+      文で事前に把握する必要があります。</p>
+      <div class="sourceCode" id="cb25" data-caption="insert-value_02.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb25-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-1"></a><span class="kw">SELECT</span></span>
+<span id="cb25-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-2"></a>  c.character_id,</span>
+<span id="cb25-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-3"></a>  c.name,</span>
+<span id="cb25-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-4"></a>  <span class="cf">CASE</span></span>
+<span id="cb25-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-5"></a>    <span class="cf">WHEN</span> c.character_id <span class="op">=</span> g.owner_id <span class="cf">THEN</span> <span class="st">'*'</span></span>
+<span id="cb25-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-6"></a>    <span class="cf">ELSE</span> <span class="st">''</span></span>
+<span id="cb25-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-7"></a>  <span class="cf">END</span> <span class="kw">AS</span> <span class="ot">"is_owner"</span></span>
+<span id="cb25-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-8"></a><span class="kw">FROM</span></span>
+<span id="cb25-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-9"></a>  x_guild_characters <span class="kw">AS</span> gc</span>
+<span id="cb25-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-10"></a>  <span class="kw">JOIN</span> x_characters <span class="kw">AS</span> c <span class="kw">ON</span> gc.character_id <span class="op">=</span> c.character_id</span>
+<span id="cb25-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-11"></a>  <span class="kw">JOIN</span> x_guilds <span class="kw">AS</span> g <span class="kw">ON</span> gc.guild_id <span class="op">=</span> g.guild_id</span>
+<span id="cb25-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-12"></a><span class="kw">WHERE</span></span>
+<span id="cb25-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-13"></a>  g.name <span class="op">=</span> <span class="st">'Yamato'</span> <span class="kw">AND</span></span>
+<span id="cb25-14"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-14"></a>  c.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span></span>
+<span id="cb25-15"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-15"></a><span class="kw">ORDER</span> <span class="kw">BY</span></span>
+<span id="cb25-16"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb25-16"></a>  c.character_id;</span></code></pre></div>
+      <pre><code> character_id |  name  | is_owner 
+--------------+--------+----------
+            1 | Marvin | *
+            6 | Alice  |
+            7 | Trudy  |
+           12 | Dave   |</code></pre>
+      <p>そして、この情報をもとに、次の SQL の <strong>第08行目</strong> から
+      <strong>第11行目</strong> ように <code>VALUES</code>
+      句を<strong>1件ずつ記述</strong>していく必要があります。</p>
+      <div class="sourceCode" id="cb27" data-caption="insert-value_03.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb27-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb27-1"></a><span class="kw">TRUNCATE</span> <span class="kw">TABLE</span> x_gold_transfers RESTART IDENTITY;</span>
+<span id="cb27-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb27-2"></a></span>
+<span id="cb27-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb27-3"></a><span class="kw">START</span> <span class="kw">TRANSACTION</span>;</span>
+<span id="cb27-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb27-4"></a></span>
+<span id="cb27-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb27-5"></a><span class="kw">INSERT</span> <span class="kw">INTO</span></span>
+<span id="cb27-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb27-6"></a>  x_gold_transfers (from_character_id, to_character_id, amount)</span>
+<span id="cb27-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb27-7"></a><span class="kw">VALUES</span></span>
+<span id="cb27-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb27-8"></a>  (<span class="kw">NULL</span>, <span class="dv">1</span>, <span class="dv">15000</span>), <span class="co">-- Marvin ギルドオーナー（所有者） </span></span>
+<span id="cb27-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb27-9"></a>  (<span class="kw">NULL</span>, <span class="dv">6</span>, <span class="dv">5000</span>), <span class="co">-- Alice</span></span>
+<span id="cb27-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb27-10"></a>  (<span class="kw">NULL</span>, <span class="dv">7</span>, <span class="dv">5000</span>), <span class="co">-- Trudy </span></span>
+<span id="cb27-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb27-11"></a>  (<span class="kw">NULL</span>, <span class="dv">12</span>, <span class="dv">5000</span>) <span class="co">-- Dave</span></span>
+<span id="cb27-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb27-12"></a>;</span>
+<span id="cb27-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb27-13"></a></span>
+<span id="cb27-14"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb27-14"></a><span class="kw">ROLLBACK</span>;</span></code></pre></div>
+      <p>このギルドには対象キャラが4名しかいませんが、これが20人、30人と増えていったとき、それらを
+      <code>VALUES (...)</code> に1件づつ記述していくことは極めて煩雑であり、また <span class="masked">転記ミスや指定漏れの原因</span> ともなります。</p>
+      <p>以上のように挿入すべきレコードの内容（たとえば「誰にいくら付与するか」という情報）が
+      <u>既存のテーブルのレコードによって決まる</u>
+      ケースでは、「リテラル挿入」ではなく、「<strong>サブクエリを用いた挿入</strong>」を利用していきます。</p>
+      <h3 data-number="4.2.1" id="sqlドリル-1"><span class="header-section-number">4.2.1</span>
+      SQLドリル💻</h3>
+      <p>以下、<code>x_****</code> テーブル群を使用する演習問題です。</p>
+      <ul>
+      <li><code>ex-02_1</code> 👉 <code>insert-value_01.sql</code> の <strong>第16行目</strong>
+      からの <code>SELECT</code>
+      文を書き換えて、次のように整形した結果セットを出力するようにせよ。</li>
+      </ul>
+      <pre><code>    id    | from  |  to  |  amount  |   transferred_at
+----------+-------+------+----------+---------------------
+ de0f591f | Alice | Bob  |    1,600 | 2025-12-28 10:22:00
+ a4d5e736 | Carol | Dave |   28,000 | 2025-12-30 01:43:00
+ 568eac47 | _SYS_ | Eve  |   10,000 | 2026-01-01 00:01:00</code></pre>
+      <h3 data-number="4.2.2" id="定着確認-2"><span class="header-section-number">4.2.2</span>
+      定着確認</h3>
+      <ul>
+      <li>UUID型のカラム <strong>user_id</strong> を <code>SELECT</code> 句で出力する際、UUID
+      全体ではなく、文字列に変換したうえで「先頭8文字のみ」を表示したい。また、結果セットのカラム名
+      (ヘッダ)
+      は「識別子」として表示したい。このときに用いるべき式を答えよ。PostgreSQLを前提とすること。
+      <ul>
+      <li><strong>答え</strong> : <span class="masked"><code>LEFT(user_id::TEXT, 8) AS "識別子"</code></span></li>
+      <li><strong>別解1</strong>: <span class="masked"><code>LEFT(CAST(user_id AS TEXT), 8) AS "識別子"</code></span></li>
+      <li><strong>別解2</strong>: <span class="masked"><code>SUBSTR(user_id::TEXT, 1, 8) AS "識別子"</code></span></li>
+      <li><strong>別解3</strong>: <span class="masked"><code>LEFT(FORMAT('%s', user_id), 8) AS "識別子"</code></span></li>
+      </ul></li>
+      <li>UUID型のカラム <strong>user_id</strong> を <code>SELECT</code> 句で出力する際、UUID
+      全体ではなく、文字列に変換したうえで先頭8文字のみを、<u>英字は大文字表記に統一</u>
+      して表示したい。また、結果セットのカラム名 (ヘッダ)
+      は「識別子」としたい。このときに用いるべき式を答えよ。PostgreSQLを前提とすること。
+      <ul>
+      <li><strong>答え</strong>: <span class="masked"><code>UPPER(LEFT(user_id::TEXT, 8)) AS "識別子"</code></span></li>
+      <li><strong>別解</strong>: <span class="masked"><code>LEFT(UPPER(user_id::TEXT), 8) AS "識別子"</code></span></li>
+      </ul></li>
+      <li>NULL 許容の INTEGER 型のカラム <strong>price</strong> を <code>SELECT</code>
+      句で出力する際、数値が存在する場合は3桁区切りの金額表記（例：<code>5,000円</code>、<code>1,900,000円</code>）で表示し、値が
+      <code>NULL</code> の場合は <code>非売品</code> と表示したい。また、結果セットのカラム名
+      (ヘッダ) は「売価」とする。このときに用いるべき式を答えよ。PostgreSQL を前提とすること。
+      <ul>
+      <li>price の値は 10,000,000 未満を想定すること。</li>
+      <li>空白文字によるパディング (fill) はしないこと。</li>
+      <li><strong>答え</strong>: <span class="masked"><code>COALESCE(TO_CHAR(price, 'FM9,999,999') || '円', '非売品') AS "売価"</code></span></li>
+      </ul></li>
+      </ul>
+      <h2 data-number="4.3" id="サブクエリを用いたレコードの挿入-1"><span class="header-section-number">4.3</span> サブクエリを用いたレコードの挿入</h2>
+      <p>レコードの挿入は <code>INSERT INTO ... VALUES ...</code>
+      の他に、<code>INSERT INTO ... SELECT ...</code>
+      という構文を用いて行なうこともできます。この構文では <span class="masked">SELECT文の実行結果を、そのまま挿入対象として利用すること</span>
+      が可能となります。</p>
+      <p>この場合、<code>INSERT</code> 文の内部に記述された <code>SELECT</code>
+      句がサブクエリとなり、<u>挿入されるレコードとその値を動的に生成</u>
+      します。つまり、サブクエリを用いて <strong>挿入すべきレコードを動的に生成する</strong>
+      という考え方になります。</p>
+      <p>先ほどの「リテラル挿入」の例では、</p>
+      <ol type="1">
+      <li>対象キャラを <code>SELECT</code> 文で取得する
+      <ul>
+      <li><code>insert-value_02.sql</code></li>
+      </ul></li>
+      <li>その結果に基づき、手作業で <code>VALUES (...)</code> を記述する
+      <ul>
+      <li><code>insert-value_03.sql</code></li>
+      </ul></li>
+      </ol>
+      <p>…という<strong>2段階の作業が必要</strong>でした。</p>
+      <p>これに対して、サブクエリを用いた挿入では、対象キャラの抽出と金額の分岐処理を、次のような
+      <span class="masked">1つの SQL 文で完結させること</span>
+      が可能となります。一見すると複雑に見えますが、以下の <strong>第08行目</strong> から
+      <strong>第21行目</strong> の <code>SELECT</code> 句で記述している内容は
+      <code>insert-value_02.sql</code> とほぼ同じものとなっています。</p>
+      <div class="sourceCode" id="cb29" data-caption="insert-select_01.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb29-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-1"></a><span class="kw">TRUNCATE</span> <span class="kw">TABLE</span> x_gold_transfers RESTART IDENTITY;</span>
+<span id="cb29-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-2"></a></span>
+<span id="cb29-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-3"></a><span class="kw">START</span> <span class="kw">TRANSACTION</span>;</span>
+<span id="cb29-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-4"></a></span>
+<span id="cb29-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-5"></a><span class="co">-- サブクエリを用いたレコードの挿入</span></span>
+<span id="cb29-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-6"></a><span class="kw">INSERT</span> <span class="kw">INTO</span></span>
+<span id="cb29-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-7"></a>  x_gold_transfers (from_character_id, to_character_id, amount)</span>
+<span id="cb29-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-8"></a><span class="kw">SELECT</span></span>
+<span id="cb29-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-9"></a>  <span class="kw">NULL</span>,</span>
+<span id="cb29-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-10"></a>  c.character_id,</span>
+<span id="cb29-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-11"></a>  <span class="cf">CASE</span></span>
+<span id="cb29-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-12"></a>    <span class="cf">WHEN</span> g.owner_id <span class="op">=</span> c.character_id <span class="cf">THEN</span> <span class="dv">15000</span></span>
+<span id="cb29-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-13"></a>    <span class="cf">ELSE</span> <span class="dv">5000</span></span>
+<span id="cb29-14"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-14"></a>  <span class="cf">END</span></span>
+<span id="cb29-15"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-15"></a><span class="kw">FROM</span></span>
+<span id="cb29-16"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-16"></a>  x_guild_characters <span class="kw">AS</span> gc</span>
+<span id="cb29-17"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-17"></a>  <span class="kw">JOIN</span> x_characters <span class="kw">AS</span> c <span class="kw">ON</span> gc.character_id <span class="op">=</span> c.character_id</span>
+<span id="cb29-18"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-18"></a>  <span class="kw">JOIN</span> x_guilds <span class="kw">AS</span> g <span class="kw">ON</span> gc.guild_id <span class="op">=</span> g.guild_id</span>
+<span id="cb29-19"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-19"></a><span class="kw">WHERE</span></span>
+<span id="cb29-20"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-20"></a>  g.name <span class="op">=</span> <span class="st">'Yamato'</span> <span class="kw">AND</span></span>
+<span id="cb29-21"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-21"></a>  c.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span>;</span>
+<span id="cb29-22"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-22"></a></span>
+<span id="cb29-23"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-23"></a><span class="co">-- 確認</span></span>
+<span id="cb29-24"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-24"></a><span class="kw">SELECT</span></span>
+<span id="cb29-25"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-25"></a>  <span class="kw">LEFT</span>(gt.transfer_id:<span class="ch">:TEXT</span>, <span class="dv">8</span>) <span class="kw">AS</span> <span class="ot">"id"</span>,</span>
+<span id="cb29-26"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-26"></a>  <span class="fu">COALESCE</span>(fc.name, <span class="st">'_SYS_'</span>) <span class="kw">AS</span> <span class="ot">"from"</span>,</span>
+<span id="cb29-27"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-27"></a>  <span class="fu">COALESCE</span>(tc.name, <span class="st">'_SYS_'</span>) <span class="kw">AS</span> <span class="ot">"to"</span>,</span>
+<span id="cb29-28"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-28"></a>  <span class="fu">TO_CHAR</span>(amount, <span class="st">'999,999'</span>) <span class="kw">AS</span> <span class="ot">"amount"</span>,</span>
+<span id="cb29-29"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-29"></a>  gt.transferred_at</span>
+<span id="cb29-30"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-30"></a><span class="kw">FROM</span></span>
+<span id="cb29-31"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-31"></a>  x_gold_transfers <span class="kw">AS</span> gt</span>
+<span id="cb29-32"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-32"></a>  <span class="kw">LEFT</span> <span class="kw">JOIN</span> x_characters <span class="kw">AS</span> fc <span class="kw">ON</span> gt.from_character_id <span class="op">=</span> fc.character_id</span>
+<span id="cb29-33"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-33"></a>  <span class="kw">LEFT</span> <span class="kw">JOIN</span> x_characters <span class="kw">AS</span> tc <span class="kw">ON</span> gt.to_character_id <span class="op">=</span> tc.character_id;</span>
+<span id="cb29-34"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-34"></a></span>
+<span id="cb29-35"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb29-35"></a><span class="kw">ROLLBACK</span>;</span></code></pre></div>
+      <p>ここで注意すべき点は、「サブクエリの結果セットに含まれるカラムの個数・順序・データ型」を、<code>INSERT INTO</code>
+      <strong>句で指定しているカラムと一致させる必要がある</strong>ということです。本例では
+      <strong>第07行目</strong> において…</p>
+      <pre><code>x_gold_transfers (from_character_id, to_character_id, amount)</code></pre>
+      <p>…としているので、<strong>第08行目</strong> 以降のサブクエリ (<code>SELECT</code> 句)
+      が返す結果セットについても、<strong>これに対応したカラム構成 (個数・順序・データ型)
+      にする必要</strong> があります。</p>
+      <p>実行結果は次のようになります。</p>
+      <pre><code>    id    | from  |   to   |  amount  |   transferred_at
+----------+-------+--------+----------+---------------------
+ ac5dc8fc | _SYS_ | Marvin |   15,000 | 2026-01-01 07:30:55
+ 1b31b2ff | _SYS_ | Dave   |    5,000 | 2026-01-01 07:30:55
+ d08d41c6 | _SYS_ | Alice  |    5,000 | 2026-01-01 07:30:55
+ d8876fe5 | _SYS_ | Trudy  |    5,000 | 2026-01-01 07:30:55</code></pre>
+      <h3 data-number="4.3.1" id="sqlドリル-2"><span class="header-section-number">4.3.1</span>
+      SQLドリル💻</h3>
+      <p>以下、<code>x_****</code> テーブル群を使用する演習問題です。</p>
+      <ul>
+      <li><code>ex-03_1</code> 👉 運営から「お年玉」として、システムから全キャラ
+      (論理削除済みのキャラを除く) に向けて 2026年1月1日午前4時00分 付けで 25,000G ～ 45,000G
+      (1,000G 刻みのランダム値) を支給するような送金レコードを x_gold_transfers テーブルに挿入する
+      SQL を記述せよ。
+      <ul>
+      <li><strong>ヒント</strong>: <a href="https://takeshiwada1980.github.io/DB-2025/lecture09.html#uuid%E3%82%92%E3%82%B5%E3%83%AD%E3%82%B2%E3%83%BC%E3%83%88%E3%82%AD%E3%83%BC%E3%81%A8%E3%81%97%E3%81%A6%E4%BD%BF%E7%94%A8">乱数の生成</a>(第09回講義)</li>
+      <li>ここで記述する SQL は <code>START TRANSACTION</code>、<code>ROLLBACK</code>
+      で囲んで実行すること。以下、同様。</li>
+      </ul></li>
+      </ul>
+      <p><strong>▼ 実行例</strong></p>
+      <pre><code>    id    | from  |   to    |  amount  |   transferred_at
+----------+-------+---------+----------+---------------------
+ daa3a581 | _SYS_ | Marvin  |   30,000 | 2026-01-01 04:00:00
+ 932cc09c | _SYS_ | Zach    |   38,000 | 2026-01-01 04:00:00
+ f90e8faf | _SYS_ | Charlie |   39,000 | 2026-01-01 04:00:00
+ 5f5d410e | _SYS_ | Tom     |   30,000 | 2026-01-01 04:00:00
+ ～ 略 ～  
+ 59bcff20 | _SYS_ | Carol   |   30,000 | 2026-01-01 04:00:00
+ fd88bfa0 | _SYS_ | Jack    |   26,000 | 2026-01-01 04:00:00
+(17 行)</code></pre>
+      <ul>
+      <li><code>ex-03_2</code> 👉 各ギルドにおいてメンバからオーナー (所有者)
+      に対して「共益費」として 2,000G を支払うような送金レコードを x_gold_transfers
+      テーブルに挿入する SQL を記述せよ。
+      <ul>
+      <li>transferred_at は 2025年12月15日午前4時00分 とすること。</li>
+      <li>論理削除済みのキャラを除いて処理すること。</li>
+      <li>各ギルドのオーナーは、自分が所有するギルドに対しては共益費を払う必要はない。</li>
+      <li>各ギルドのメンバ構成は<a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#sql%E3%83%89%E3%83%AA%E3%83%AB-3">第10回講義</a>の「SQLドリル」の
+      <code>ex-04_1</code> で記述したコードで確認できる (実行結果の検証用)。</li>
+      </ul></li>
+      </ul>
+      <p><strong>▼ 実行例</strong></p>
+      <pre><code>    id    |  from  |   to   |  amount  |   transferred_at
+----------+--------+--------+----------+---------------------
+ 935a0194 | Alice  | Marvin |    2,000 | 2025-12-15 04:00:00
+ dcd184f5 | Trudy  | Marvin |    2,000 | 2025-12-15 04:00:00
+ c3354257 | Dave   | Marvin |    2,000 | 2025-12-15 04:00:00
+ 1e06fd6c | Oscar  | Bob    |    2,000 | 2025-12-15 04:00:00
+ 01cb481f | Dave   | Bob    |    2,000 | 2025-12-15 04:00:00
+ 6ee41395 | Steve  | Bob    |    2,000 | 2025-12-15 04:00:00
+ 1ae49a32 | Jack   | Bob    |    2,000 | 2025-12-15 04:00:00
+ 36f146f1 | Zach   | Ellen  |    2,000 | 2025-12-15 04:00:00
+ 9d27424b | Alice  | Ellen  |    2,000 | 2025-12-15 04:00:00
+ 066f056a | Mallet | Ellen  |    2,000 | 2025-12-15 04:00:00
+ 2f1cab0f | Eve    | Ellen  |    2,000 | 2025-12-15 04:00:00
+ b719e073 | Wendy  | Ellen  |    2,000 | 2025-12-15 04:00:00
+(12 行)</code></pre>
+      <ul>
+      <li><code>ex-03_3</code> 👉 キャラ作成後の初期資金として、運営から各キャラに 1,000G
+      を支給する送金レコードを x_gold_transfers テーブルに挿入する SQL を記述せよ。
+      <ul>
+      <li>論理削除済みのキャラも含めること。</li>
+      <li>transferred_at は、各キャラの created_at の「5分後」とすること。
+      <ul>
+      <li>時間の加減演算には <code>INTERVAL</code>
+      を使用する。詳細は生成AIなどを利用して各自で調べること。</li>
+      </ul></li>
+      </ul></li>
+      </ul>
+      <p><strong>▼ 実行例</strong></p>
+      <pre><code>    id    | from  |   to    |  amount  |   transferred_at
+----------+-------+---------+----------+---------------------
+ 2ab6215d | _SYS_ | Marvin  |      500 | 2020-09-23 13:37:00
+ f5d8e680 | _SYS_ | Zach    |      500 | 2020-10-25 21:17:00
+ a92c57f6 | _SYS_ | Charlie |      500 | 2020-12-05 10:20:00
+ ba01915f | _SYS_ | Tom     |      500 | 2020-12-05 18:45:00
+ ～ 略 ～ 
+ 05a68a32 | _SYS_ | Carol   |      500 | 2024-05-11 11:47:00
+ b6a5e35d | _SYS_ | Jack    |      500 | 2024-07-12 15:48:00
+(19 行)</code></pre>
+      <ul>
+      <li><code>ex-03_4</code> 👉
+      後衛職応援キャンペーンとして、ジョブが「Priest」または「Wizard」のキャラに、level <span class="math inline"><mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" tabindex="0" ctxtmenu_counter="0" style="font-size: 113.1%; position: relative;"><mjx-math class="MJX-TEX" aria-hidden="true"><mjx-mo class="mjx-n"><mjx-c class="mjx-cD7"></mjx-c></mjx-mo></mjx-math><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mo>×</mo></math></mjx-assistive-mml></mjx-container></span> 1,000G を運営から支給する送金レコードを x_gold_transfers
+      テーブルに挿入する SQL を記述せよ。
+      <ul>
+      <li>論理削除済みのキャラを除いて処理すること。</li>
+      <li>transferred_at は現在日時 (デフォルト値) とすること。</li>
+      </ul></li>
+      </ul>
+      <p><strong>▼ 実行例</strong></p>
+      <pre><code>    id    | from  |   to    |  amount  |   transferred_at
+----------+-------+---------+----------+---------------------
+ 7165e932 | _SYS_ | Marvin  |   35,000 | 2026-01-02 13:54:43
+ a2cda2a8 | _SYS_ | Charlie |   57,000 | 2026-01-02 13:54:43
+ dd22194e | _SYS_ | Alice   |   42,000 | 2026-01-02 13:54:43
+ 3409604e | _SYS_ | Ellen   |   51,000 | 2026-01-02 13:54:43
+ 562f2143 | _SYS_ | Mallet  |   64,000 | 2026-01-02 13:54:43
+ 65c4bc28 | _SYS_ | Carol   |   28,000 | 2026-01-02 13:54:43
+ 891398db | _SYS_ | Jack    |   61,000 | 2026-01-02 13:54:43</code></pre>
+      <h1 data-number="5" id="サブクエリを用いたレコードの更新"><span class="header-section-number">5</span> サブクエリを用いたレコードの更新</h1>
+      <p><a href="https://takeshiwada1980.github.io/DB-2025/lecture05.html#%E3%81%99%E3%81%B9%E3%81%A6%E3%81%AE%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AE%E5%80%A4%E3%82%92%E5%9B%BA%E5%AE%9A%E5%80%A4%E3%81%A7%E6%9B%B4%E6%96%B0">第05回講義</a>では
+      <strong>UPDATE文 (基礎編)</strong> として、<code>SET</code> 句や <code>WHERE</code> 句に
+      <strong>直接的に値を指定してレコードを更新する方法</strong> について学びました。</p>
+      <p>このセクションでは、<code>SET</code> 句や <code>WHERE</code> 句に
+      <strong>サブクエリを用いたレコードの更新</strong>
+      (つまり、<u>既存のテーブルに格納されているレコードを参照し、それをもとに更新後の値を動的に与えたり、更新するレコードを指定したりする方法</u>)
+      について学んでいきます。</p>
+      <h2 data-number="5.1" id="レコードの更新-固定値"><span class="header-section-number">5.1</span> レコードの更新 (固定値)</h2>
+      <p><code>UPDATE</code>
+      文による基本的なフィールドの更新について一度整理しておきます。たとえば、x_jobs テーブルの
+      <strong>Samurai</strong> (job_id=<code>4</code>) を対象に…</p>
+      <ul>
+      <li><strong>attack_gain</strong> (現在値 <code>3</code>) を <code>5</code> に更新</li>
+      <li><strong>defense_gain</strong> (現在値 <code>3</code>) を <code>4</code> に更新</li>
+      </ul>
+      <p>…するための SQL は、次のように記述することができました。</p>
+      <div class="sourceCode" id="cb36" data-caption="update-set_01.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb36-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-1"></a><span class="kw">START</span> <span class="kw">TRANSACTION</span>;</span>
+<span id="cb36-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-2"></a></span>
+<span id="cb36-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-3"></a><span class="co">-- 現在値の確認</span></span>
+<span id="cb36-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-4"></a><span class="kw">SELECT</span></span>
+<span id="cb36-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-5"></a>  <span class="op">*</span></span>
+<span id="cb36-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-6"></a><span class="kw">FROM</span></span>
+<span id="cb36-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-7"></a>  x_jobs</span>
+<span id="cb36-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-8"></a><span class="kw">WHERE</span></span>
+<span id="cb36-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-9"></a>  job_id <span class="op">=</span> <span class="dv">4</span>;</span>
+<span id="cb36-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-10"></a></span>
+<span id="cb36-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-11"></a><span class="co">-- 更新処理 (更新後の値の確認)</span></span>
+<span id="cb36-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-12"></a><span class="kw">UPDATE</span> x_jobs</span>
+<span id="cb36-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-13"></a><span class="kw">SET</span></span>
+<span id="cb36-14"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-14"></a>  attack_gain <span class="op">=</span> <span class="dv">5</span>,</span>
+<span id="cb36-15"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-15"></a>  defense_gain <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb36-16"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-16"></a><span class="kw">WHERE</span></span>
+<span id="cb36-17"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-17"></a>  job_id <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb36-18"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-18"></a><span class="kw">RETURNING</span></span>
+<span id="cb36-19"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-19"></a>  <span class="op">*</span>;</span>
+<span id="cb36-20"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-20"></a></span>
+<span id="cb36-21"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb36-21"></a><span class="kw">ROLLBACK</span>;</span></code></pre></div>
+      <p>この SQL の実行結果 (更新前と更新後の値を出力)
+      は、次のようになります。<strong>attack_gain</strong> と <strong>defense_gain</strong>
+      の値が更新されていることが確認できます。</p>
+      <pre><code>START TRANSACTION
+ job_id |  name   | attack_gain | defense_gain | magic_gain
+--------+---------+-------------+--------------+------------
+      4 | Samurai |           3 |            3 |          2
+(1 行)
+
+ job_id |  name   | attack_gain | defense_gain | magic_gain
+--------+---------+-------------+--------------+------------
+      4 | Samurai |           5 |            4 |          2
+(1 行)
+
+UPDATE 1
+ROLLBACK</code></pre>
+      <p><strong>第18行目</strong> の <code>RETURNING</code> 句は<a href="https://takeshiwada1980.github.io/DB-2025/lecture05.html#%E8%A3%9C%E8%B6%B3-returning%E5%8F%A5">第05回講義</a>で学んだように <span class="masked">更新処理とともに、更新後のレコードをあわせて簡易出力するため</span>
+      の指定となります。任意のカラムだけを出力したい場合は <code>*</code>
+      の代わりに、具体的なカラム名を記述します。</p>
+      <h3 data-number="5.1.1" id="演習"><span class="header-section-number">5.1.1</span> 演習</h3>
+      <p><code>update-set_01.sql</code> の <code>RETURNING</code>
+      句を次のように書き換え、実行結果を確認してください。</p>
+      <div class="sourceCode" id="cb38" data-caption="RETURNINGで出力するカラム指定" data-startfrom="18" style="counter-reset: pg-line 17;"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql" style="counter-reset: source-line 17;"><span id="cb38-18"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb38-18"></a><span class="kw">RETURNING</span></span>
+<span id="cb38-19"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb38-19"></a>  job_id,</span>
+<span id="cb38-20"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb38-20"></a>  attack_gain <span class="kw">AS</span> <span class="ot">"updated_attack_gain"</span>,</span>
+<span id="cb38-21"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb38-21"></a>  defense_gain <span class="kw">AS</span> <span class="ot">"updated_defense_gain"</span>;</span></code></pre></div>
+      <h2 data-number="5.2" id="レコードの更新-現在値を利用した更新"><span class="header-section-number">5.2</span> レコードの更新 (現在値を利用した更新)</h2>
+      <p><code>UPDATE</code>
+      文では「現在値」あるいは「更新対象のレコードの他のカラムの値」を参照し、<strong>更新後の値を動的に設定すること</strong>
+      も可能でした。</p>
+      <ul>
+      <li>参考: 第05回講義の<a href="https://takeshiwada1980.github.io/DB-2025/lecture05.html#%E7%8F%BE%E5%9C%A8%E3%81%AE%E5%80%A4%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%9F%E6%9B%B4%E6%96%B0">現在の値を利用した更新</a></li>
+      </ul>
+      <p>たとえば、job_id が <code>3</code> と <code>4</code> の各ジョブについて…</p>
+      <ul>
+      <li><strong>attack_gain</strong> を <code>現在値+1</code></li>
+      <li><strong>defense_gain</strong> を <code>8 - attack_gain - magic_gain</code></li>
+      </ul>
+      <p>に更新するような処理は、以下のような SQL で記述することができました。</p>
+      <div class="sourceCode" id="cb39" data-caption="update-set_02.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb39-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-1"></a><span class="kw">START</span> <span class="kw">TRANSACTION</span>;</span>
+<span id="cb39-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-2"></a></span>
+<span id="cb39-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-3"></a><span class="kw">SELECT</span></span>
+<span id="cb39-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-4"></a>  <span class="op">*</span></span>
+<span id="cb39-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-5"></a><span class="kw">FROM</span></span>
+<span id="cb39-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-6"></a>  x_jobs</span>
+<span id="cb39-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-7"></a><span class="kw">WHERE</span></span>
+<span id="cb39-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-8"></a>  job_id <span class="kw">IN</span> (<span class="dv">3</span>, <span class="dv">4</span>);</span>
+<span id="cb39-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-9"></a></span>
+<span id="cb39-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-10"></a><span class="kw">UPDATE</span> x_jobs</span>
+<span id="cb39-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-11"></a><span class="kw">SET</span></span>
+<span id="cb39-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-12"></a>  attack_gain <span class="op">=</span> attack_gain <span class="op">+</span> <span class="dv">1</span>, <span class="co">-- ◀ 変更</span></span>
+<span id="cb39-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-13"></a>  defense_gain <span class="op">=</span> <span class="dv">8</span> <span class="op">-</span> attack_gain <span class="op">-</span> magic_gain <span class="co">-- ◀ 変更</span></span>
+<span id="cb39-14"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-14"></a><span class="kw">WHERE</span></span>
+<span id="cb39-15"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-15"></a>  job_id <span class="kw">IN</span> (<span class="dv">3</span>, <span class="dv">4</span>) <span class="co">-- ◀ 変更</span></span>
+<span id="cb39-16"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-16"></a><span class="kw">RETURNING</span></span>
+<span id="cb39-17"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-17"></a>  <span class="op">*</span>;</span>
+<span id="cb39-18"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-18"></a></span>
+<span id="cb39-19"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb39-19"></a><span class="kw">ROLLBACK</span>;</span></code></pre></div>
+      <p>実行結果は、次のようになります。</p>
+      <pre><code> job_id |  name   | attack_gain | defense_gain | magic_gain
+--------+---------+-------------+--------------+------------
+      3 | Ninja   |           5 |           -1 |          0
+      4 | Samurai |           3 |            3 |          2
+(2 行)
+
+ job_id |  name   | attack_gain | defense_gain | magic_gain
+--------+---------+-------------+--------------+------------
+      3 | Ninja   |           6 |            3 |          0
+      4 | Samurai |           4 |            3 |          2
+(2 行)</code></pre>
+      <p>ここで、更新後の <strong>defense_gain</strong> は、更新前の値を参照した
+      <code>8 - attack_gain - magic_gain</code> で計算されていることに注意してください。</p>
+      <h2 data-number="5.3" id="サブクエリを用いた更新"><span class="header-section-number">5.3</span> サブクエリを用いた更新</h2>
+      <p><code>UPDATE</code> 文では、<code>SET</code> 句や <code>WHERE</code>
+      句に「<strong>サブクエリ</strong>」を用いることも可能です。</p>
+      <p>たとえば、ギルド「<strong>Yamato</strong>」に所属する各キャラのレベルが</p>
+      <ul>
+      <li>全キャラ平均レベル以下のときは、レベルを <code>+2</code> する</li>
+      <li>全キャラ平均レベルを超えているときは、レベルを <code>+1</code> する</li>
+      </ul>
+      <p>…ような処理を、次のように<strong>「サブクエリ」を使用して一括して実行</strong>することができます。</p>
+      <div class="sourceCode" id="cb41" data-caption="update-set_03-a.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb41-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-1"></a><span class="kw">START</span> <span class="kw">TRANSACTION</span>;</span>
+<span id="cb41-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-2"></a></span>
+<span id="cb41-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-3"></a><span class="co">-- 確認: 全キャラの平均レベル</span></span>
+<span id="cb41-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-4"></a><span class="kw">SELECT</span></span>
+<span id="cb41-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-5"></a>  <span class="fu">ROUND</span>(<span class="fu">AVG</span>(<span class="kw">level</span>), <span class="dv">1</span>) <span class="kw">AS</span> <span class="ot">"avg_lv"</span></span>
+<span id="cb41-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-6"></a><span class="kw">FROM</span></span>
+<span id="cb41-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-7"></a>  x_characters</span>
+<span id="cb41-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-8"></a><span class="kw">WHERE</span></span>
+<span id="cb41-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-9"></a>  deleted_at <span class="kw">IS</span> <span class="kw">NULL</span>;</span>
+<span id="cb41-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-10"></a></span>
+<span id="cb41-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-11"></a><span class="co">-- 確認: Yamato所属キャラの現在レベル</span></span>
+<span id="cb41-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-12"></a><span class="kw">SELECT</span></span>
+<span id="cb41-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-13"></a>  character_id,</span>
+<span id="cb41-14"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-14"></a>  name,</span>
+<span id="cb41-15"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-15"></a>  <span class="kw">level</span></span>
+<span id="cb41-16"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-16"></a><span class="kw">FROM</span></span>
+<span id="cb41-17"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-17"></a>  x_characters</span>
+<span id="cb41-18"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-18"></a><span class="kw">WHERE</span></span>
+<span id="cb41-19"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-19"></a>  deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="kw">AND</span></span>
+<span id="cb41-20"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-20"></a>  character_id <span class="kw">IN</span> (</span>
+<span id="cb41-21"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-21"></a>    <span class="kw">SELECT</span></span>
+<span id="cb41-22"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-22"></a>      c.character_id</span>
+<span id="cb41-23"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-23"></a>    <span class="kw">FROM</span></span>
+<span id="cb41-24"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-24"></a>      x_guild_characters <span class="kw">AS</span> gc</span>
+<span id="cb41-25"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-25"></a>      <span class="kw">JOIN</span> x_characters <span class="kw">AS</span> c <span class="kw">ON</span> gc.character_id <span class="op">=</span> c.character_id</span>
+<span id="cb41-26"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-26"></a>      <span class="kw">JOIN</span> x_guilds <span class="kw">AS</span> g <span class="kw">ON</span> gc.guild_id <span class="op">=</span> g.guild_id</span>
+<span id="cb41-27"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-27"></a>    <span class="kw">WHERE</span></span>
+<span id="cb41-28"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-28"></a>      g.name <span class="op">=</span> <span class="st">'Yamato'</span></span>
+<span id="cb41-29"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-29"></a>  );</span>
+<span id="cb41-30"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-30"></a></span>
+<span id="cb41-31"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-31"></a><span class="co">-- 本体: サブクエリを用いた更新処理</span></span>
+<span id="cb41-32"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-32"></a><span class="kw">UPDATE</span> x_characters <span class="kw">AS</span> c</span>
+<span id="cb41-33"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-33"></a><span class="kw">SET</span></span>
+<span id="cb41-34"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-34"></a>  <span class="kw">level</span> <span class="op">=</span> c.<span class="kw">level</span> <span class="op">+</span> (</span>
+<span id="cb41-35"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-35"></a>    <span class="kw">SELECT</span></span>
+<span id="cb41-36"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-36"></a>      <span class="cf">CASE</span></span>
+<span id="cb41-37"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-37"></a>        <span class="cf">WHEN</span> c.<span class="kw">level</span> <span class="op">&lt;=</span> <span class="fu">AVG</span>(c1.<span class="kw">level</span>) <span class="cf">THEN</span> <span class="dv">2</span></span>
+<span id="cb41-38"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-38"></a>        <span class="cf">ELSE</span> <span class="dv">1</span></span>
+<span id="cb41-39"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-39"></a>      <span class="cf">END</span></span>
+<span id="cb41-40"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-40"></a>    <span class="kw">FROM</span></span>
+<span id="cb41-41"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-41"></a>      x_characters <span class="kw">as</span> c1</span>
+<span id="cb41-42"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-42"></a>    <span class="kw">WHERE</span></span>
+<span id="cb41-43"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-43"></a>      c1.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span></span>
+<span id="cb41-44"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-44"></a>  ) <span class="co">-- ◀ レベルの増分値をサブクエリで指定</span></span>
+<span id="cb41-45"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-45"></a><span class="kw">WHERE</span></span>
+<span id="cb41-46"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-46"></a>  c.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="kw">AND</span></span>
+<span id="cb41-47"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-47"></a>  c.character_id <span class="kw">IN</span> (</span>
+<span id="cb41-48"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-48"></a>    <span class="kw">SELECT</span></span>
+<span id="cb41-49"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-49"></a>      c2.character_id</span>
+<span id="cb41-50"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-50"></a>    <span class="kw">FROM</span></span>
+<span id="cb41-51"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-51"></a>      x_guild_characters <span class="kw">AS</span> gc</span>
+<span id="cb41-52"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-52"></a>      <span class="kw">JOIN</span> x_characters <span class="kw">AS</span> c2 <span class="kw">ON</span> gc.character_id <span class="op">=</span> c2.character_id</span>
+<span id="cb41-53"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-53"></a>      <span class="kw">JOIN</span> x_guilds <span class="kw">AS</span> g <span class="kw">ON</span> gc.guild_id <span class="op">=</span> g.guild_id</span>
+<span id="cb41-54"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-54"></a>    <span class="kw">WHERE</span></span>
+<span id="cb41-55"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-55"></a>      g.name <span class="op">=</span> <span class="st">'Yamato'</span></span>
+<span id="cb41-56"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-56"></a>  ) <span class="co">-- ◀ 更新対象のレコードをサブクエリで指定</span></span>
+<span id="cb41-57"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-57"></a><span class="kw">RETURNING</span></span>
+<span id="cb41-58"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-58"></a>  c.character_id,</span>
+<span id="cb41-59"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-59"></a>  c.name,</span>
+<span id="cb41-60"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-60"></a>  c.<span class="kw">level</span>;</span>
+<span id="cb41-61"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-61"></a></span>
+<span id="cb41-62"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb41-62"></a><span class="kw">ROLLBACK</span>;</span></code></pre></div>
+      <p><strong>第32行目</strong> から <strong>第60行目</strong>
+      がメインの更新処理になります。やや複雑な SQL となっているので丁寧に読解してください。特に
+      x_characters は、3カ所
+      (<strong>第32行目</strong>、<strong>第41行目</strong>、<strong>第52行目</strong>)
+      で参照されており、それぞれ <code>c</code>、<code>c1</code>、<code>c2</code>
+      のエイリアスが設定されています。これらの区別に注意しながら読み解くようにしてください。</p>
+      <ul>
+      <li><p><strong>第33行目</strong> からの <code>SET</code>
+      句では、全キャラの平均レベルを求めて、更新対象の行のレベル (<code>c.level</code>)
+      と比較して増分値 (<code>+1</code> or <code>+2</code>)
+      を決定するために「相関サブクエリ」を使用しています。</p></li>
+      <li><p><strong>第45行目</strong> からの <code>WHERE</code> 句では、更新対象のレコード
+      (＝ギルド「Yamato」に所属するキャラのレコード)
+      を「サブクエリ」を使用して指定しています。</p></li>
+      </ul>
+      <p>実行結果 (更新前と更新後を出力)
+      は次のようになります。論理削除済みのキャラを除いた全キャラの平均レベルは 47.4
+      であり、これ以下のレベルのキャラは <code>+2</code>、それ以外は <code>+1</code>
+      されていることが確認できます。</p>
+      <pre><code> character_id |  name  | level
+--------------+--------+-------
+            1 | Marvin |    35
+            6 | Alice  |    42
+            7 | Trudy  |    48
+           12 | Dave   |    68
+(4 行)
+
+ character_id |  name  | level
+--------------+--------+-------
+            1 | Marvin |    37
+            6 | Alice  |    44
+            7 | Trudy  |    49
+           12 | Dave   |    69
+(4 行)</code></pre>
+      <h3 data-number="5.3.1" id="sqlドリル-3"><span class="header-section-number">5.3.1</span>
+      SQLドリル💻</h3>
+      <p>以下、<code>x_****</code> テーブル群を使用する演習問題です。SQL は
+      <code>START TRANSACTION</code>、<code>ROLLBACK</code>
+      で囲んで実行してください。以下、同様。</p>
+      <ul>
+      <li><code>ex-04_1</code> 👉 ジョブが「Priest」「Wizard」以外のキャラについて、レベルを
+      <code>+1</code> するような SQL を記述せよ。
+      <ul>
+      <li>論理削除済みのキャラを除いて更新すること。</li>
+      <li><code>UPDATE</code> 文の <code>WHERE</code> 句においてサブクエリを用いること。</li>
+      <li><code>RETURNING</code> を使用して、次のようなカラムを持った更新情報を出力すること。</li>
+      </ul></li>
+      </ul>
+      <pre><code> character_id | name  | updated_level
+--------------+-------+---------------
+            2 | Zach  |            63
+            4 | Tom   |             2
+            5 | Ivan  |            40
+            7 | Trudy |            49
+            8 | Bob   |            34
+           10 | Oscar |            45
+           12 | Dave  |            69
+           14 | Eve   |            47
+           16 | Steve |            71
+           17 | Wendy |            57
+</code></pre>
+      <div class="note type-tips">
+      <p>解答例は <code>from-teacher</code> に示していますが、実際には様々な別解が存在します。</p>
+      <p>「自分で考えた SQL」と「解答例の
+      SQL」を比較し、それぞれの書き方や考え方の違いを整理するためには、生成AIを活用してください。</p>
+      <p><strong>(プロンプト例)</strong></p>
+      <blockquote>
+      <p>次の 2 つの SQL
+      は、同じ要件を満たすことを目的としたものです。両者を比較しながら「処理内容としての違い」「可読性・保守性・実行効率」「実務で使用する場合にどちらが適しているか」という観点からレビューしてください。</p>
+      <p>```<br>
+      UPDATE … ;<br>
+      ```</p>
+      <p>```<br>
+      UPDATE … ;<br>
+      ```</p>
+      </blockquote>
+      </div>
+      <ul>
+      <li><code>ex-04_2</code> 👉 アイテム「High Mana Potion」を所持しているキャラについて、レベルを
+      <code>+2</code> するような SQL を記述せよ。
+      <ul>
+      <li>論理削除済みのキャラを除いて更新すること。</li>
+      <li><code>UPDATE</code> 文の <code>WHERE</code> 句においてサブクエリを用いること。</li>
+      <li><code>RETURNING</code> を使用して、次のようなカラムを持った更新情報を出力すること。</li>
+      </ul></li>
+      </ul>
+      <pre><code> character_id |  name   | updated_level
+--------------+---------+---------------
+            3 | Charlie |            59
+           13 | Mallet  |            66
+           19 | Jack    |            63</code></pre>
+      <ul>
+      <li><code>ex-04_3</code> 👉 流通数 (全キャラの所持数合計) が 6個以上のアイテムの価格を 1.2倍
+      (10円単位に切り上げ) に改定するような SQL を記述せよ。
+      <ul>
+      <li>論理削除されていないキャラのみを対象にアイテムの所持数合計を計算すること。</li>
+      <li><code>UPDATE</code> 文の <code>WHERE</code> 句においてサブクエリを用いること。</li>
+      <li><code>RETURNING</code> を使用して、次のようなカラムを持った更新情報を出力すること。</li>
+      </ul></li>
+      </ul>
+      <pre><code> item_id |     name     | updated_price
+---------+--------------+---------------
+       1 | Potion       |           240
+       5 | Mana Potion  |          1200
+       7 | Antidote     |           360
+      10 | Chimera Wing |           600
+      11 | Torch        |           990</code></pre>
+      <ul>
+      <li><code>ex-04_4</code> 👉 各アイテムの価格を「そのアイテムの所持人数
+      (論理削除済みのキャラを除く) <span class="math inline"><mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" tabindex="0" ctxtmenu_counter="1" style="font-size: 113.1%; position: relative;"><mjx-math class="MJX-TEX" aria-hidden="true"><mjx-mo class="mjx-n"><mjx-c class="mjx-cD7"></mjx-c></mjx-mo></mjx-math><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mo>×</mo></math></mjx-assistive-mml></mjx-container></span>
+      50G」だけ値上げし、「所持人数 (論理削除済みのキャラを除く) が 0 のアイテムは
+      100G」だけ値下げするような SQL を記述せよ。
+      <ul>
+      <li>例: <strong>Potion</strong> を所持するキャラの人数は 3 人なので、3 <span class="math inline"><mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" tabindex="0" ctxtmenu_counter="2" style="font-size: 113.1%; position: relative;"><mjx-math class="MJX-TEX" aria-hidden="true"><mjx-mo class="mjx-n"><mjx-c class="mjx-cD7"></mjx-c></mjx-mo></mjx-math><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mo>×</mo></math></mjx-assistive-mml></mjx-container></span> 50G だけ値上げする。200G → 350G。</li>
+      <li><code>UPDATE</code> 文の <code>SET</code> 句においてサブクエリを用いること。</li>
+      <li><code>RETURNING</code> を使用して、次のようなカラムを持った更新情報を出力すること。</li>
+      </ul></li>
+      </ul>
+      <pre><code> item_id |       name       | updated_price
+---------+------------------+---------------
+       1 | Potion           |           350
+       2 | High Potion      |           700
+       3 | Mega Potion      |          1350
+       4 | Giga Potion      |          3900
+       5 | Mana Potion      |          1150
+       6 | High Mana Potion |          5150
+       7 | Antidote         |           500
+       8 | Paralyze Cure    |           500
+       9 | Angel Feather    |          1400
+      10 | Chimera Wing     |           750
+      11 | Torch            |          1020
+      12 | Climbing Rope    |          1050</code></pre>
+      <ul>
+      <li><code>ex-04_5</code> 👉 各キャラクタのレベルを「そのジョブに就いているキャラ人数
+      (論理削除済みのキャラを除く)」だけ上げるような SQL を記述せよ。
+      <ul>
+      <li><code>UPDATE</code> 文の <code>SET</code> 句においてサブクエリを用いること。</li>
+      <li><code>RETURNING</code> を使用して、次のようなカラムを持った更新情報を出力すること。</li>
+      </ul></li>
+      </ul>
+      <pre><code> character_id |  name   | job_id | updated_level
+--------------+---------+--------+---------------
+            1 | Marvin  |      5 |            38
+            2 | Zach    |      3 |            64
+            3 | Charlie |      6 |            61
+            4 | Tom     |      1 |             5
+            5 | Ivan    |      2 |            41
+            6 | Alice   |      5 |            45
+            7 | Trudy   |      1 |            52
+            8 | Bob     |      2 |            35
+           10 | Oscar   |      1 |            48
+           11 | Ellen   |      6 |            55
+           12 | Dave    |      4 |            70
+           13 | Mallet  |      6 |            68
+           14 | Eve     |      3 |            48
+           16 | Steve   |      4 |            72
+           17 | Wendy   |      1 |            60
+           18 | Carol   |      5 |            31
+           19 | Jack    |      6 |            65
+(17 行)</code></pre>
+      <h2 data-number="5.4" id="from句の利用"><span class="header-section-number">5.4</span>
+      FROM句の利用</h2>
+      <p><code>UPDATE</code> 文では、<code>FROM</code>
+      句を用いることで「更新対象」や「更新値」を決めるための <strong>参照用テーブル</strong>
+      を指定することができます。</p>
+      <p>ただし、実際にレコード更新されるのは、あくまで <code>UPDATE</code> 句で指定したテーブルの
+      <code>SET</code> 句で指定したカラムだけです。<code>FROM</code> 句に記述したテーブルは <span class="masked">更新処理には関与せず、<code>WHERE</code> 句での条件式や、<code>SET</code>
+      句で更新値を計算する材料として参照するものであること</span> に注意してください。</p>
+      <p>たとえば、次のように <code>FROM</code> 句に table2 を指定して<code>SET</code> 句や
+      <code>WHERE</code> 句で参照するように使用します。</p>
+      <div class="sourceCode" id="cb48" data-caption="UPDATE文におけるFROM句の利用 1"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb48-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb48-1"></a><span class="kw">UPDATE</span> table1</span>
+<span id="cb48-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb48-2"></a><span class="kw">SET</span></span>
+<span id="cb48-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb48-3"></a>  value1 <span class="op">=</span> (table1 や table2 を参照する式),</span>
+<span id="cb48-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb48-4"></a>  value2 <span class="op">=</span> (table1 や table2 を参照する式)</span>
+<span id="cb48-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb48-5"></a><span class="kw">FROM</span></span>
+<span id="cb48-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb48-6"></a>  table2</span>
+<span id="cb48-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb48-7"></a><span class="kw">WHERE</span></span>
+<span id="cb48-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb48-8"></a>  table1.<span class="kw">id</span> <span class="kw">IN</span> (table1 や table2を参照する式);</span></code></pre></div>
+      <p>このように記述した場合、あくまで更新されるのは table1 の value1 カラムと value2
+      カラムだけとなります。仮に table2 に value1 や value2
+      という名前のカラムがあっても、それは影響をうけません。</p>
+      <p>構文的には、以下のように <code>UPDATE</code> 句と <code>FROM</code>
+      句に同じテーブルを指定することも可能ですが、あまり意味がありません (実質的に <code>FROM</code>
+      句を省略した <code>UPDATE</code> 文と同じになります)。</p>
+      <div class="sourceCode" id="cb49" data-caption="UPDATE文におけるFROM句の利用 2"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb49-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb49-1"></a><span class="kw">UPDATE</span> table1</span>
+<span id="cb49-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb49-2"></a><span class="kw">SET</span></span>
+<span id="cb49-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb49-3"></a>  value1 <span class="op">=</span> <span class="op">..</span>.,</span>
+<span id="cb49-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb49-4"></a>  value2 <span class="op">=</span> <span class="op">..</span>.</span>
+<span id="cb49-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb49-5"></a><span class="kw">FROM</span></span>
+<span id="cb49-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb49-6"></a>  table1</span>
+<span id="cb49-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb49-7"></a><span class="kw">WHERE</span></span>
+<span id="cb49-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb49-8"></a>  table1.<span class="kw">id</span> <span class="kw">IN</span> <span class="op">..</span>.;</span></code></pre></div>
+      <p>一般的には、以下のように のように、 <code>UPDATE</code>
+      句で指定したテーブルと他テーブルを結合したものを<code>FROM</code>
+      句に指定して、更新条件や更新値を与えるという使い方が最も多くなります。</p>
+      <div class="sourceCode" id="cb50" data-caption="UPDATE文におけるFROM句の利用 3"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb50-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb50-1"></a><span class="kw">UPDATE</span> table1 <span class="kw">as</span> t</span>
+<span id="cb50-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb50-2"></a><span class="kw">SET</span></span>
+<span id="cb50-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb50-3"></a>  value1 <span class="op">=</span> (t1 や t2 を参照する式),</span>
+<span id="cb50-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb50-4"></a>  value2 <span class="op">=</span> (t1 や t2 を参照する式)</span>
+<span id="cb50-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb50-5"></a><span class="kw">FROM</span></span>
+<span id="cb50-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb50-6"></a>  table1 <span class="kw">AS</span> t1 <span class="kw">JOIN</span> table2 <span class="kw">AS</span> t2 <span class="kw">ON</span> t1.<span class="kw">id</span> <span class="op">=</span> t2.<span class="kw">id</span></span>
+<span id="cb50-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb50-7"></a><span class="kw">WHERE</span></span>
+<span id="cb50-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb50-8"></a>  t.<span class="kw">id</span> <span class="kw">IN</span> (t1 や t2 を参照する式);</span></code></pre></div>
+      <p>たとえば、先ほどサブクエリを用いて記述した…</p>
+      <blockquote>
+      <p>ギルド「Yamato」に所属するキャラのレベルが…<br>
+      全キャラ平均レベル以下のときは、レベルを +2 する<br>
+      全キャラ平均レベルを超えているときは、レベルを +1 する</p>
+      </blockquote>
+      <p>…という処理 (<code>update-set_03-a.sql</code>) は、<code>FROM</code>
+      句を用いて、以下のように記述することもできます。</p>
+      <div class="sourceCode" id="cb51" data-caption="update-set_03-b.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb51-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-1"></a><span class="kw">START</span> <span class="kw">TRANSACTION</span>;</span>
+<span id="cb51-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-2"></a></span>
+<span id="cb51-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-3"></a><span class="co">-- 本体: FROM句を用いた更新処理</span></span>
+<span id="cb51-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-4"></a><span class="kw">UPDATE</span> x_characters <span class="kw">AS</span> c</span>
+<span id="cb51-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-5"></a><span class="kw">SET</span></span>
+<span id="cb51-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-6"></a>  <span class="kw">level</span> <span class="op">=</span> c.<span class="kw">level</span> <span class="op">+</span> <span class="cf">CASE</span></span>
+<span id="cb51-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-7"></a>    <span class="cf">WHEN</span> c.<span class="kw">level</span> <span class="op">&lt;=</span> a.avg_level <span class="cf">THEN</span> <span class="dv">2</span></span>
+<span id="cb51-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-8"></a>    <span class="cf">ELSE</span> <span class="dv">1</span></span>
+<span id="cb51-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-9"></a>  <span class="cf">END</span></span>
+<span id="cb51-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-10"></a><span class="kw">FROM</span></span>
+<span id="cb51-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-11"></a>  x_guild_characters <span class="kw">AS</span> gc</span>
+<span id="cb51-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-12"></a>  <span class="kw">JOIN</span> x_guilds <span class="kw">AS</span> g <span class="kw">ON</span> g.guild_id <span class="op">=</span> gc.guild_id</span>
+<span id="cb51-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-13"></a>  <span class="kw">CROSS</span> <span class="kw">JOIN</span> (</span>
+<span id="cb51-14"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-14"></a>    <span class="kw">SELECT</span></span>
+<span id="cb51-15"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-15"></a>      <span class="fu">AVG</span>(<span class="kw">level</span>) <span class="kw">AS</span> avg_level</span>
+<span id="cb51-16"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-16"></a>    <span class="kw">FROM</span></span>
+<span id="cb51-17"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-17"></a>      x_characters</span>
+<span id="cb51-18"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-18"></a>    <span class="kw">WHERE</span></span>
+<span id="cb51-19"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-19"></a>      deleted_at <span class="kw">IS</span> <span class="kw">NULL</span></span>
+<span id="cb51-20"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-20"></a>  ) <span class="kw">AS</span> a</span>
+<span id="cb51-21"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-21"></a><span class="kw">WHERE</span></span>
+<span id="cb51-22"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-22"></a>  c.character_id <span class="op">=</span> gc.character_id <span class="kw">AND</span></span>
+<span id="cb51-23"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-23"></a>  c.deleted_at <span class="kw">IS</span> <span class="kw">NULL</span> <span class="kw">AND</span></span>
+<span id="cb51-24"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-24"></a>  g.name <span class="op">=</span> <span class="st">'Yamato'</span></span>
+<span id="cb51-25"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-25"></a><span class="kw">RETURNING</span></span>
+<span id="cb51-26"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-26"></a>  c.character_id,</span>
+<span id="cb51-27"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-27"></a>  c.name,</span>
+<span id="cb51-28"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-28"></a>  c.<span class="kw">level</span>;</span>
+<span id="cb51-29"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-29"></a></span>
+<span id="cb51-30"><a href="https://takeshiwada1980.github.io/DB-2025/lecture12.html#cb51-30"></a><span class="kw">ROLLBACK</span>;</span></code></pre></div>
+      <p>実行すると、先ほどと同様の結果を得ることができます。なお、<code>RETURNING</code>
+      による出力順が変わることがあります。</p>
+      <p><strong>(プロンプト例)</strong></p>
+      <blockquote>
+      <p>SQLに関する質問です。<code>UPDATE</code> 文は
+      <code>UPDATE tbl_1 SET col_1=xxx, col_2=xxx WHERE col_3=xxx;</code>
+      のように記述しますが、これにくわえて <code>FROM</code>
+      句を記述できると聞きました。<code>UPDATE tbl_1</code> により、既に <code>tbl_1</code>
+      を更新対象として指定しているのに、何のために <code>FROM</code> 句を指定するのですか。</p>
+      </blockquote>
+      <blockquote>
+      <p>(上記のつづきとして) 更新に使う値を取得するための参照テーブルとして <code>FROM</code>
+      句を与えるとのことですが、新に使う値を取得にはサブクエリも使えると思います。両者の使い分けを教えてください。</p>
+      </blockquote>
+      <p><strong>(プロンプト例)</strong></p>
+      <blockquote>
+      <p>SQLに関する質問です。<code>UPDATE</code> 文に <code>FROM</code>
+      句を記述する場合、<code>UPDATE tabale1 SET ...FROM table2 WHERE ...</code>
+      としたとき、内部的には tabale1 (更新対象) と table2 (参照用テーブル)
+      は、どのように対応づけされるのですか。</p>
+      </blockquote>
+      <p><strong>(プロンプト例)</strong></p>
+      <blockquote>
+      <p>SQLに関する質問です。<code>UPDATE ... FROM</code>
+      における「多重マッチ問題」とは何ですか。具体例で説明してください。</p>
+      </blockquote>
+      <h3 data-number="5.4.1" id="sqlドリル-4"><span class="header-section-number">5.4.1</span>
+      SQLドリル💻</h3>
+      <p>以下、<code>x_****</code> テーブル群を使用する演習問題です。難しめです。SQL は
+      <code>START TRANSACTION</code>、<code>ROLLBACK</code>
+      で囲んで実行してください。以下、同様。</p>
+      <ul>
+      <li><code>ex-05_1</code> 👉 <code>ex-04_1</code> の要求を <code>FROM</code>
+      句を用いたSQLで記述せよ。</li>
+      <li><code>ex-05_2</code> 👉 <code>ex-04_2</code> の要求を <code>FROM</code>
+      句を用いたSQLで記述せよ。</li>
+      </ul>
+      <h3 data-number="5.4.2" id="sqlドリル-ex"><span class="header-section-number">5.4.2</span>
+      SQLドリル💻 (<strong>EX</strong>)</h3>
+      <p>以下、<code>x_****</code> テーブル群を使用する演習問題です。かなり難しめです。SQL は
+      <code>START TRANSACTION</code>、<code>ROLLBACK</code>
+      で囲んで実行してください。以下、同様。</p>
+      <ul>
+      <li><code>ex-05_3</code> 👉 <code>ex-04_3</code> の要求を <code>FROM</code>
+      句を用いたSQLで記述せよ。
+      <ul>
+      <li>なお <code>FROM</code> 句のなかでサブクエリを使用してもよい。</li>
+      </ul></li>
+      <li><code>ex-05_4</code> 👉 <code>ex-04_4</code> の要求を <code>FROM</code>
+      句を用いたSQLで記述せよ。
+      <ul>
+      <li>なお <code>FROM</code> 句のなかでサブクエリを使用してもよい。</li>
+      </ul></li>
+      <li><code>ex-05_5</code> 👉 <code>ex-04_5</code> の要求を <code>FROM</code>
+      句を用いたSQLで記述せよ。
+      <ul>
+      <li>なお <code>FROM</code> 句のなかでサブクエリを使用してもよい。</li>
+      </ul></li>
+      </ul>
+      <h1 data-number="6" id="バックアップとリストア"><span class="header-section-number">6</span>
+      バックアップとリストア</h1>
+      <p>ここでは PostgreSQL におけるデータベースの <strong>バックアップ</strong> と
+      <strong>リストア (復元)</strong> について学んでいきます。</p>
+      <h2 data-number="6.1" id="バックアップ"><span class="header-section-number">6.1</span>
+      バックアップ</h2>
+      <p>PostgreSQL におけるデータベースの「<strong>バックアップ</strong>」には
+      <strong>pg_dump</strong> というコマンドを使用します。<strong>dump</strong> (ダンプ)
+      とは、コンピュータ分野では <span class="masked">ある時点でのメモリやデータの内容をそのまま外部に書き出すこと</span>
+      を指します。<strong>pg_dump</strong> コマンドは「<strong>PostgreSQL データベースの現在の状態
+      (テーブル定義やデータなど) を、あとから再現できるようにSQLコマンド列 (テキストファイル)
+      として書き出す機能</strong>」を提供するツールです。</p>
+      <ul>
+      <li>pg_dump
+      は、デフォルトでテキストファイルを出力しますが、オプション指定によりバイナリファイルで出力することもできます。</li>
+      </ul>
+      <p>現在の演習環境では、<strong>pg_dump</strong> は PostgreSQL が稼働している Docker
+      コンテナ内に用意されています。そのため、VSCode のターミナル (ホスト OS 側)
+      から実行する場合は、以下のような <strong>docker exec</strong>
+      コマンドと組み合わせて実行します。</p>
+      <pre><code>docker exec pg17 pg_dump -U student playground &gt; data/playground_db_01.sql</code></pre>
+      <ul>
+      <li><code>docker exec</code> は <code>docker container exec</code> の略表記です。</li>
+      <li><code>docker container exec</code> は<a href="https://takeshiwada1980.github.io/DB-2025/lecture02.html#%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%AE%E5%88%A9%E7%94%A8-bash%E7%B5%8C%E7%94%B1">第02回講義</a>で登場しています。</li>
+      </ul>
+      <p>ここで、<code>pg17</code> は <strong>コンテナ名</strong>、<code>-U student</code> は
+      <strong>pg_dump を実行するユーザ名</strong>、<code>playground</code> は
+      <strong>バックアップ対象となるデータベース名</strong> を指定しています。これらの指定は
+      <code>docker/docker-compose.yaml</code> 記載されている設定と対応している必要があります。</p>
+      <ul>
+      <li><i class="fa-brands fa-github"></i><a href="https://github.com/TakeshiWada1980/DB-2025-PostgreSQL/blob/main/docker/docker-compose.yaml">docker/docker-compose.yaml</a>@
+      GitHub</li>
+      </ul>
+      <p>上記コマンドを実際に実行してみてください。<code>data/playground_db_01.sql</code>
+      というファイルが作成されて <code>playground</code>
+      の権限・所有者情報、テーブル定義、データなどのすべての情報がダンプされます
+      (内容を確認してください)。</p>
+      <p>pg_dump
+      には、ダンプの用途に応じて出力内容を細かく制御できるように多数のオプションが用意されています。以下では、そのなかでも
+      <strong>基本的なもの</strong> に絞って紹介します。</p>
+      <p><strong>(プロンプト例)</strong></p>
+      <blockquote>
+      <p>PostgreSQL の pg_dump コマンドの代表的なオプション (実務における使用頻度が高いもの)
+      について解説してください。</p>
+      </blockquote>
+      <h3 data-number="6.1.1" id="clean---if-exists-オプション"><span class="header-section-number">6.1.1</span> <code>--clean --if-exists</code> オプション</h3>
+      <p><code>--clean --if-exists</code> オプションを指定すると、ダンプファイルのなかに
+      <code>DROP IF EXISTS</code> などの削除系の SQL 文が書き込まれます。これにより、リストア (復元)
+      のときに同名のテーブルや制約がすでに存在していても、エラーにならずに処理を進めることができます。</p>
+      <p>なお、このオプションは <span class="masked">pg_dump
+      の実行時には何も削除せず</span>、あくまで「<strong>削除用の SQL
+      をダンプに含める</strong>」だけである点に注意してください。</p>
+      <pre><code>docker exec pg17 pg_dump -U student playground --clean --if-exists &gt; data/playground_db_02.sql</code></pre>
+      <p>実際に上記コマンドを実行して、ダンプファイルの先頭付近に
+      <code>ALTER TABLE IF EXISTS ONLY ... DROP CONSTRAINT IF EXISTS ...</code>
+      といった制約の削除や、<code>DROP TABLE IF EXISTS ...</code> のようなテーブルの削除に関する SQL
+      が含まれることを確認してください。</p>
+      <h3 data-number="6.1.2" id="inserts---column-inserts-オプション"><span class="header-section-number">6.1.2</span> <code>--inserts --column-inserts</code>
+      オプション</h3>
+      <p><code>--inserts --column-inserts</code> オプションを指定すると、データの挿入方法が <span class="masked"><code>COPY</code> 文ではなく <code>INSERT</code> 文</span> に変更されます。</p>
+      <p><code>COPY</code> 文は<a href="https://takeshiwada1980.github.io/DB-2025/lecture05.html#csv-%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%8B%E3%82%89%E3%83%86%E3%83%BC%E3%83%96%E3%83%AB%E3%81%AB%E5%8F%96%E3%82%8A%E8%BE%BC%E3%81%BF">第05回講義</a>で紹介したように、<strong>CSV
+      や TSV（Tab-Separated
+      Values）形式のデータを高速に取り込むための文</strong>です。<code>COPY</code> 文のほうが <span class="masked">リストアの処理速度が速く、ダンプファイルのサイズも小さく</span>
+      なりますが、MySQL など 他の RDBMS への移行を想定する場合 には、<code>INSERT</code>
+      文として出力しておくほうが修正箇所を減らしやすくなります。</p>
+      <pre><code>docker exec pg17 pg_dump -U student playground --inserts --column-inserts &gt; data/playground_db_03.sql</code></pre>
+      <p>実行後、<code>playground_db_01.sql</code> では <code>COPY</code>
+      文で記述されていた部分が、<code>playground_db_03.sql</code> では <code>INSERT</code>
+      文に置き換わっていることを確認してください。</p>
+      <h3 data-number="6.1.3" id="schema-only-と---data-only-オプション"><span class="header-section-number">6.1.3</span> <code>--schema-only</code> と
+      <code>--data-only</code> オプション</h3>
+      <p><code>--schema-only</code>
+      オプションを指定すると、<strong>テーブル定義、制約、インデックス、ビュー、関数など、データベースの構造
+      (スキーマ) に関する情報のみ</strong> がダンプされます。レコード (行データ)
+      は一切含まれません。</p>
+      <p>このオプションは、<span class="masked">本番データを含めずに「空のデータベース」を用意したい場合</span>、<span class="masked">スキーマ設計の確認やレビューをしたい場合</span>、テーブル構造だけを別環境に再現したい場合などに使用されます。</p>
+      <p>一方、<code>--data-only</code>
+      オプションを指定すると、<strong>テーブル定義や制約は含めず、レコードのみがダンプ</strong>
+      されます (リストアの際には、レコードに対応したスキーマが存在している必要があります)。</p>
+      <pre><code>docker exec pg17 pg_dump -U student playground --schema-only &gt; data/playground_db_04-a.sql
+docker exec pg17 pg_dump -U student playground --data-only &gt; data/playground_db_04-b.sql</code></pre>
+      <ul>
+      <li><code>playground_db_04-a.sql</code> には <code>CREATE TABLE</code> や
+      <code>ALTER TABLE</code> などの定義文のみが、含まれることを確認してください。</li>
+      <li><code>playground_db_04-b.sql</code> には <code>COPY</code> 文や <code>INSERT</code>
+      文によるデータ挿入処理のみが含まれることを確認してください。</li>
+      </ul>
+      <h3 data-number="6.1.4" id="定着確認-3"><span class="header-section-number">6.1.4</span>
+      定着確認</h3>
+      <ul>
+      <li>PostgreSQL において、データベースのバックアップ (ダンプ) に使用するコマンドを答えよ。
+      <ul>
+      <li><strong>答え</strong>: <span class="masked">pg_dump</span></li>
+      </ul></li>
+      </ul>
+      <h2 data-number="6.2" id="リストア"><span class="header-section-number">6.2</span>
+      リストア</h2>
+      <p><strong>リストア</strong>には <strong>psql</strong> コマンドを使用します。
+      <strong>psql</strong> コマンドは、いつも SQL を実行するために使用しているコマンドです (<a href="https://takeshiwada1980.github.io/DB-2025/lecture02.html#%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%AE%E5%88%A9%E7%94%A8-windows-%E3%81%8B%E3%82%89-psql-%E3%82%92%E7%9B%B4%E6%8E%A5%E5%AE%9F%E8%A1%8C">第02回講義</a>)。</p>
+      <p>リストアについて実験する前に、現在のデータベース (<code>playground</code>)
+      の内容について確認しておきます。第02回講義以来、久しぶりにアクセスするひとも多いと思いますが、<a href="http://localhost:8080/">http://localhost:8080/</a>にアクセスして <code>playground</code>
+      データベースのなかに存在しているテーブル群を確認してください。</p>
+      <figure>
+      <img src="./第12回 4I-データベース工学_files/dbgate-01.png" alt="img">
+      <figcaption aria-hidden="true">img</figcaption>
+      </figure>
+      <p>現状で、<code>playground</code> のなかに
+      <code>n_character_items</code>、<code>n_characters</code>
+      などの複数のテーブルが存在し、各テーブルには複数のレコードが存在しています。</p>
+      <p>まずは、リストア (復元) の準備として、<code>pg17</code> コンテナの <span class="maseked">ボリュームの削除と初期化</span> をしていきます。以下のように <code>-v</code>
+      をつけて down
+      すると、<strong>コンテナのデータを永続化してきたボリューム領域も同時に削除</strong>
+      されます。</p>
+      <pre><code>docker compose -f docker/docker-compose.yaml -p pg17dev down -v</code></pre>
+      <p>実際に上記コマンドを実行してみてください。</p>
+      <p>なお、<code>package.json</code> の <code>scripts</code> に定義されているように、本科目の
+      SQL演習環境では <code>npm run db:reset</code>
+      というコマンドでも、コンテナの停止とボリュームの削除が実行できます (参照:<a href="https://takeshiwada1980.github.io/DB-2025/lecture03.html#%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%AE%E5%81%9C%E6%AD%A2">第03回講義</a>)。</p>
+      <p>コマンドに成功すると、以下のように pg17 コンテナの内容を永続化をしてきた
+      <code>pg17dev_pg17_data</code> ボリュームも削除されます。</p>
+      <pre><code>✔ Container dbgate            Removed
+✔ Container pg17              Removed
+✔ Network pg17dev_default     Removed
+✔ Volume pg17dev_dbgate_data  Removed
+✔ Volume pg17dev_pg17_data    Removed 👈 注目</code></pre>
+      <p>つづいて、以下のコマンドで、再度、コンテナを起動します。</p>
+      <pre><code>npm run db:up</code></pre>
+      <p>この際、以下のようにボリュームが新規作成 (初期化) されます。</p>
+      <pre><code>✔ Network pg17dev_default     Created
+✔ Volume pg17dev_pg17_data    Created 👈 注目
+✔ Volume pg17dev_dbgate_data  Created
+✔ Container pg17              Healthy
+✔ Container dbgate            Healthy</code></pre>
+      <p><a href="http://localhost:8080/">http://localhost:8080/</a>にアクセスして DbGate から
+      <code>playground</code> データベースの内容を確認してください。以下のように <span class="masked">すべてのテーブルが消えていること😭</span> が確認できます。</p>
+      <figure>
+      <img src="./第12回 4I-データベース工学_files/dbgate-02.png" alt="img">
+      <figcaption aria-hidden="true">img</figcaption>
+      </figure>
+      <p>さきほどのダンプファイルを使って、データベースをリストアしています。VSCode のターミナル
+      (PowerShell) から以下のコマンドを実行してください。<code>ON_ERROR_STOP=1</code>
+      は、処理の途中でエラーが発生した場合、そこで全処理を停止するオプションです。</p>
+      <pre><code>gc data/playground_db_01.sql | docker exec -i pg17 psql -U student playground -v ON_ERROR_STOP=1</code></pre>
+      <p>DbGate から <code>playground</code>
+      データベースの内容を確認してください。リストアできていることが確認できると思います。</p>
+      <div class="note type-tips">
+      <p>上記のコマンドは、PowerShell では <strong>bash などで用いられる入力リダイレクト</strong>
+      (<code>&lt;</code>) <strong>と同じ書き方ができない関係上</strong>、Get-Content
+      (<code>gc</code>) とパイプを用いて SQL
+      ファイルの内容を標準入力として渡しているものです。これは、bash や cmd
+      における次のコマンドと等価です。</p>
+      <pre><code>docker exec -i pg17 psql -U student playground -v ON_ERROR_STOP=1 &lt; data/playground_db_01.sql</code></pre>
+      </div>
+      <p>なお、上記のリストアコマンドを再実行すると
+      <code>ERROR:  リレーション"n_character_items"はすでに存在します</code>
+      のようなエラーで失敗します。これは、<strong>既存のテーブルが残っているために生じるもの</strong>*です。</p>
+      <p>既存のテーブルを削除したうえでリストアを実行するときは <code>--clean --if-exists</code>
+      オプションをつけて <strong>pg_dump</strong> を実行して生成したファイル (ここでは
+      <code>playground_db_02.sql</code>) を使用してください。</p>
+      <pre><code>gc data/playground_db_02.sql | docker exec -i pg17 psql -U student playground -v ON_ERROR_STOP=1</code></pre>
+      <h3 data-number="6.2.1" id="定着確認-4"><span class="header-section-number">6.2.1</span>
+      定着確認</h3>
+      <ul>
+      <li>PostgreSQL において、データベースのリストアに使用するコマンドを答えよ。
+      <ul>
+      <li><strong>答え</strong>: <span class="masked">psql</span></li>
+      </ul></li>
+      </ul>
+      <h1 data-number="7" id="授業時間外学習の指示"><span class="header-section-number">7</span>
+      授業時間外学習の指示</h1>
+      <p>🚨<strong>本科目は「学修単位科目」であり、1回の講義あたり「4時間相当」の授業時間外学習が求められる科目です</strong>🏃</p>
+      <ul>
+      <li>次回の講義で「<strong>小テスト❿</strong>」を実施します。
+      <ul>
+      <li>主に <strong>SQLドリル</strong>、<strong>定着確認</strong>、<strong>演習</strong>
+      から出題します。</li>
+      </ul></li>
+      </ul>
+      <hr>
+      <ul>
+      <li>この講義資料を再読・熟読し「不明な用語」や「理解が不十分な用語」があればインターネットや、ChatGPTなどの生成AIを利用して解決してください。また、興味関心を持ったトピックについて、ウェブ、生成AI、YouTube動画などを利用して知識を広げ、理解を深めてください。
+      <ul>
+      <li>特に <strong>(プロンプト例)</strong>
+      を示しているものについては、実際に生成AIにプロンプトを投げ、さらに対話を重ねることで、知識の幅を広げるだけでなく、理解をより深く確かなものにしてください。</li>
+      </ul></li>
+      <li>講義資料内の「<strong>演習</strong>」や「<strong>SQLドリル</strong>」に再度取り組んでください。特に、<strong>SQLドリル</strong>💻
+      は、授業時間中に1回取り組むだけでは定着しないので注意してください。</li>
+      </ul>
+      <!-- ---------------------------------------- -->
+    </main>
+
+    <footer class="markdown-body">
+      <p><a href="https://takeshiwada1980.github.io/DB-2025/">講義資料のIndexに移動</a></p>
+    </footer>
+
+    <script>
+      window.onload = function () {
+        // ナビゲーション関連
+        let openBtn = document.getElementsByClassName("openbtn")[0];
+        let navPnl = document.getElementById("g-nav");
+        openBtn.onclick = () => {
+          openBtn.classList.toggle("active");
+          navPnl.classList.toggle("panelactive");
+        };
+
+        let items = navPnl.getElementsByTagName("a");
+        Array.from(items).forEach((item) => {
+          item.onclick = () => {
+            openBtn.classList.toggle("active");
+            navPnl.classList.toggle("panelactive");
+          };
+        });
+
+        // マスク処理
+        let maskedSpans = document.getElementsByClassName("masked");
+        Array.from(maskedSpans).forEach((span) => {
+          span.onclick = () => {
+            span.classList.toggle("open");
+          };
+        });
+
+        // data-startfrom 属性の行番号カウンタのリセット
+        document.querySelectorAll("div.sourceCode").forEach(function (div) {
+          var startFrom = div.getAttribute("data-startfrom");
+          if (startFrom != null) {
+            div.style.counterReset = "pg-line " + (startFrom - 1);
+          }
+        });
+
+        // 画像にリンクを付与
+        // let images = document.querySelectorAll("figure img");
+        // Array.from(images).forEach((img) => {
+        //   img.onclick = () => {
+        //     location.href = img.getAttribute("src");
+        //   };
+        // });
+      };
+    </script>
+  
+
+</body></html>

@@ -1,0 +1,9 @@
+.env*
+!.env.dummy
+/node_modules
+/prisma/schema.prisma
+/dist
+/private
+.DS_Store
+/resources
+/from-teacher

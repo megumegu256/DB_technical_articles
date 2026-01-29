@@ -1,0 +1,4 @@
+
+docker exec -it pg17 bash
+psql -U user -d lab 
+

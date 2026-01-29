@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)https://takeshiwada1980.github.io/DB-2025/lecture10.html -->
+<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="robots" content="noindex,nofollow,noarchive">
+    <meta name="referrer" content="no-referrer">
+
+    <script>
+      MathJax = {
+        chtml: {
+          displayAlign: "left",
+          displayIndent: "1em",
+        },
+      };
+    </script>
+
+    
+
+    <link rel="icon" href="https://takeshiwada1980.github.io/DB-2025/favicon.ico" sizes="any">
+    <link rel="stylesheet" href="./第10回 4I-データベース工学_files/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="./第10回 4I-データベース工学_files/css">
+    <link rel="stylesheet" href="./第10回 4I-データベース工学_files/style.css">
+
+    <title>第10回 4I-データベース工学</title>
+  </head>
+
+  <body cz-shortcut-listen="true">
+    <div class="openbtn"><span></span><span></span><span></span></div>
+    <nav id="g-nav">
+      <div id="g-nav-list">
+        <!-- ---------------------------------------- -->
+         <ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#%E9%80%A3%E7%B5%A1%E3%81%A8%E6%BA%96%E5%82%99" id="toc-連絡と準備"><span class="toc-section-number">1</span>
+連絡と準備</a>
+<ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#%E3%83%8F%E3%83%B3%E3%82%BA%E3%82%AA%E3%83%B3%E5%AD%A6%E7%BF%92%E3%81%AE%E6%BA%96%E5%82%99" id="toc-ハンズオン学習の準備"><span class="toc-section-number">1.1</span> ハンズオン学習の準備</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#%E4%BB%8A%E5%9B%9E%E3%81%AE%E8%AC%9B%E7%BE%A9%E3%81%AE%E6%A6%82%E8%A6%81" id="toc-今回の講義の概要"><span class="toc-section-number">1.2</span> 今回の講義の概要</a></li>
+</ul></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#%E6%BA%96%E5%82%99" id="toc-準備"><span class="toc-section-number">2</span> 準備</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#%E3%82%B5%E3%83%96%E3%82%AF%E3%82%A8%E3%83%AA-%E5%89%AF%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B" id="toc-サブクエリ-副問い合わせ"><span class="toc-section-number">3</span> サブクエリ (副問い合わせ)</a>
+<ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#where%E5%8F%A5%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E3%82%B5%E3%83%96%E3%82%AF%E3%82%A8%E3%83%AA%E3%81%AE%E5%88%A9%E7%94%A8" id="toc-where句におけるサブクエリの利用"><span class="toc-section-number">3.1</span> WHERE句におけるサブクエリの利用</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#select%E5%8F%A5%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E3%82%B5%E3%83%96%E3%82%AF%E3%82%A8%E3%83%AA%E3%81%AE%E5%88%A9%E7%94%A8" id="toc-select句におけるサブクエリの利用"><span class="toc-section-number">3.2</span> SELECT句におけるサブクエリの利用</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#%E3%82%B5%E3%83%96%E3%82%AF%E3%82%A8%E3%83%AA%E3%82%92%E5%88%A9%E7%94%A8%E3%81%99%E3%82%8B%E5%A0%B4%E5%90%88%E3%81%AE%E6%B3%A8%E6%84%8F%E7%82%B9" id="toc-サブクエリを利用する場合の注意点"><span class="toc-section-number">3.3</span> サブクエリを利用する場合の注意点</a></li>
+</ul></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#%E5%86%85%E9%83%A8%E7%B5%90%E5%90%88" id="toc-内部結合"><span class="toc-section-number">4</span> 内部結合</a>
+<ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#%E5%86%85%E9%83%A8%E7%B5%90%E5%90%88%E3%81%AE%E6%A6%82%E8%A6%81" id="toc-内部結合の概要"><span class="toc-section-number">4.1</span>
+内部結合の概要</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#%E5%86%85%E9%83%A8%E7%B5%90%E5%90%88%E3%81%AEsql%E6%A7%8B%E6%96%87" id="toc-内部結合のsql構文"><span class="toc-section-number">4.2</span> 内部結合のSQL構文</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#%E5%86%85%E9%83%A8%E7%B5%90%E5%90%88%E3%81%AEsql%E6%A7%8B%E6%96%87-%E3%82%A8%E3%82%A4%E3%83%AA%E3%82%A2%E3%82%B9%E4%BD%BF%E7%94%A8" id="toc-内部結合のsql構文-エイリアス使用"><span class="toc-section-number">4.3</span> 内部結合のSQL構文 (エイリアス使用)</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#%E3%81%A4%E4%BB%A5%E4%B8%8A%E3%81%AE%E3%83%86%E3%83%BC%E3%83%96%E3%83%AB%E3%81%AE%E5%86%85%E9%83%A8%E7%B5%90%E5%90%88" id="toc-つ以上のテーブルの内部結合"><span class="toc-section-number">4.4</span> 3つ以上のテーブルの内部結合</a></li>
+</ul></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#%E6%8E%88%E6%A5%AD%E6%99%82%E9%96%93%E5%A4%96%E5%AD%A6%E7%BF%92%E3%81%AE%E6%8C%87%E7%A4%BA" id="toc-授業時間外学習の指示"><span class="toc-section-number">5</span> 授業時間外学習の指示</a></li>
+</ul> 
+        <!-- ---------------------------------------- -->
+      </div>
+    </nav>
+
+    <header class="markdown-body">
+      <p>2025-4I データベース工学 第10回 講義資料</p>
+      <p>2025年12月18日 (木) 3-4時限</p>
+    </header>
+
+    <main class="markdown-body">
+      <!-- ---------------------------------------- -->
+      <h1 data-number="1" id="連絡と準備"><span class="header-section-number">1</span>
+      連絡と準備</h1>
+      <ul>
+      <li><strong>小テスト❼</strong> を実施します。
+      <ul>
+      <li>シラバス記載のように、小テストは最終評価の <span class="masked">35%</span>
+      に相当します。</li>
+      <li>遅刻・欠席等により追試験を希望する場合は<a href="https://takeshiwada1980.github.io/DB-2025/lecture01.html#%E6%88%90%E7%B8%BE%E8%A9%95%E4%BE%A1%E6%B3%95%E3%81%A8%E5%B1%A5%E4%BF%AE%E4%B8%8A%E3%81%AE%E6%B3%A8%E6%84%8F">第01回講義で案内した手続き</a>をしてください。</li>
+      </ul></li>
+      <li><strong>Unity 1-Week GAME JAM</strong>
+      <ul>
+      <li><a href="https://unityroom.com/unity1weeks">https://unityroom.com/unity1weeks</a></li>
+      <li>次回の開催 12月22日(月) 0時 〜 12月28日(日) 20時 … お題「？？？？」</li>
+      </ul></li>
+      </ul>
+      <h2 data-number="1.1" id="ハンズオン学習の準備"><span class="header-section-number">1.1</span>
+      ハンズオン学習の準備</h2>
+      <p>次の手順でSQL演習環境の立ち上げと、教材の更新を取得してください。</p>
+      <ul>
+      <li><a href="https://takeshiwada1980.github.io/DB-2025/lecture04.html#sql%E6%BC%94%E7%BF%92%E7%92%B0%E5%A2%83%E3%81%AE%E5%8B%95%E4%BD%9C%E7%A2%BA%E8%AA%8D-%E5%89%8D%E5%9B%9E%E5%BE%A9%E7%BF%92">SQL演習環境の動作確認</a>@
+      第04回講義</li>
+      <li><a href="https://takeshiwada1980.github.io/DB-2025/lecture04.html#%E6%95%99%E6%9D%90%E3%81%AE%E6%9B%B4%E6%96%B0%E3%81%AE%E5%8F%96%E5%BE%97">教材の更新の取得</a>@ 第04回講義</li>
+      </ul>
+      <h2 data-number="1.2" id="今回の講義の概要"><span class="header-section-number">1.2</span>
+      今回の講義の概要</h2>
+      <p><a href="https://takeshiwada1980.github.io/DB-2025/lecture07.html">第07回講義</a>では、データの冗長性を排除し、効率的かつ一貫性のある構造を実現するために、情報を複数のテーブルに分解する
+      <strong><em>正規化</em></strong> について学びました。また、<a href="https://takeshiwada1980.github.io/DB-2025/lecture09.html">第09回講義</a>では、具体的なテーブル定義 (<code>CREATE TABLE</code>)
+      と、<u>それらのテーブル同士を整合性を保ちながら関連付けるため</u>
+      の<strong>外部キー制約</strong> (<code>REFERENCES</code>) について学びました。</p>
+      <p>ここからの講義では、複数のテーブルに分散しているデータを対象に、<u>それらを組み合わせて情報を引き出すクエリ
+      (問い合わせ)</u> について学んでいきます。具体的には、<strong><em>サブクエリ</em></strong>
+      (副問い合わせ) と、<strong><em>内部結合</em></strong>・<strong><em>外部結合</em></strong>
+      によるデータ取得について学んでいきます。</p>
+      <h1 data-number="2" id="準備"><span class="header-section-number">2</span> 準備</h1>
+      <p>演習環境の <code>from-teacher/10/create-x_db.sql</code>
+      を実行して、次のテーブル群を作成してください。</p>
+      <ul>
+      <li>x_items</li>
+      <li>x_jobs</li>
+      <li>x_characters</li>
+      <li>x_guilds</li>
+      <li>x_guild_characters</li>
+      <li>x_character_items</li>
+      <li>x_gold_transfers</li>
+      </ul>
+      <p>実行後、<code>create-x_db.sql</code>
+      を読解して「<u>各テーブルがどのようなカラムを持っているか</u>」、「<u>外部キー制約によってどのように紐付いているか</u>」を確認してください。</p>
+      <p><strong>(プロンプト例)</strong></p>
+      <blockquote>
+      <p>RDBに関する質問です。SQL
+      を読んでいたら「XXXのマスタテーブル」や「XXXに関するトランザクションテーブル」というコメントが書かれていました。「マスタテーブル」と「トランザクションテーブル」とは何ですか？性質や役割が違うのですか？</p>
+      </blockquote>
+      <blockquote>
+      <p>「マスタテーブル」と「トランザクションテーブル」という文脈において、それらは SQL の
+      <code>START TRANSACTION</code> / <code>COMMIT</code> とは関係ありますか？</p>
+      </blockquote>
+      <p>つづいて <code>from-teacher/10/insert-x_db_01.sql</code>
+      を実行して、各テーブルにレコードを挿入してください
+      (※意図的にレコードを挿入していないテーブルもあります)。また <code>insert-x_db_01.sql</code>
+      を読解してください。</p>
+      <h3 data-number="2.0.1" id="演習"><span class="header-section-number">2.0.1</span> 演習</h3>
+      <ul>
+      <li><code>create-x_db.sql</code> の内容に基づき「論理ER図」を作成してください。
+      <ul>
+      <li><strong>作成例</strong> : <a href="https://takeshiwada1980.github.io/DB-2025/figs/10/LER-01.png">こちら</a></li>
+      </ul></li>
+      </ul>
+      <h3 data-number="2.0.2" id="定着確認"><span class="header-section-number">2.0.2</span>
+      定着確認</h3>
+      <p><code>create-x_db.sql</code> で定義されるテーブル群について、次の各問いに答えよ。</p>
+      <ul>
+      <li>あるアイテム (たとえば <code>Potion</code>) を所持しているキャラが存在する場合、x_items
+      テーブルから、そのアイテム (＝ <code>Potion</code>)
+      のレコードを削除することはできない。この解釈は「適切である」か「適切ではない」かを答えよ。
+      <ul>
+      <li><strong>答え</strong> : <span class="masked">適切である。<code>x_character_items.item_id</code> は
+      <code>x_items.item_id</code> を参照しているが、<code>ON DELETE CASCADE</code> も
+      <code>SET NULL</code>
+      も設定していない。そのため、参照先を消そうとするとFK違反により削除に失敗する。</span></li>
+      </ul></li>
+      <li>x_characters テーブルからキャラクタを削除すると、そのキャラが所有しているギルドも x_guilds
+      から自動的に削除される。この解釈は「適切である」か「条件付きで適切である」か「適切ではない」かを答えよ。
+      <ul>
+      <li><strong>答え</strong> : <span class="masked">条件付きで適切である。<code>x_guilds.owner_id</code> は
+      <code>x_characters.character_id</code> を <code>ON DELETE CASCADE</code> で参照しているため
+      (キャラの削除が成立した場合は) そのキャラが所有するギルドは自動的に削除される。ただし
+      <code>x_gold_transfers</code> がキャラを参照しており <code>ON DELETE</code>
+      が未指定であるため、送受信履歴が残っているキャラはFK違反により削除できない。</span></li>
+      </ul></li>
+      <li>x_guilds テーブルからギルドを削除すると、x_guild_characters
+      テーブルのなかで、そのギルドを参照したレコードも自動的に削除される。この解釈は「適切である」か「適切ではない」かを答えよ。
+      <ul>
+      <li><strong>答え</strong> : <span class="masked">適切である。</span></li>
+      </ul></li>
+      <li>x_jobs テーブルからジョブを削除すると、x_characters
+      テーブルのなかで、そのジョブを参照していたキャラクタのレコードも自動的に削除される。この解釈は「適切である」か「適切ではない」かを答えよ。
+      <ul>
+      <li><strong>答え</strong> : <span class="masked">適切ではない。</span></li>
+      </ul></li>
+      <li>x_characters
+      テーブルから、あるキャラクタの削除が成功したとき、そのキャラが所有していたギルドも x_guilds
+      から自動的に削除され、さらに x_guild_characters
+      テーブルで、そのギルドを参照していたレコードも自動的に削除される。この解釈は「適切である」か「条件付きで適切である」か「適切ではない」かを答えよ。
+      <ul>
+      <li><strong>答え</strong> : <span class="masked">適切である。</span></li>
+      </ul></li>
+      <li>x_gold_transfers テーブルには、from_character_id と to_character_id の両方が NULL
+      のレコードを挿入することはできない。この解釈は「適切である」か「適切ではない」かを答えよ。
+      <ul>
+      <li><strong>答え</strong> : <span class="masked">適切である。</span></li>
+      </ul></li>
+      <li>x_gold_transfers テーブルには、from_character_id と to_character_id
+      が同じ値のレコードを挿入することはできない。この解釈は「適切である」か「適切ではない」かを答えよ。
+      <ul>
+      <li><strong>答え</strong> : <span class="masked">適切である。</span></li>
+      </ul></li>
+      </ul>
+      <h3 data-number="2.0.3" id="sqlドリル"><span class="header-section-number">2.0.3</span>
+      SQLドリル💻</h3>
+      <ul>
+      <li><code>ex-01_1.sql</code> 👉 x_items
+      テーブルのすべてのレコードについて、次に示すようなカラムを出力する SQL
+      を記述せよ。ただし、item_id の昇順で整列すること。</li>
+      </ul>
+      <pre><code> item_id |       name       | price | weight_kg |     description      
+---------+------------------+-------+-----------+----------------------
+       1 | Potion           |   200 |       0.2 | 単体HPを小回復
+       2 | High Potion      |   600 |       0.2 | 単体HPを中回復
+       3 | Mega Potion      |  1200 |       0.3 | 単体HPを大回復
+       4 | Giga Potion      |  4000 |       0.3 | 単体HPを完全回復
+       5 | Mana Potion      |  1000 |       0.1 | 単体MPを小回復
+       6 | High Mana Potion |  5000 |       0.2 | 単体MPを大回復
+       7 | Antidote         |   300 |       0.1 | 毒状態を回復
+       8 | Paralyze Cure    |   600 |       0.1 | 麻痺状態を回復
+       9 | Angel Feather    |  1200 |       0.1 | 戦闘不能を回復
+      10 | Chimera Wing     |   500 |       0.1 | 指定の街に瞬間移動
+      11 | Torch            |   820 |       1.5 | 洞窟内を明るく照らす
+      12 | Climbing Rope    |  1000 |       1.5 | 崖や段差を乗り越える</code></pre>
+      <ul>
+      <li><code>ex-01_2.sql</code> 👉 x_jobs
+      テーブルのすべてのレコードについて、次に示すようなカラムを出力する SQL
+      を記述せよ。ただし、job_id の昇順で整列すること。</li>
+      </ul>
+      <pre><code> job_id |  name   
+--------+---------
+      1 | Fighter
+      2 | Monk
+      3 | Ninja
+      4 | Samurai
+      5 | Priest
+      6 | Wizard</code></pre>
+      <ul>
+      <li><code>ex-01_3.sql</code> 👉 x_character_items
+      テーブルのすべてのレコードについて、次に示すようなカラムを出力する SQL
+      を記述せよ。ただし、第1キーを <strong>item_id</strong> (昇順)、第2キーを
+      <strong>character_id</strong> (昇順) として整列すること。</li>
+      </ul>
+      <pre><code> item_id | character_id | qty 
+---------+--------------+-----
+       1 |            1 |   2
+       1 |            4 |   1
+       1 |            7 |  10
+       1 |            9 |   1
+       1 |           15 |   2
+       2 |            5 |   2
+       2 |           14 |   1
+       3 |            2 |   1
+       3 |           12 |   1
+ ～～以下略～～</code></pre>
+      <ul>
+      <li><code>ex-01_4.sql</code> 👉 x_character_items
+      テーブルから、各アイテムを所持するキャラの人数、各アイテムの所持総数
+      (＝全キャラの所持数の合計) を集計して出力する SQL を記述せよ。ただし、<strong>item_id</strong>
+      の昇順で整列すること。
+      <ul>
+      <li>x_character_items には、item_id が <code>4</code>、<code>8</code>
+      のレコードが存在しないため、次のような結果になることに注意すること。</li>
+      <li><strong>ヒント</strong>: <span class="masked">GROUP BY 句、集約関数 SUM、COUNT
+      を利用</span></li>
+      </ul></li>
+      </ul>
+      <pre><code> item_id | 所持キャラ数 | 所持総数 
+---------+--------------+----------
+       1 |            5 |       16
+       2 |            2 |        3
+       3 |            3 |        3
+       5 |            3 |        9
+       6 |            3 |        4
+       7 |            5 |        8
+       9 |            5 |        6
+      10 |            6 |        7
+      11 |            5 |        9
+      12 |            1 |        1
+(10 行)</code></pre>
+      <ul>
+      <li><code>ex-01_5.sql</code> 👉 x_character_items
+      テーブルから、各アイテムの所持総数を集計して出力せよ。ただし、次のように所持総数が6個以上のレコードについて、<strong>item_id</strong>
+      の昇順で整列して出力する SQL を記述せよ。
+      <ul>
+      <li><strong>ヒント</strong>: <span class="masked">HAVING 句を利用</span></li>
+      </ul></li>
+      </ul>
+      <pre><code> item_id | 所持総数 
+---------+----------
+       1 |       16
+       5 |        9
+       7 |        8
+       9 |        6
+      10 |        7
+      11 |        9
+(6 行)</code></pre>
+      <ul>
+      <li><code>ex-01_6.sql</code> 👉 x_jobs テーブルから name が <code>Priest</code> であるジョブの
+      job_id を出力する SQL を記述せよ。
+      <ul>
+      <li><strong>ヒント</strong>: <span class="masked">WHERE 句を利用</span></li>
+      </ul></li>
+      </ul>
+      <pre><code> job_id 
+--------
+      5
+(1 行)</code></pre>
+      <h1 data-number="3" id="サブクエリ-副問い合わせ"><span class="header-section-number">3</span>
+      サブクエリ (副問い合わせ)</h1>
+      <p>SQLにおける <strong>サブクエリ</strong> (<strong>副問い合わせ</strong>) とは、ある SQL
+      文の内部に「入れ子」として記述される <code>SELECT</code>
+      文のことを意味します。これにより、1つのクエリのなかで
+      <u>複数テーブルにまたがる検索条件や、集計結果</u> を扱うことが可能になります。</p>
+      <p>サブクエリは、主に <span class="masked">WHERE 句や SELECT 句</span>
+      などの一部として利用されます。</p>
+      <h2 data-number="3.1" id="where句におけるサブクエリの利用"><span class="header-section-number">3.1</span> WHERE句におけるサブクエリの利用</h2>
+      <p>たとえば、正規化によって「キャラクタデータ」と「ジョブデータ」が別々のテーブルに分解されている状況を考えます。このとき「<u><strong>ジョブが
+      Wizard または Priest
+      であるキャラの名前を取得したい</strong></u>」という要求があるとします。</p>
+      <p>この要求を原始的に実現しようとすると
+      (＝<strong>「サブクエリ」や「結合」を使用せずに実現しようとすると</strong>) 、まずは x_jobs
+      に対して該当する <strong>job_id</strong> を取得するために、次のような SQL
+      を発行する必要があります。</p>
+      <div class="sourceCode" id="cb7" data-caption="Wizard と Priest の job_id を取得"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb7-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb7-1"></a><span class="kw">SELECT</span></span>
+<span id="cb7-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb7-2"></a>  job_id</span>
+<span id="cb7-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb7-3"></a><span class="kw">FROM</span></span>
+<span id="cb7-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb7-4"></a>  x_jobs</span>
+<span id="cb7-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb7-5"></a><span class="kw">WHERE</span></span>
+<span id="cb7-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb7-6"></a>  name <span class="kw">IN</span> (<span class="st">'Wizard'</span>, <span class="st">'Priest'</span>);</span></code></pre></div>
+      <p>この SQL の実行結果から、以下のように Wizard と Priest に対応する <strong>job_id</strong>
+      (ここでは <code>5</code> と <code>6</code>) を得ます。</p>
+      <pre><code> job_id 
+--------
+      5
+      6
+(2 行)</code></pre>
+      <p>つづいて、この結果をもとに、x_characters テーブルに対して次のような SQL
+      を発行し、<strong>条件に一致するキャラクタ情報を取得する</strong> という
+      <u><strong>2段階の手順</strong></u> を踏むことになります。</p>
+      <div class="sourceCode" id="cb9" data-caption="job_id が 5 と 6 のキャラクタの id, name, job_id を取得"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb9-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb9-1"></a><span class="kw">SELECT</span></span>
+<span id="cb9-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb9-2"></a>  character_id,</span>
+<span id="cb9-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb9-3"></a>  name,</span>
+<span id="cb9-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb9-4"></a>  job_id</span>
+<span id="cb9-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb9-5"></a><span class="kw">FROM</span></span>
+<span id="cb9-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb9-6"></a>  x_characters</span>
+<span id="cb9-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb9-7"></a><span class="kw">WHERE</span></span>
+<span id="cb9-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb9-8"></a>  job_id <span class="kw">IN</span> (<span class="dv">5</span>, <span class="dv">6</span>) <span class="co">-- 先の実行結果から手作業で値を転記</span></span>
+<span id="cb9-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb9-9"></a><span class="kw">ORDER</span> <span class="kw">BY</span></span>
+<span id="cb9-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb9-10"></a>  character_id;</span></code></pre></div>
+      <p>▼ 実行結果</p>
+      <pre><code> character_id |  name   | job_id
+--------------+---------+--------
+            1 | Marvin  |      5
+            3 | Charlie |      6
+            6 | Alice   |      5
+           11 | Ellen   |      6
+           13 | Mallet  |      6
+           15 | Trent   |      5
+           18 | Carol   |      5
+           19 | Jack    |      6
+(8 行)</code></pre>
+      <p>このような手続きは煩雑になりやすく、特に <strong>第08行目</strong> のように、別の SQL
+      の実行結果を手作業で転記する場合、ミスが起こりやすいという問題があります。ここでは
+      2個の整数値を転記していますが <span class="masked">1000個の UUID</span>
+      を転記するような状況は現実的ではありません。</p>
+      <p>サブクエリは、このような問題を解消するために有効に利用できます。サブクエリを用いることで、以下の
+      SQL のように <strong>1つのクエリのなかで、x_characters と x_jobs
+      にまたがる検索条件を記述することが可能</strong> となります。</p>
+      <div class="sourceCode" id="cb11" data-caption="WHERE句にサブクエリを用いた例"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb11-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-1"></a><span class="kw">SELECT</span></span>
+<span id="cb11-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-2"></a>  character_id,</span>
+<span id="cb11-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-3"></a>  name,</span>
+<span id="cb11-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-4"></a>  job_id</span>
+<span id="cb11-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-5"></a><span class="kw">FROM</span></span>
+<span id="cb11-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-6"></a>  x_characters</span>
+<span id="cb11-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-7"></a><span class="kw">WHERE</span></span>
+<span id="cb11-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-8"></a>  job_id <span class="kw">IN</span> (</span>
+<span id="cb11-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-9"></a>    <span class="kw">SELECT</span></span>
+<span id="cb11-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-10"></a>      job_id</span>
+<span id="cb11-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-11"></a>    <span class="kw">FROM</span></span>
+<span id="cb11-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-12"></a>      x_jobs</span>
+<span id="cb11-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-13"></a>    <span class="kw">WHERE</span></span>
+<span id="cb11-14"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-14"></a>      name <span class="kw">IN</span> (<span class="st">'Wizard'</span>, <span class="st">'Priest'</span>)</span>
+<span id="cb11-15"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-15"></a>  )</span>
+<span id="cb11-16"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-16"></a><span class="kw">ORDER</span> <span class="kw">BY</span></span>
+<span id="cb11-17"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb11-17"></a>  character_id;</span></code></pre></div>
+      <p>上記の SQL の <strong>第09行目</strong> から <strong>第14行目</strong>
+      のように、親クエリの内部に「入れ子」で記述された <code>SELECT</code> 文を
+      <strong><em>サブクエリ</em></strong> といいます。サブクエリは必ず <span class="masked">括弧で囲む必要がある</span> ので注意してください。</p>
+      <p>実際に SQL を実行し、先の場合と同じく以下の結果が得られることを確認してください。</p>
+      <pre><code> character_id |  name   | job_id
+--------------+---------+--------
+            1 | Marvin  |      5
+            3 | Charlie |      6
+            6 | Alice   |      5
+           11 | Ellen   |      6
+           13 | Mallet  |      6
+           15 | Trent   |      5
+           18 | Carol   |      5
+           19 | Jack    |      6
+(8 行)</code></pre>
+      <h2 data-number="3.2" id="select句におけるサブクエリの利用"><span class="header-section-number">3.2</span> SELECT句におけるサブクエリの利用</h2>
+      <p>サブクエリは <code>WHERE</code> 句 だけではなく、<code>SELECT句</code>
+      でも利用することができます。<code>SELECT</code> 句で利用すれば、先の結果セットに <span class="masked">Wizard や Priest といった「ジョブ名」をあわせて出力すること</span>
+      も可能になります。</p>
+      <p>ただし、通常、このような処理は、後のセクションで学ぶ <strong>結合</strong>
+      (<code>JOIN</code>)
+      を使用したほうが、<u>記述がシンプルとなり、さらに実行効率の面でも有利になる場合が多いので注意</u>
+      してください。</p>
+      <div class="sourceCode" id="cb13" data-caption="SELECT句にサブクエリを用いた例"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb13-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-1"></a><span class="kw">SELECT</span></span>
+<span id="cb13-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-2"></a>  character_id,</span>
+<span id="cb13-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-3"></a>  name,</span>
+<span id="cb13-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-4"></a>  job_id,</span>
+<span id="cb13-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-5"></a>  (</span>
+<span id="cb13-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-6"></a>    <span class="kw">SELECT</span></span>
+<span id="cb13-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-7"></a>      name</span>
+<span id="cb13-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-8"></a>    <span class="kw">FROM</span></span>
+<span id="cb13-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-9"></a>      x_jobs</span>
+<span id="cb13-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-10"></a>    <span class="kw">WHERE</span></span>
+<span id="cb13-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-11"></a>      job_id <span class="op">=</span> x_characters.job_id</span>
+<span id="cb13-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-12"></a>  ) <span class="kw">AS</span> job_name</span>
+<span id="cb13-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-13"></a><span class="kw">FROM</span></span>
+<span id="cb13-14"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-14"></a>  x_characters</span>
+<span id="cb13-15"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-15"></a><span class="kw">WHERE</span></span>
+<span id="cb13-16"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-16"></a>  job_id <span class="kw">IN</span> (</span>
+<span id="cb13-17"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-17"></a>    <span class="kw">SELECT</span></span>
+<span id="cb13-18"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-18"></a>      job_id</span>
+<span id="cb13-19"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-19"></a>    <span class="kw">FROM</span></span>
+<span id="cb13-20"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-20"></a>      x_jobs</span>
+<span id="cb13-21"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-21"></a>    <span class="kw">WHERE</span></span>
+<span id="cb13-22"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-22"></a>      name <span class="kw">IN</span> (<span class="st">'Wizard'</span>, <span class="st">'Priest'</span>)</span>
+<span id="cb13-23"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-23"></a>  )</span>
+<span id="cb13-24"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-24"></a><span class="kw">ORDER</span> <span class="kw">BY</span></span>
+<span id="cb13-25"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-25"></a>  job_id,</span>
+<span id="cb13-26"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb13-26"></a>  character_id;</span></code></pre></div>
+      <p>実行結果は次のようになります。</p>
+      <pre><code> character_id |  name   | job_id | job_name 
+--------------+---------+--------+----------
+            1 | Marvin  |      5 | Priest
+            6 | Alice   |      5 | Priest
+           15 | Trent   |      5 | Priest
+           18 | Carol   |      5 | Priest
+            3 | Charlie |      6 | Wizard
+           11 | Ellen   |      6 | Wizard
+           13 | Mallet  |      6 | Wizard
+           19 | Jack    |      6 | Wizard
+(8 行)</code></pre>
+      <p>なお、この SQL の <strong>第11行目</strong> ように <u>外側 (親側) のクエリのカラム
+      (x_characters.job_id) を参照するサブクエリ</u> は <strong><em>相関サブクエリ</em></strong>
+      (<strong>Correlated Subquery</strong>) と呼ばれます。</p>
+      <ul>
+      <li><strong>第17行目</strong> から <strong>第22行目</strong>
+      のサブクエリは、外側のカラムのクエリを参照していないので、<u>相関サブクエリではありません</u>。</li>
+      </ul>
+      <p><strong>(プロンプト例)</strong></p>
+      <blockquote>
+      <p>SQLに関する質問です。「サブクエリ」と「相関サブクエリ」の違いがいまいち分かりません。SELECT句に用いるものを「サブクエリ」、WHERE句に用いるものを「相関サブクエリ」というのですか🤔</p>
+      </blockquote>
+      <h3 data-number="3.2.1" id="定着確認-1"><span class="header-section-number">3.2.1</span>
+      定着確認</h3>
+      <ul>
+      <li>サブクエリのうち、外側 (親側) のクエリのカラムを参照して評価されるものを特に (　　　)
+      という。括弧にあてはまる最も適切な語を答えよ。
+      <ul>
+      <li><strong>答え</strong>: <span class="masked">相関サブクエリ</span></li>
+      </ul></li>
+      <li>サブクエリは <code>WHERE</code> 句のみで使用可能であり、その他の <code>SELECT</code>
+      句などでは使用することはできない。この説明は「適切である」か「適切ではない」かを答えよ。
+      <ul>
+      <li><strong>答え</strong>: <span class="masked">適切ではない。</span></li>
+      </ul></li>
+      </ul>
+      <h2 data-number="3.3" id="サブクエリを利用する場合の注意点"><span class="header-section-number">3.3</span> サブクエリを利用する場合の注意点</h2>
+      <p>式として使うサブクエリは、外側のクエリから見ると「<strong>スカラー値</strong>」または「<strong>スカラー値の集合</strong>」として扱われます。そのため、原則として
+      <span class="masked">「1カラムの1レコード」または「1カラムの複数レコード」</span>
+      の結果セットを返すような <code>SELECT</code> 文を記述します。</p>
+      <p>サブクエリとして <strong>複数のカラム</strong> を含む結果セットを返す <code>SELECT</code>
+      を記述すると次のようなエラーが発生します。</p>
+      <pre><code>psql:&lt;stdin&gt;:XX: ERROR:  副問い合わせは1列のみを返さなければなりません</code></pre>
+      <p>また、単一のスカラー値が期待されている箇所で、サブクエリとして
+      <strong>複数のレコード</strong> を返す <code>SELECT</code>
+      を記述すると、次のようなエラーが発生します。</p>
+      <pre><code>psql:&lt;stdin&gt;:XX: ERROR:  式として使用された副問い合わせが2行以上の行を返しました</code></pre>
+      <p>たとえば、<code>WHERE job_id IN ( SELECT ... )</code> のように <code>IN</code>
+      キーワードによって「<strong>スカラー値の集合</strong>」が期待される場合は、複数のレコードを返すサブクエリを記述しても問題ありません。</p>
+      <p>一方で、<code>WHERE job_id = ( SELECT ... )</code>
+      のような「<strong>単一のスカラー値</strong>」が期待される場合は、<span class="masked">必ず
+      1レコードのみ を返すサブクエリ</span> を記述する必要があります。</p>
+      <p><strong>(プロンプト例)</strong></p>
+      <blockquote>
+      <p>SQLに関する質問です。式として使用するサブクエリは、スカラー値 (1カラム1レコード) または
+      スカラー値の集合 (1カラム複数レコード)
+      を返す必要がある、と言われました。意味が分かりません。どういうことですか？丁寧に解説してください。</p>
+      </blockquote>
+      <div class="note type-senior">
+      <p><strong>補足</strong></p>
+      <p>ここでは <code>WHERE</code> 句 や <code>SELECT</code>
+      句の「<strong>式として使うサブクエリ</strong>」に絞って説明しています。</p>
+      <p><code>FROM</code> 句 において <code>FROM ( SELECT ... )</code>
+      のように「表」として扱うサブクエリは「複数カラムの複数レコード」を返すように記述することができます。</p>
+      <p><strong>(プロンプト例)</strong></p>
+      <blockquote>
+      <p>SQLに関する質問です。サブクエリは、<code>WHERE</code> 句 や <code>SELECT</code> 句
+      で使うことが多いが、<code>FROM</code>
+      句でも使用できると聞きました。どのような使い道があるのか教えてください。</p>
+      </blockquote>
+      </div>
+      <h3 data-number="3.3.1" id="sqlドリル-1"><span class="header-section-number">3.3.1</span>
+      SQLドリル💻</h3>
+      <p>やや難易度の高い問題も含まれているため、数分考えても解決しない場合は、解答例（演習環境の
+      from-teacher/10/drill）を参照して理解してください。そのうえで、必ず自分で SQL
+      を書き直してみてください。</p>
+      <div class="note type-tips">
+      <p>解答例を見て「分かった」と感じても、実際に SQL
+      を書けない場合、それは理解できているのではなく <strong>理解したという錯覚</strong>
+      に陥っているだけです。注意してください。</p>
+      </div>
+      <ul>
+      <li><code>ex-02_1.sql</code> 👉 x_items
+      テーブルから、どのキャラも所持していないアイテムを抽出し、次のような結果セットを得るような SQL
+      を記述せよ (item_id の昇順で整列すること)。ただし、結合ではなくサブクエリを用いた SQL
+      とすること。</li>
+      </ul>
+      <pre><code> item_id |     name      |   description    
+---------+---------------+------------------
+       4 | Giga Potion   | 単体HPを完全回復
+       8 | Paralyze Cure | 麻痺状態を回復</code></pre>
+      <ul>
+      <li><code>ex-02_2.sql</code> 👉 x_items テーブルから、全キャラクタを通算した所持数量の合計が 5
+      個以下であるアイテムを抽出し、次のような結果セットを得るような SQL
+      を記述せよ。ただし、結合ではなくサブクエリを用いた SQL とすること。</li>
+      </ul>
+      <pre><code> item_id |       name       |     description      
+---------+------------------+----------------------
+       2 | High Potion      | 単体HPを中回復
+       3 | Mega Potion      | 単体HPを大回復
+       4 | Giga Potion      | 単体HPを完全回復
+       6 | High Mana Potion | 単体MPを大回復
+       8 | Paralyze Cure    | 麻痺状態を回復
+      12 | Climbing Rope    | 崖や段差を乗り越える</code></pre>
+      <ul>
+      <li><code>ex-02_3.sql</code> 👉 x_characters
+      テーブルから、どのギルドにも所属していないキャラクタを抽出し、次のような結果セットを得るような
+      SQL を記述せよ。ただし、結合ではなくサブクエリを用いた SQL とすること。</li>
+      </ul>
+      <pre><code> character_id |  name   |     deleted_at      
+--------------+---------+---------------------
+            3 | Charlie | 
+            4 | Tom     | 
+            5 | Ivan    |
+            9 | Walter  | 2023-08-31 07:10:00
+           18 | Carol   |</code></pre>
+      <ul>
+      <li><code>ex-02_4.sql</code> 👉 x_characters テーブルから、ジョブが Wizard または Priest
+      のキャラクタ (ただし、deleted_at が NULL のみ) を抽出し、次のような結果セットを得るような SQL
+      を記述せよ。ただし、結合ではなくサブクエリを用いた SQL とすること。</li>
+      </ul>
+      <pre><code> character_id |  name   | job_id | deleted_at 
+--------------+---------+--------+------------
+            1 | Marvin  |      5 |
+            3 | Charlie |      6 |
+            6 | Alice   |      5 |
+           11 | Ellen   |      6 |
+           13 | Mallet  |      6 |
+           18 | Carol   |      5 |
+           19 | Jack    |      6 |</code></pre>
+      <ul>
+      <li><code>ex-02_5.sql</code> 👉 x_items テーブルから、所持しているキャラクタの人数が 2
+      名以下であるアイテムを抽出し、次のような結果セットを得るような SQL
+      を記述せよ。ただし、結合ではなくサブクエリを用いた SQL とすること。
+      <ul>
+      <li><strong>ヒント</strong>: サブクエリで COUNT と HAVING を利用</li>
+      </ul></li>
+      </ul>
+      <pre><code> item_id |     name      |     description      
+---------+---------------+----------------------
+       2 | High Potion   | 単体HPを中回復
+       4 | Giga Potion   | 単体HPを完全回復
+       8 | Paralyze Cure | 麻痺状態を回復
+      12 | Climbing Rope | 崖や段差を乗り越える</code></pre>
+      <ul>
+      <li><code>ex-02_6.sql</code> 👉 x_items
+      テーブルから、重量が最大のものを抽出し、次のような結果セットを得るような SQL
+      を記述せよ。ただし、結合ではなくサブクエリを用いた SQL とすること。</li>
+      </ul>
+      <pre><code> item_id |     name      | weight_kg |     description      
+---------+---------------+-----------+----------------------
+      11 | Torch         |       1.5 | 洞窟内を明るく照らす
+      12 | Climbing Rope |       1.5 | 崖や段差を乗り越える</code></pre>
+      <ul>
+      <li><code>ex-02_7.sql</code> 👉
+      各キャラクタが所持するアイテム種類数を集計し、次のような結果セットを得るような SQL
+      を記述せよ。ただし、結合ではなくサブクエリを用いた SQL とすること。
+      <ul>
+      <li><strong>ヒント</strong>: SELECT句で相関サブクエリを使用</li>
+      </ul></li>
+      </ul>
+      <pre><code> character_id |  name   | item_kinds 
+--------------+---------+------------
+            1 | Marvin  |          3
+            2 | Zach    |          2
+            3 | Charlie |          2
+            4 | Tom     |          1
+            5 | Ivan    |          2
+            6 | Alice   |          3
+            7 | Trudy   |          3
+            8 | Bob     |          0
+            9 | Walter  |          4
+ ～～以下略～～</code></pre>
+      <h1 data-number="4" id="内部結合"><span class="header-section-number">4</span> 内部結合</h1>
+      <p>先のセクションでは、データが複数のテーブルに分散して存在しているとき、それらを組み合わせて情報を引き出すための方法のひとつとして「<strong>サブクエリ</strong>」について学びました。</p>
+      <p>同様に、複数のテーブルを対象に情報を引き出す方法として「<strong>結合</strong>」があります。結合には、大きくわけて「<strong>内部結合</strong>
+      (<code>INNER JOIN</code>)」「<strong>外部結合</strong>
+      (<code>OUTER JOIN</code>)」「<strong>直積</strong>
+      (<code>CROSS JOIN</code>)」が存在します。</p>
+      <p>まずは、シンプルで使用頻度も高い「内部結合」について学んでいきます。</p>
+      <h2 data-number="4.1" id="内部結合の概要"><span class="header-section-number">4.1</span>
+      内部結合の概要</h2>
+      <p><strong>内部結合</strong> (<code>INNER JOIN</code>)
+      は、複数テーブルの間に定義されたリレーションに基づいて
+      <u><strong>両方のテーブルに「共通して存在する行だけ」を結合</strong></u>
+      する方法です。その結果、次のような特徴があります。</p>
+      <ul>
+      <li>結合条件がを満たさない行 (＝条件の評価結果が <code>TRUE</code> にならない行)
+      は、結果セットから除外されます。</li>
+      <li><u>対応するデータが揃っている行だけ</u> を扱いたいときに使用されます。</li>
+      </ul>
+      <p>文章だけでは分かりづらいため、ここからは具体例をみていきます。以下では、次に示すような jobs
+      と characters という2つのテーブルがあるものとします。</p>
+      <p><strong>▼ jobs テーブル</strong></p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th style="text-align: center;"><u>job_id</u></th>
+      <th style="text-align: center;">name</th>
+      <th style="text-align: center;">attack_gain</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">Fighter</td>
+      <td style="text-align: center;">3</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">2</td>
+      <td style="text-align: center;">Monk</td>
+      <td style="text-align: center;">4</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">3</td>
+      <td style="text-align: center;">Ninja</td>
+      <td style="text-align: center;">5</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: center;">Samurai</td>
+      <td style="text-align: center;">3</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">5</td>
+      <td style="text-align: center;">Priest</td>
+      <td style="text-align: center;">0</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">6</td>
+      <td style="text-align: center;">Wizard</td>
+      <td style="text-align: center;">-1</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><strong>▼ characters テーブル</strong></p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th style="text-align: center;"><u>character_id</u></th>
+      <th style="text-align: center;">name</th>
+      <th style="text-align: center;">level</th>
+      <th style="text-align: center;">job_id</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">Marvin</td>
+      <td style="text-align: center;">35</td>
+      <td style="text-align: center;">5</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">2</td>
+      <td style="text-align: center;">Zach</td>
+      <td style="text-align: center;">62</td>
+      <td style="text-align: center;">3</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">3</td>
+      <td style="text-align: center;">Charlie</td>
+      <td style="text-align: center;">57</td>
+      <td style="text-align: center;"></td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: center;">Tom</td>
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">1</td>
+      </tr>
+      </tbody>
+      </table>
+      <ul>
+      <li>解説の都合上、<strong>characters.job_id</strong>
+      には「非NULL制約」を<u>設定していないこと</u>に注意してください。</li>
+      </ul>
+      <p>各テーブルの主キーは「下線」で示しています。また、<strong>characters.job_id</strong>
+      に、次のような「<strong>外部キー制約</strong>」が設定されているとします。</p>
+      <pre><code>job_id INTEGER REFERENCES jobs (job_id)</code></pre>
+      <p>このとき <span class="masked"><code>characters.job_id = jobs.job_id</code></span>
+      という結合条件を用いて <strong>内部結合</strong> <code>INNER JOIN</code>
+      を行うと、次のような結果セットを得ることができます。</p>
+      <p><strong>▼ 内部結合の結果セット</strong></p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th style="text-align: center;">character_id</th>
+      <th style="text-align: center;">character_name</th>
+      <th style="text-align: center;">level</th>
+      <th style="text-align: center;">job_id</th>
+      <th style="text-align: center;">job_name</th>
+      <th style="text-align: center;">attack_gain</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">Marvin</td>
+      <td style="text-align: center;">35</td>
+      <td style="text-align: center;">5</td>
+      <td style="text-align: center;">Priest</td>
+      <td style="text-align: center;">0</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">2</td>
+      <td style="text-align: center;">Zach</td>
+      <td style="text-align: center;">62</td>
+      <td style="text-align: center;">3</td>
+      <td style="text-align: center;">Ninja</td>
+      <td style="text-align: center;">5</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: center;">Tom</td>
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">Fighter</td>
+      <td style="text-align: center;">3</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>内部結合では <strong>対応づけに成功した行の組だけ</strong> (＝結合条件の評価結果が
+      <code>TRUE</code> となるものだけ)
+      が、結果セットに含まれます。そのため、次のようになっていることに注意してください。</p>
+      <ul>
+      <li>どのキャラからも参照されていないジョブ (たとえば Monk や Wizard など)
+      は結果セットに<u>含まれません</u>。</li>
+      <li><strong>job_id</strong> が <code>NULL</code> のキャラクタ (＝Charlie)
+      は、結合条件を満たさないため結果セットに<u>含まれません</u>。
+      <ul>
+      <li><strong>job_id</strong> が <code>NULL</code> の行 は <code>=</code> による比較結果
+      (条件式の評価) が <code>UNKNOWN</code> となるため、結合条件を満たしません。</li>
+      </ul></li>
+      </ul>
+      <p>このような特性があるため、内部結合は SQLドリル の <code>ex-02_1.sql</code>
+      のように「<strong>どのキャラも所持していないアイテムを抽出</strong>」や「<strong>どのキャラも就いていないジョブを抽出</strong>」といったクエリには適しません。この点が、次回講義で扱う「<strong>外部結合</strong>」との大きな違いとなります。</p>
+      <p>なお、ここでは <strong>主キー</strong> (＝<span class="masked">jobs.job_id</span>) と
+      <strong>それを参照する外部キー</strong> (＝<span class="masked">characters.job_id</span>)
+      を結合条件として用いましたが、必ずしもそのような関係にあるカラムでなければならないわけではありません。</p>
+      <h3 data-number="4.1.1" id="定着確認-2"><span class="header-section-number">4.1.1</span>
+      定着確認</h3>
+      <ul>
+      <li>内部結合では、結合条件の評価結果が <code>FALSE</code> または <code>UNKNOWN</code>
+      となる行は結果セットに含まれない。この説明は「適切である」か「適切ではない」かを答えよ。
+      <ul>
+      <li><strong>答え</strong>: <span class="masked">適切である。</span></li>
+      </ul></li>
+      <li>CHECK 制約では、条件の評価結果が <code>FALSE</code>
+      となる場合に制約違反となる。一方、評価結果が <code>UNKNOWN</code>
+      となる場合は制約違反とはならない。この説明は「適切である」か「適切ではない」かを答えよ。
+      <ul>
+      <li><strong>答え</strong>: <span class="masked">適切である。</span></li>
+      </ul></li>
+      <li>内部結合は、主キーと、それを参照している外部キーのみが、結合条件に使用可能である。この説明は「適切である」か「適切ではない」かを答えよ。
+      <ul>
+      <li><strong>答え</strong>: <span class="masked">適切ではない。</span></li>
+      </ul></li>
+      </ul>
+      <h2 data-number="4.2" id="内部結合のsql構文"><span class="header-section-number">4.2</span>
+      内部結合のSQL構文</h2>
+      <p><strong>内部結合</strong>は SQL の <code>FROM</code> 句において、<code>INNER JOIN</code> と
+      <code>ON</code> というキーワードを用いて指定します。たとえば、x_characters と x_jobs
+      を「<strong>job_id</strong>」で内部結合する場合、次のような SQL を記述します。</p>
+      <ul>
+      <li>演習環境で実行し、実際に、どのような結果セットが得られるかを確認してください。</li>
+      </ul>
+      <div class="sourceCode" id="cb25" data-caption="select-join_01.sql（job_idによるx_charactersとx_jobsの内部結合）"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb25-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb25-1"></a><span class="kw">SELECT</span></span>
+<span id="cb25-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb25-2"></a>  character_id,</span>
+<span id="cb25-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb25-3"></a>  x_characters.name, <span class="co">-- ◀ 注目</span></span>
+<span id="cb25-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb25-4"></a>  <span class="kw">level</span>,</span>
+<span id="cb25-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb25-5"></a>  x_jobs.job_id, <span class="co">-- ◀ 注目</span></span>
+<span id="cb25-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb25-6"></a>  x_jobs.name, <span class="co">-- ◀ 注目</span></span>
+<span id="cb25-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb25-7"></a>  attack_gain</span>
+<span id="cb25-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb25-8"></a><span class="kw">FROM</span></span>
+<span id="cb25-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb25-9"></a>  x_characters</span>
+<span id="cb25-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb25-10"></a>  <span class="kw">INNER</span> <span class="kw">JOIN</span> x_jobs <span class="kw">ON</span> x_characters.job_id <span class="op">=</span> x_jobs.job_id; <span class="co">-- ◀ 注目</span></span></code></pre></div>
+      <ul>
+      <li>基本的に内部結合では <code>x_characters INNER JOIN x_jobs</code>
+      と記述しても、順番を変えて <code>x_jobs INNER JOIN x_characters</code> と記述しても同じです
+      (結合の順番は結果に影響しません)。
+      <ul>
+      <li>ただし、内部的な実行計画に影響を与えることがあり、<code>ORDER BY</code>
+      句を指定しない場合、結果セットの <span class="masked">並び順</span>
+      が変わる可能性はあります。</li>
+      </ul></li>
+      </ul>
+      <p>ここで、注意してほしいのが <code>SELECT</code> 句の記述です。<strong>name</strong> や
+      <strong>job_id</strong>
+      のように<u>両方のテーブルに「同名のカラム」が存在している場合</u>は、「<strong>どちらのテーブルのカラムであるか</strong>」を明示する必要があります。もし、<strong>第03行目</strong>
+      で <code>name</code> だけを指定すると、次のようなエラーが発生します。</p>
+      <pre><code>psql:&lt;stdin&gt;:XX: ERROR:  列参照"name"は曖昧です</code></pre>
+      <p>一方で、<strong>level</strong>
+      のように、結合対象のテーブル間でカラム名が重複していない場合は、そのまま指定することができます。ただし、将来的にカラムが追加される可能性があることや、可読性・識別性の観点から
+      <span class="masked">テーブル名を明示する書き方が推奨</span>
+      されます。その際、実務では次のセクションで説明するように、テーブルの別名
+      (<strong>エイリアス</strong>) が用いられます。</p>
+      <div class="note type-senior">
+      <p>ここでは 2つのテーブルを結合していますが、実務では
+      <strong>数個から十数個のテーブルを同時に結合すること</strong>
+      もあります。このような状況でテーブル名を省略してカラムを指定すると SQL
+      の可読性や保守性が著しく低下します。</p>
+      </div>
+      <p>なお、SQL標準 (PostgreSQL を含む) では、<code>INNER JOIN</code> を <code>JOIN</code>
+      のように省略表記することもできます。</p>
+      <h3 data-number="4.2.1" id="定着確認-3"><span class="header-section-number">4.2.1</span>
+      定着確認</h3>
+      <ul>
+      <li>内部結合 (<code>INNER JOIN</code>) においては、<code>table_1 INNER JOIN table_2</code> と
+      <code>table_2 INNER JOIN table_1</code>
+      のように、結合するテーブルの記述順を入れ替えたとき、結果セットの正味の内容が変わる。この説明は「適切である」か「適切ではない」かを答えよ。
+      <ul>
+      <li><strong>答え</strong>: <span class="masked">適切ではない。</span></li>
+      </ul></li>
+      <li>内部結合 (<code>INNER JOIN</code>)
+      では、3つ以上のテーブルを同時に結合することはできない。この説明は「適切である」か「適切ではない」かを答えよ。
+      <ul>
+      <li><strong>答え</strong>: <span class="masked">適切ではない。</span></li>
+      </ul></li>
+      <li>標準SQLでは <code>OUTER JOIN</code> を <code>JOIN</code>
+      のように略表記できる。この説明は「適切である」か「適切ではない」かを答えよ。
+      <ul>
+      <li><strong>答え</strong>: <span class="masked">適切ではない。</span></li>
+      </ul></li>
+      </ul>
+      <h2 data-number="4.3" id="内部結合のsql構文-エイリアス使用"><span class="header-section-number">4.3</span> 内部結合のSQL構文 (エイリアス使用)</h2>
+      <p>さきほどの <code>select-join_01.sql</code>
+      は、PostgreSQLでは、次のように記述することができます。本科目では保守性と可読性の関係から、原則として
+      <code>INNER JOIN</code> は省略形である
+      <code>JOIN</code>、テーブルには1から2文字のエイリアスを使用してください。</p>
+      <div class="sourceCode" id="cb27" data-caption="select-join_02.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb27-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb27-1"></a><span class="kw">SELECT</span></span>
+<span id="cb27-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb27-2"></a>  c.character_id,</span>
+<span id="cb27-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb27-3"></a>  c.name,</span>
+<span id="cb27-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb27-4"></a>  c.<span class="kw">level</span>,</span>
+<span id="cb27-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb27-5"></a>  j.job_id,</span>
+<span id="cb27-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb27-6"></a>  j.name,</span>
+<span id="cb27-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb27-7"></a>  j.attack_gain</span>
+<span id="cb27-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb27-8"></a><span class="kw">FROM</span></span>
+<span id="cb27-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb27-9"></a>  x_characters <span class="kw">AS</span> c</span>
+<span id="cb27-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb27-10"></a>  <span class="kw">JOIN</span> x_jobs <span class="kw">AS</span> j <span class="kw">ON</span> c.job_id <span class="op">=</span> j.job_id;</span></code></pre></div>
+      <p>ここでは <code>AS c</code> や <code>AS j</code>
+      のように、テーブルに「<strong>1文字のエイリアス (別名)</strong>」を指定していますが <span class="masked">エイリアスは必ずしも1文字である必要はありません</span>。ただ、結合条件やカラム指定の際にエイリアスを何度も記述するため、実務でも1文字のエイリアスがよく用いられます。</p>
+      <h3 data-number="4.3.1" id="sqlドリル-2"><span class="header-section-number">4.3.1</span>
+      SQLドリル💻</h3>
+      <p><code>create-x_db.sql</code> および <code>insert-x_db_01.sql</code> で初期化した
+      x_items、x_jobs、x_characters、x_guilds、x_guild_characters、x_character_items、x_gold_transfers
+      を対象として、次の要求を満たす SQL を記述せよ。</p>
+      <ul>
+      <li><code>ex-03_1.sql</code> 👉 x_characters と x_guilds
+      テーブルから、次のような結果セットを得るような SQL を記述せよ (guild_id
+      の昇順で整列すること)。ただし、内部結合を用いた SQL とすること。</li>
+      </ul>
+      <pre><code> guild_id |  name  | owner_name | owner_level 
+----------+--------+------------+-------------
+        1 | Yamato | Marvin     |          35
+        2 | D.D.D  | Ellen      |          51
+        3 | hameln | Bob        |          33</code></pre>
+      <ul>
+      <li><p><code>ex-03_2.sql</code> 👉 <code>ex-03_1.sql</code> と同じ結果セットを得る SQL
+      を記述せよ。ただし、<u>結合を使用せず、サブクエリ (相関サブクエリ) を用いた SQL</u>
+      とすること。</p></li>
+      <li><p><code>ex-03_3.sql</code> 👉 x_characters と x_character_items
+      テーブルから、次のような結果セットを得るような SQL を記述せよ (character_id、item_id
+      の昇順で整列すること)。ただし、内部結合を用いた SQL とすること。</p></li>
+      </ul>
+      <pre><code> character_id |  name   | item_id | qty 
+--------------+---------+---------+-----
+            1 | Marvin  |       1 |   2
+            1 | Marvin  |       7 |   1
+            1 | Marvin  |      10 |   1
+            2 | Zach    |       3 |   1
+            2 | Zach    |      11 |   2
+ ～以下略～</code></pre>
+      <ul>
+      <li><code>ex-03_4.sql</code> 👉 ジョブが Wizard または Priest のキャラクタ (ただし、deleted_at
+      が NULL のキャラクタのみ) を抽出し、次のような結果セットを得るような SQL
+      を記述せよ。ただし、内部結合を用いた SQL とすること。
+      <ul>
+      <li><code>ex-02_4.sql</code>
+      は、同様の処理を「サブクエリ」を用いて実装をしている。両者を比較せよ。</li>
+      </ul></li>
+      </ul>
+      <pre><code> character_id |  name   |  job   | deleted_at 
+--------------+---------+--------+------------
+            1 | Marvin  | Priest |
+            3 | Charlie | Wizard |
+            6 | Alice   | Priest |
+           11 | Ellen   | Wizard |
+           13 | Mallet  | Wizard |
+           18 | Carol   | Priest |
+           19 | Jack    | Wizard |</code></pre>
+      <ul>
+      <li><code>ex-03_5.sql</code> 👉 全キャラクタを通算した所持数量の合計が 6
+      個以上であるアイテムを抽出し、次のような結果セットを得る SQL
+      を記述せよ。ただし、内部結合を用いた SQL とすること。
+      <ul>
+      <li>参考: <code>ex-01_5.sql</code> でも同様の処理をしている。</li>
+      </ul></li>
+      </ul>
+      <pre><code> item_id |     name      | 所持総数 
+---------+---------------+----------
+       1 | Potion        |       16
+       5 | Mana Potion   |        9
+       7 | Antidote      |        8
+       9 | Angel Feather |        6
+      10 | Chimera Wing  |        7
+      11 | Torch         |        9</code></pre>
+      <ul>
+      <li><code>ex-03_6.sql</code> 👉
+      各ジョブに就いているキャラクタの人数を集計し、次のような結果セットを得る SQL
+      を記述せよ。ただし、論理削除済みのキャラクタは除外し (x_characters.deleted_at が
+      <code>NULL</code> のキャラクタのみを集計対象とし)、job_id の昇順に整列すること。</li>
+      </ul>
+      <pre><code> job_id |   job   | count 
+--------+---------+-------
+      1 | Fighter |     4
+      2 | Monk    |     2
+      3 | Ninja   |     2
+      4 | Samurai |     2
+      5 | Priest  |     3
+      6 | Wizard  |     4</code></pre>
+      <ul>
+      <li><code>ex-03_7.sql</code> 👉 <code>ex-03_6.sql</code>
+      に、次のように全ジョブの合計人数を加えた結果セットを得るような SQL を記述せよ。
+      <ul>
+      <li>ヒント: 全体集計には <code>ROLLUP</code> を利用 (<a href="https://takeshiwada1980.github.io/DB-2025/lecture05.html#rollup%E3%81%AB%E3%82%88%E3%82%8B%E5%85%A8%E4%BD%93%E9%9B%86%E8%A8%88">第05回講義</a>)</li>
+      </ul></li>
+      </ul>
+      <pre><code> job_id |   job   | count 
+--------+---------+-------
+      1 | Fighter |     4
+      2 | Monk    |     2
+      3 | Ninja   |     2
+      4 | Samurai |     2
+      5 | Priest  |     3
+      6 | Wizard  |     4
+        | (Total) |    17</code></pre>
+      <h2 data-number="4.4" id="つ以上のテーブルの内部結合"><span class="header-section-number">4.4</span> 3つ以上のテーブルの内部結合</h2>
+      <p>内部結合 (<code>INNER JOIN</code>)
+      では、<strong>3つ以上のテーブル</strong>を対象に連結することもできます。例として、次に示す論理ER図のような関係をもつ
+      x_characters、x_character_items、x_items を結合することが考えます。</p>
+      <figure>
+      <img src="./第10回 4I-データベース工学_files/LER-02.png" alt="img">
+      <figcaption aria-hidden="true">img</figcaption>
+      </figure>
+      <p>ここで <strong>x_character_items</strong>
+      は、キャラクタとアイテムの関係を表す「<strong>中間テーブル</strong>」となっています。これらの3つのテーブルを結合し、キャラクタ名、アイテム名、所持数の一覧を得るには、以下のような
+      SQL を記述します。</p>
+      <ul>
+      <li><strong>第08行目</strong> から <strong>第10行目</strong>
+      が「内部結合」に関する記述になります。</li>
+      </ul>
+      <div class="sourceCode" id="cb34" data-caption="select-join_03.sql"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb34-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb34-1"></a><span class="kw">SELECT</span></span>
+<span id="cb34-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb34-2"></a>  c.character_id,</span>
+<span id="cb34-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb34-3"></a>  c.name <span class="kw">AS</span> <span class="ot">"character"</span>,</span>
+<span id="cb34-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb34-4"></a>  i.item_id,</span>
+<span id="cb34-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb34-5"></a>  i.name <span class="kw">AS</span> <span class="ot">"item"</span>,</span>
+<span id="cb34-6"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb34-6"></a>  ci.qty</span>
+<span id="cb34-7"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb34-7"></a><span class="kw">FROM</span></span>
+<span id="cb34-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb34-8"></a>  x_characters <span class="kw">AS</span> c</span>
+<span id="cb34-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb34-9"></a>  <span class="kw">JOIN</span> x_character_items <span class="kw">AS</span> ci <span class="kw">ON</span> c.character_id <span class="op">=</span> ci.character_id</span>
+<span id="cb34-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb34-10"></a>  <span class="kw">JOIN</span> x_items <span class="kw">AS</span> i <span class="kw">ON</span> i.item_id <span class="op">=</span> ci.item_id</span>
+<span id="cb34-11"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb34-11"></a><span class="kw">ORDER</span> <span class="kw">BY</span></span>
+<span id="cb34-12"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb34-12"></a>  c.character_id,</span>
+<span id="cb34-13"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb34-13"></a>  i.item_id;</span></code></pre></div>
+      <p>実行結果は、次のようになります。実際に試してみてください。</p>
+      <pre><code> character_id | character | item_id |       item       | qty 
+--------------+-----------+---------+------------------+-----
+            1 | Marvin    |       1 | Potion           |   2
+            1 | Marvin    |       7 | Antidote         |   1
+            1 | Marvin    |      10 | Chimera Wing     |   1
+            2 | Zach      |       3 | Mega Potion      |   1
+            2 | Zach      |      11 | Torch            |   2
+            3 | Charlie   |       6 | High Mana Potion |   1
+            3 | Charlie   |       9 | Angel Feather    |   2
+            4 | Tom       |       1 | Potion           |   1
+ ～以下略～</code></pre>
+      <p>先に述べたように、内部結合は「<strong>どの組み合わせで結合するか
+      (結合条件)</strong>」が同じであれば、<code>FROM</code>
+      句の書き方をある程度入れ替えても、結果セットの正味の内容は同じものとなります。たとえば、
+      <strong>第08行目</strong> から <strong>第10行目</strong>
+      を以下のように書き換えても同じ結果セットとなります。</p>
+      <div class="sourceCode" id="cb36" data-caption="内部結合の別記述" data-startfrom="8" style="counter-reset: pg-line 7;"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql" style="counter-reset: source-line 7;"><span id="cb36-8"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb36-8"></a>x_character_items <span class="kw">AS</span> ci</span>
+<span id="cb36-9"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb36-9"></a><span class="kw">JOIN</span> x_items <span class="kw">AS</span> i <span class="kw">ON</span> ci.item_id <span class="op">=</span> i.item_id</span>
+<span id="cb36-10"><a href="https://takeshiwada1980.github.io/DB-2025/lecture10.html#cb36-10"></a><span class="kw">JOIN</span> x_characters <span class="kw">AS</span> c <span class="kw">ON</span> ci.character_id <span class="op">=</span> c.character_id</span></code></pre></div>
+      <p>ただし、 <code>ORDER BY</code>
+      を指定していない場合は、行の並び順は変わる可能性があります。</p>
+      <h3 data-number="4.4.1" id="sqlドリル-3"><span class="header-section-number">4.4.1</span>
+      SQLドリル💻</h3>
+      <p><code>create-x_db.sql</code> および <code>insert-x_db_01.sql</code> で初期化した
+      x_items、x_jobs、x_characters、x_guilds、x_guild_characters、x_character_items、x_gold_transfers
+      を対象として、次の要求を満たす SQL を記述せよ。</p>
+      <ul>
+      <li><code>ex-04_1.sql</code> 👉 次に示すような結果セットを得る SQL を記述せよ。
+      <ul>
+      <li>整列順は、guild_id を昇順とし、同一ギルド内では 所有者 → 非所有者 の順に並べ、さらに level
+      を降順で整列すること。</li>
+      <li>論理削除済みのキャラクタは集計から除外すること。</li>
+      </ul></li>
+      </ul>
+      <pre><code> guild_id | guild  | member | level | is_owner 
+----------+--------+--------+-------+----------
+        1 | Yamato | Marvin |    35 | *
+        1 | Yamato | Dave   |    68 |
+        1 | Yamato | Trudy  |    48 |
+        1 | Yamato | Alice  |    42 |
+        2 | D.D.D  | Ellen  |    51 | *
+        2 | D.D.D  | Mallet |    64 |
+        2 | D.D.D  | Zach   |    62 |
+        2 | D.D.D  | Wendy  |    56 |
+        2 | D.D.D  | Eve    |    46 |
+        2 | D.D.D  | Alice  |    42 |
+        3 | hameln | Bob    |    33 | *
+        3 | hameln | Steve  |    70 |
+        3 | hameln | Dave   |    68 |
+        3 | hameln | Jack   |    61 |
+        3 | hameln | Oscar  |    44 |
+(15 行)</code></pre>
+      <ul>
+      <li><code>ex-04_2.sql</code> 👉 次に示すような結果セットを得る SQL を記述せよ。
+      <ul>
+      <li>整列順は、所属人数の降順とすること。</li>
+      <li>論理削除済みのキャラクタは集計から除外すること。</li>
+      <li>内部結合のみで実装する方法、相関サブクエリを併用する方法などがあります。</li>
+      </ul></li>
+      </ul>
+      <pre><code> guild_id |  name  | owner  | member_count | avg_level 
+----------+--------+--------+--------------+-----------
+        2 | D.D.D  | Ellen  |            6 |      53.5
+        3 | hameln | Bob    |            5 |      55.2
+        1 | Yamato | Marvin |            4 |      48.3
+(3 行)</code></pre>
+      <ul>
+      <li><code>ex-04_3.sql</code> 👉
+      次に示すようにギルドごとにジョブ別の人数を集計した結果セットを得る SQL を記述せよ。
+      <ul>
+      <li>第1キーを guild_id (昇順)、第2キーを job_id (昇順) とすること。</li>
+      <li>論理削除済みのキャラクタは集計から除外すること。</li>
+      </ul></li>
+      </ul>
+      <pre><code> guild_id | guild  |   job   | count 
+----------+--------+---------+-------
+        1 | Yamato | Fighter |     1
+        1 | Yamato | Samurai |     1
+        1 | Yamato | Priest  |     2
+        2 | D.D.D  | Fighter |     1
+        2 | D.D.D  | Ninja   |     2
+        2 | D.D.D  | Priest  |     1
+        2 | D.D.D  | Wizard  |     2
+        3 | hameln | Fighter |     1
+        3 | hameln | Monk    |     1
+        3 | hameln | Samurai |     2
+        3 | hameln | Wizard  |     1
+(11 行)</code></pre>
+      <p>なお、0人のジョブも表示したい場合、次回講義で扱う <strong>外部結合</strong>
+      を使用します。</p>
+      <h1 data-number="5" id="授業時間外学習の指示"><span class="header-section-number">5</span>
+      授業時間外学習の指示</h1>
+      <p>🚨<strong>本科目は「学修単位科目」であり、1回の講義あたり「4時間相当」の授業時間外学習が求められる科目です</strong>🏃</p>
+      <ul>
+      <li>次回の講義で「<strong>小テスト❽</strong>」を実施します。
+      <ul>
+      <li>主に <strong>SQLドリル</strong>、<strong>定着確認</strong>、<strong>演習</strong>
+      から出題します。</li>
+      </ul></li>
+      <li><strong>外部結合</strong> (<code>OUTER JOIN</code>) について予習しておいてください。</li>
+      <li>次のYouTube動画がおすすめです。時間があるときに視聴してください。
+      <ul>
+      <li><a href="https://www.youtube.com/watch?v=ft-OviQjSgA">AIが代わりに書く時代に「SQLを学ぶ意味」はあるのか</a>
+      4分17秒</li>
+      <li><a href="https://www.youtube.com/watch?v=RjIYL-g53_g">やらかし注意。SQLでやるな、NoSQLでやるな、を完全整理</a>
+      6分25秒</li>
+      </ul></li>
+      </ul>
+      <hr>
+      <ul>
+      <li>この講義資料を再読・熟読し「不明な用語」や「理解が不十分な用語」があればインターネットや、ChatGPTなどの生成AIを利用して解決してください。また、興味関心を持ったトピックについて、ウェブ、生成AI、YouTube動画などを利用して知識を広げ、理解を深めてください。
+      <ul>
+      <li>特に <strong>(プロンプト例)</strong>
+      を示しているものについては、実際に生成AIにプロンプトを投げ、さらに対話を重ねることで、知識の幅を広げるだけでなく、理解をより深く確かなものにしてください。</li>
+      </ul></li>
+      <li>講義資料内の「<strong>演習</strong>」や「<strong>SQLドリル</strong>」に再度取り組んでください。特に、<strong>SQLドリル</strong>💻
+      は、授業時間中に1回取り組むだけでは定着しないので注意してください。</li>
+      </ul>
+      <!-- ---------------------------------------- -->
+    </main>
+
+    <footer class="markdown-body">
+      <p><a href="https://takeshiwada1980.github.io/DB-2025/">講義資料のIndexに移動</a></p>
+    </footer>
+
+    <script>
+      window.onload = function () {
+        // ナビゲーション関連
+        let openBtn = document.getElementsByClassName("openbtn")[0];
+        let navPnl = document.getElementById("g-nav");
+        openBtn.onclick = () => {
+          openBtn.classList.toggle("active");
+          navPnl.classList.toggle("panelactive");
+        };
+
+        let items = navPnl.getElementsByTagName("a");
+        Array.from(items).forEach((item) => {
+          item.onclick = () => {
+            openBtn.classList.toggle("active");
+            navPnl.classList.toggle("panelactive");
+          };
+        });
+
+        // マスク処理
+        let maskedSpans = document.getElementsByClassName("masked");
+        Array.from(maskedSpans).forEach((span) => {
+          span.onclick = () => {
+            span.classList.toggle("open");
+          };
+        });
+
+        // data-startfrom 属性の行番号カウンタのリセット
+        document.querySelectorAll("div.sourceCode").forEach(function (div) {
+          var startFrom = div.getAttribute("data-startfrom");
+          if (startFrom != null) {
+            div.style.counterReset = "pg-line " + (startFrom - 1);
+          }
+        });
+
+        // 画像にリンクを付与
+        // let images = document.querySelectorAll("figure img");
+        // Array.from(images).forEach((img) => {
+        //   img.onclick = () => {
+        //     location.href = img.getAttribute("src");
+        //   };
+        // });
+      };
+    </script>
+  
+
+</body></html>

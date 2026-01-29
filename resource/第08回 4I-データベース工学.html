@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)https://takeshiwada1980.github.io/DB-2025/lecture08.html -->
+<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="robots" content="noindex,nofollow,noarchive">
+    <meta name="referrer" content="no-referrer">
+
+    <script>
+      MathJax = {
+        chtml: {
+          displayAlign: "left",
+          displayIndent: "1em",
+        },
+      };
+    </script>
+
+     <script src="./第08回 4I-データベース工学_files/tex-chtml-full.js.ダウンロード" type="text/javascript"></script><style type="text/css">.CtxtMenu_InfoClose {  top:.2em; right:.2em;}
+.CtxtMenu_InfoContent {  overflow:auto; text-align:left; font-size:80%;  padding:.4em .6em; border:1px inset; margin:1em 0px;  max-height:20em; max-width:30em; background-color:#EEEEEE;  white-space:normal;}
+.CtxtMenu_Info.CtxtMenu_MousePost {outline:none;}
+.CtxtMenu_Info {  position:fixed; left:50%; width:auto; text-align:center;  border:3px outset; padding:1em 2em; background-color:#DDDDDD;  color:black;  cursor:default; font-family:message-box; font-size:120%;  font-style:normal; text-indent:0; text-transform:none;  line-height:normal; letter-spacing:normal; word-spacing:normal;  word-wrap:normal; white-space:nowrap; float:none; z-index:201;  border-radius: 15px;                     /* Opera 10.5 and IE9 */  -webkit-border-radius:15px;               /* Safari and Chrome */  -moz-border-radius:15px;                  /* Firefox */  -khtml-border-radius:15px;                /* Konqueror */  box-shadow:0px 10px 20px #808080;         /* Opera 10.5 and IE9 */  -webkit-box-shadow:0px 10px 20px #808080; /* Safari 3 & Chrome */  -moz-box-shadow:0px 10px 20px #808080;    /* Forefox 3.5 */  -khtml-box-shadow:0px 10px 20px #808080;  /* Konqueror */  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color="gray", Positive="true"); /* IE */}
+</style><style type="text/css">.CtxtMenu_MenuClose {  position:absolute;  cursor:pointer;  display:inline-block;  border:2px solid #AAA;  border-radius:18px;  -webkit-border-radius: 18px;             /* Safari and Chrome */  -moz-border-radius: 18px;                /* Firefox */  -khtml-border-radius: 18px;              /* Konqueror */  font-family: "Courier New", Courier;  font-size:24px;  color:#F0F0F0}
+.CtxtMenu_MenuClose span {  display:block; background-color:#AAA; border:1.5px solid;  border-radius:18px;  -webkit-border-radius: 18px;             /* Safari and Chrome */  -moz-border-radius: 18px;                /* Firefox */  -khtml-border-radius: 18px;              /* Konqueror */  line-height:0;  padding:8px 0 6px     /* may need to be browser-specific */}
+.CtxtMenu_MenuClose:hover {  color:white!important;  border:2px solid #CCC!important}
+.CtxtMenu_MenuClose:hover span {  background-color:#CCC!important}
+.CtxtMenu_MenuClose:hover:focus {  outline:none}
+</style><style type="text/css">.CtxtMenu_Menu {  position:absolute;  background-color:white;  color:black;  width:auto; padding:5px 0px;  border:1px solid #CCCCCC; margin:0; cursor:default;  font: menu; text-align:left; text-indent:0; text-transform:none;  line-height:normal; letter-spacing:normal; word-spacing:normal;  word-wrap:normal; white-space:nowrap; float:none; z-index:201;  border-radius: 5px;                     /* Opera 10.5 and IE9 */  -webkit-border-radius: 5px;             /* Safari and Chrome */  -moz-border-radius: 5px;                /* Firefox */  -khtml-border-radius: 5px;              /* Konqueror */  box-shadow:0px 10px 20px #808080;         /* Opera 10.5 and IE9 */  -webkit-box-shadow:0px 10px 20px #808080; /* Safari 3 & Chrome */  -moz-box-shadow:0px 10px 20px #808080;    /* Forefox 3.5 */  -khtml-box-shadow:0px 10px 20px #808080;  /* Konqueror */}
+.CtxtMenu_MenuItem {  padding: 1px 2em;  background:transparent;}
+.CtxtMenu_MenuArrow {  position:absolute; right:.5em; padding-top:.25em; color:#666666;  font-family: null; font-size: .75em}
+.CtxtMenu_MenuActive .CtxtMenu_MenuArrow {color:white}
+.CtxtMenu_MenuArrow.CtxtMenu_RTL {left:.5em; right:auto}
+.CtxtMenu_MenuCheck {  position:absolute; left:.7em;  font-family: null}
+.CtxtMenu_MenuCheck.CtxtMenu_RTL { right:.7em; left:auto }
+.CtxtMenu_MenuRadioCheck {  position:absolute; left: .7em;}
+.CtxtMenu_MenuRadioCheck.CtxtMenu_RTL {  right: .7em; left:auto}
+.CtxtMenu_MenuInputBox {  padding-left: 1em; right:.5em; color:#666666;  font-family: null;}
+.CtxtMenu_MenuInputBox.CtxtMenu_RTL {  left: .1em;}
+.CtxtMenu_MenuComboBox {  left:.1em; padding-bottom:.5em;}
+.CtxtMenu_MenuSlider {  left: .1em;}
+.CtxtMenu_SliderValue {  position:absolute; right:.1em; padding-top:.25em; color:#333333;  font-size: .75em}
+.CtxtMenu_SliderBar {  outline: none; background: #d3d3d3}
+.CtxtMenu_MenuLabel {  padding: 1px 2em 3px 1.33em;  font-style:italic}
+.CtxtMenu_MenuRule {  border-top: 1px solid #DDDDDD;  margin: 4px 3px;}
+.CtxtMenu_MenuDisabled {  color:GrayText}
+.CtxtMenu_MenuActive {  background-color: #606872;  color: white;}
+.CtxtMenu_MenuDisabled:focus {  background-color: #E8E8E8}
+.CtxtMenu_MenuLabel:focus {  background-color: #E8E8E8}
+.CtxtMenu_ContextMenu:focus {  outline:none}
+.CtxtMenu_ContextMenu .CtxtMenu_MenuItem:focus {  outline:none}
+.CtxtMenu_SelectionMenu {  position:relative; float:left;  border-bottom: none; -webkit-box-shadow:none; -webkit-border-radius:0px; }
+.CtxtMenu_SelectionItem {  padding-right: 1em;}
+.CtxtMenu_Selection {  right: 40%; width:50%; }
+.CtxtMenu_SelectionBox {  padding: 0em; max-height:20em; max-width: none;  background-color:#FFFFFF;}
+.CtxtMenu_SelectionDivider {  clear: both; border-top: 2px solid #000000;}
+.CtxtMenu_Menu .CtxtMenu_MenuClose {  top:-10px; left:-10px}
+</style> 
+
+    <link rel="icon" href="https://takeshiwada1980.github.io/DB-2025/favicon.ico" sizes="any">
+    <link rel="stylesheet" href="./第08回 4I-データベース工学_files/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="./第08回 4I-データベース工学_files/css">
+    <link rel="stylesheet" href="./第08回 4I-データベース工学_files/style.css">
+
+    <title>第08回 4I-データベース工学</title>
+  <style id="MJX-CHTML-styles">
+mjx-container[jax="CHTML"] {
+  line-height: 0;
+}
+
+mjx-container [space="1"] {
+  margin-left: .111em;
+}
+
+mjx-container [space="2"] {
+  margin-left: .167em;
+}
+
+mjx-container [space="3"] {
+  margin-left: .222em;
+}
+
+mjx-container [space="4"] {
+  margin-left: .278em;
+}
+
+mjx-container [space="5"] {
+  margin-left: .333em;
+}
+
+mjx-container [rspace="1"] {
+  margin-right: .111em;
+}
+
+mjx-container [rspace="2"] {
+  margin-right: .167em;
+}
+
+mjx-container [rspace="3"] {
+  margin-right: .222em;
+}
+
+mjx-container [rspace="4"] {
+  margin-right: .278em;
+}
+
+mjx-container [rspace="5"] {
+  margin-right: .333em;
+}
+
+mjx-container [size="s"] {
+  font-size: 70.7%;
+}
+
+mjx-container [size="ss"] {
+  font-size: 50%;
+}
+
+mjx-container [size="Tn"] {
+  font-size: 60%;
+}
+
+mjx-container [size="sm"] {
+  font-size: 85%;
+}
+
+mjx-container [size="lg"] {
+  font-size: 120%;
+}
+
+mjx-container [size="Lg"] {
+  font-size: 144%;
+}
+
+mjx-container [size="LG"] {
+  font-size: 173%;
+}
+
+mjx-container [size="hg"] {
+  font-size: 207%;
+}
+
+mjx-container [size="HG"] {
+  font-size: 249%;
+}
+
+mjx-container [width="full"] {
+  width: 100%;
+}
+
+mjx-box {
+  display: inline-block;
+}
+
+mjx-block {
+  display: block;
+}
+
+mjx-itable {
+  display: inline-table;
+}
+
+mjx-row {
+  display: table-row;
+}
+
+mjx-row > * {
+  display: table-cell;
+}
+
+mjx-mtext {
+  display: inline-block;
+}
+
+mjx-mstyle {
+  display: inline-block;
+}
+
+mjx-merror {
+  display: inline-block;
+  color: red;
+  background-color: yellow;
+}
+
+mjx-mphantom {
+  visibility: hidden;
+}
+
+_::-webkit-full-page-media, _:future, :root mjx-container {
+  will-change: opacity;
+}
+
+mjx-assistive-mml {
+  position: absolute !important;
+  top: 0px;
+  left: 0px;
+  clip: rect(1px, 1px, 1px, 1px);
+  padding: 1px 0px 0px 0px !important;
+  border: 0px !important;
+  display: block !important;
+  width: auto !important;
+  overflow: hidden !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+mjx-assistive-mml[display="block"] {
+  width: 100% !important;
+}
+
+mjx-math {
+  display: inline-block;
+  text-align: left;
+  line-height: 0;
+  text-indent: 0;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 100%;
+  font-size-adjust: none;
+  letter-spacing: normal;
+  border-collapse: collapse;
+  word-wrap: normal;
+  word-spacing: normal;
+  white-space: nowrap;
+  direction: ltr;
+  padding: 1px 0;
+}
+
+mjx-container[jax="CHTML"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="CHTML"][display="true"][width="full"] {
+  display: flex;
+}
+
+mjx-container[jax="CHTML"][display="true"] mjx-math {
+  padding: 0;
+}
+
+mjx-container[jax="CHTML"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="CHTML"][justify="right"] {
+  text-align: right;
+}
+
+mjx-mo {
+  display: inline-block;
+  text-align: left;
+}
+
+mjx-stretchy-h {
+  display: inline-table;
+  width: 100%;
+}
+
+mjx-stretchy-h > * {
+  display: table-cell;
+  width: 0;
+}
+
+mjx-stretchy-h > * > mjx-c {
+  display: inline-block;
+  transform: scalex(1.0000001);
+}
+
+mjx-stretchy-h > * > mjx-c::before {
+  display: inline-block;
+  width: initial;
+}
+
+mjx-stretchy-h > mjx-ext {
+  /* IE */ overflow: hidden;
+  /* others */ overflow: clip visible;
+  width: 100%;
+}
+
+mjx-stretchy-h > mjx-ext > mjx-c::before {
+  transform: scalex(500);
+}
+
+mjx-stretchy-h > mjx-ext > mjx-c {
+  width: 0;
+}
+
+mjx-stretchy-h > mjx-beg > mjx-c {
+  margin-right: -.1em;
+}
+
+mjx-stretchy-h > mjx-end > mjx-c {
+  margin-left: -.1em;
+}
+
+mjx-stretchy-v {
+  display: inline-block;
+}
+
+mjx-stretchy-v > * {
+  display: block;
+}
+
+mjx-stretchy-v > mjx-beg {
+  height: 0;
+}
+
+mjx-stretchy-v > mjx-end > mjx-c {
+  display: block;
+}
+
+mjx-stretchy-v > * > mjx-c {
+  transform: scaley(1.0000001);
+  transform-origin: left center;
+  overflow: hidden;
+}
+
+mjx-stretchy-v > mjx-ext {
+  display: block;
+  height: 100%;
+  box-sizing: border-box;
+  border: 0px solid transparent;
+  /* IE */ overflow: hidden;
+  /* others */ overflow: visible clip;
+}
+
+mjx-stretchy-v > mjx-ext > mjx-c::before {
+  width: initial;
+  box-sizing: border-box;
+}
+
+mjx-stretchy-v > mjx-ext > mjx-c {
+  transform: scaleY(500) translateY(.075em);
+  overflow: visible;
+}
+
+mjx-mark {
+  display: inline-block;
+  height: 0px;
+}
+
+mjx-c {
+  display: inline-block;
+}
+
+mjx-utext {
+  display: inline-block;
+  padding: .75em 0 .2em 0;
+}
+
+mjx-c::before {
+  display: block;
+  width: 0;
+}
+
+.MJX-TEX {
+  font-family: MJXZERO, MJXTEX;
+}
+
+.TEX-B {
+  font-family: MJXZERO, MJXTEX-B;
+}
+
+.TEX-I {
+  font-family: MJXZERO, MJXTEX-I;
+}
+
+.TEX-MI {
+  font-family: MJXZERO, MJXTEX-MI;
+}
+
+.TEX-BI {
+  font-family: MJXZERO, MJXTEX-BI;
+}
+
+.TEX-S1 {
+  font-family: MJXZERO, MJXTEX-S1;
+}
+
+.TEX-S2 {
+  font-family: MJXZERO, MJXTEX-S2;
+}
+
+.TEX-S3 {
+  font-family: MJXZERO, MJXTEX-S3;
+}
+
+.TEX-S4 {
+  font-family: MJXZERO, MJXTEX-S4;
+}
+
+.TEX-A {
+  font-family: MJXZERO, MJXTEX-A;
+}
+
+.TEX-C {
+  font-family: MJXZERO, MJXTEX-C;
+}
+
+.TEX-CB {
+  font-family: MJXZERO, MJXTEX-CB;
+}
+
+.TEX-FR {
+  font-family: MJXZERO, MJXTEX-FR;
+}
+
+.TEX-FRB {
+  font-family: MJXZERO, MJXTEX-FRB;
+}
+
+.TEX-SS {
+  font-family: MJXZERO, MJXTEX-SS;
+}
+
+.TEX-SSB {
+  font-family: MJXZERO, MJXTEX-SSB;
+}
+
+.TEX-SSI {
+  font-family: MJXZERO, MJXTEX-SSI;
+}
+
+.TEX-SC {
+  font-family: MJXZERO, MJXTEX-SC;
+}
+
+.TEX-T {
+  font-family: MJXZERO, MJXTEX-T;
+}
+
+.TEX-V {
+  font-family: MJXZERO, MJXTEX-V;
+}
+
+.TEX-VB {
+  font-family: MJXZERO, MJXTEX-VB;
+}
+
+mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
+  font-family: MJXZERO, MJXTEX-S1, MJXTEX-S4, MJXTEX, MJXTEX-A ! important;
+}
+
+@font-face /* 0 */ {
+  font-family: MJXZERO;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Zero.woff") format("woff");
+}
+
+@font-face /* 1 */ {
+  font-family: MJXTEX;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Regular.woff") format("woff");
+}
+
+@font-face /* 2 */ {
+  font-family: MJXTEX-B;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Bold.woff") format("woff");
+}
+
+@font-face /* 3 */ {
+  font-family: MJXTEX-I;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-Italic.woff") format("woff");
+}
+
+@font-face /* 4 */ {
+  font-family: MJXTEX-MI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Italic.woff") format("woff");
+}
+
+@font-face /* 5 */ {
+  font-family: MJXTEX-BI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-BoldItalic.woff") format("woff");
+}
+
+@font-face /* 6 */ {
+  font-family: MJXTEX-S1;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size1-Regular.woff") format("woff");
+}
+
+@font-face /* 7 */ {
+  font-family: MJXTEX-S2;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size2-Regular.woff") format("woff");
+}
+
+@font-face /* 8 */ {
+  font-family: MJXTEX-S3;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size3-Regular.woff") format("woff");
+}
+
+@font-face /* 9 */ {
+  font-family: MJXTEX-S4;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size4-Regular.woff") format("woff");
+}
+
+@font-face /* 10 */ {
+  font-family: MJXTEX-A;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_AMS-Regular.woff") format("woff");
+}
+
+@font-face /* 11 */ {
+  font-family: MJXTEX-C;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Calligraphic-Regular.woff") format("woff");
+}
+
+@font-face /* 12 */ {
+  font-family: MJXTEX-CB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Calligraphic-Bold.woff") format("woff");
+}
+
+@font-face /* 13 */ {
+  font-family: MJXTEX-FR;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Fraktur-Regular.woff") format("woff");
+}
+
+@font-face /* 14 */ {
+  font-family: MJXTEX-FRB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Fraktur-Bold.woff") format("woff");
+}
+
+@font-face /* 15 */ {
+  font-family: MJXTEX-SS;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Regular.woff") format("woff");
+}
+
+@font-face /* 16 */ {
+  font-family: MJXTEX-SSB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Bold.woff") format("woff");
+}
+
+@font-face /* 17 */ {
+  font-family: MJXTEX-SSI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Italic.woff") format("woff");
+}
+
+@font-face /* 18 */ {
+  font-family: MJXTEX-SC;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Script-Regular.woff") format("woff");
+}
+
+@font-face /* 19 */ {
+  font-family: MJXTEX-T;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Typewriter-Regular.woff") format("woff");
+}
+
+@font-face /* 20 */ {
+  font-family: MJXTEX-V;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Vector-Regular.woff") format("woff");
+}
+
+@font-face /* 21 */ {
+  font-family: MJXTEX-VB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Vector-Bold.woff") format("woff");
+}
+
+mjx-c.mjx-c7B::before {
+  padding: 0.75em 0.5em 0.25em 0;
+  content: "{";
+}
+
+mjx-c.mjx-c7D::before {
+  padding: 0.75em 0.5em 0.25em 0;
+  content: "}";
+}
+
+mjx-c.mjx-c2192::before {
+  padding: 0.511em 1em 0.011em 0;
+  content: "\2192";
+}
+</style></head>
+
+  <body cz-shortcut-listen="true">
+    <div class="openbtn"><span></span><span></span><span></span></div>
+    <nav id="g-nav">
+      <div id="g-nav-list">
+        <!-- ---------------------------------------- -->
+         <ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#%E9%80%A3%E7%B5%A1" id="toc-連絡"><span class="toc-section-number">1</span> 連絡</a>
+<ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#%E5%BE%8C%E6%9C%9F%E4%B8%AD%E9%96%93%E6%88%90%E7%B8%BE%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6" id="toc-後期中間成績について"><span class="toc-section-number">1.1</span> 後期中間成績について</a></li>
+</ul></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#%E5%95%8F%E9%A1%8C1-%E3%81%AE%E8%A7%A3%E8%AA%AC" id="toc-問題1-の解説"><span class="toc-section-number">2</span> 問題1
+の解説</a>
+<ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#section" id="toc-section"><span class="toc-section-number">2.1</span> (02)</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#section-1" id="toc-section-1"><span class="toc-section-number">2.2</span>
+(08)</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#section-2" id="toc-section-2"><span class="toc-section-number">2.3</span>
+(10)・(11)</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#section-3" id="toc-section-3"><span class="toc-section-number">2.4</span>
+(20)</a></li>
+</ul></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#%E5%95%8F%E9%A1%8C2-%E3%81%AE%E8%A7%A3%E8%AA%AC" id="toc-問題2-の解説"><span class="toc-section-number">3</span> 問題2
+の解説</a>
+<ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#section-4" id="toc-section-4"><span class="toc-section-number">3.1</span>
+(23)</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#section-5" id="toc-section-5"><span class="toc-section-number">3.2</span>
+(25)</a></li>
+</ul></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#%E5%95%8F%E9%A1%8C4-%E3%81%AE%E8%A7%A3%E8%AA%AC" id="toc-問題4-の解説"><span class="toc-section-number">4</span> 問題4
+の解説</a>
+<ul>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#%E9%9D%9E%E6%AD%A3%E8%A6%8F%E5%BD%A2" id="toc-非正規形"><span class="toc-section-number">4.1</span>
+非正規形</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#%E7%AC%AC1%E6%AD%A3%E8%A6%8F%E5%BD%A2" id="toc-第1正規形"><span class="toc-section-number">4.2</span>
+第1正規形</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#%E7%AC%AC2%E6%AD%A3%E8%A6%8F%E5%BD%A2" id="toc-第2正規形"><span class="toc-section-number">4.3</span>
+第2正規形</a></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#%E7%AC%AC3%E6%AD%A3%E8%A6%8F%E5%BD%A2" id="toc-第3正規形"><span class="toc-section-number">4.4</span>
+第3正規形</a></li>
+</ul></li>
+<li><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#%E5%95%8F%E9%A1%8C5-%E3%81%AE%E8%A7%A3%E8%AA%AC" id="toc-問題5-の解説"><span class="toc-section-number">5</span> 問題5
+の解説</a></li>
+</ul> 
+        <!-- ---------------------------------------- -->
+      </div>
+    </nav>
+
+    <header class="markdown-body">
+      <p>2025-4I データベース工学 第08回 講義資料</p>
+      <p>2025年11月28日 (木) 2時限 後期中間試験</p>
+    </header>
+
+    <main class="markdown-body">
+      <!-- ---------------------------------------- -->
+      <h1 data-number="1" id="連絡"><span class="header-section-number">1</span> 連絡</h1>
+      <ul>
+      <li>試験問題と解答例は、Teams にアップしています。</li>
+      </ul>
+      <h2 data-number="1.1" id="後期中間成績について"><span class="header-section-number">1.1</span>
+      後期中間成績について</h2>
+      <p>シラバス記載のように「試験<strong>45%</strong>、小テスト<strong>35%</strong>、課題<strong>20%</strong>の割合で総合して評価」します。具体的には、以下を合計して後期中間成績とします
+      (成績票の配付は12月下旬です)。ただし、欠課時数が <strong>10時間超</strong>
+      の場合は、これらに関わらず 0点 となります。</p>
+      <ul>
+      <li><strong><em>試験</em></strong> : 後期中間試験 (100点満点) を <strong>45点換算</strong>
+      (端数は四捨五入)。</li>
+      <li><strong><em>小テスト</em></strong> : 小テスト①～⑥の合計点 (60満点) を
+      <strong>35点換算</strong> (端数は四捨五入)。</li>
+      <li><strong><em>課題</em></strong> : 課題1 (10点満点) を <strong>20点換算</strong>
+      (端数は四捨五入)。</li>
+      </ul>
+      <h1 data-number="2" id="問題1-の解説"><span class="header-section-number">2</span> 問題1
+      の解説</h1>
+      <p>「問題1」の解説と補足です。</p>
+      <h2 data-number="2.1" id="section"><span class="header-section-number">2.1</span> (02)</h2>
+      <p>代表的な DBMS (製品名) については把握しておいてください。<a href="https://takeshiwada1980.github.io/DB-2025/lecture01.html#%E4%B8%BB%E8%A6%81%E3%81%AArdbms">第01回講義</a>で紹介したように「MySQL」「Microsoft SQL
+      Server」「SQLite」「Microsoft
+      Access」「MariaDB」はリレーショナル型のデータベース管理システム、「MongoDB」はドキュメント指向のデータベース管理システムとなります。</p>
+      <p>一方で「Prisma」「Drizzle」は <a href="https://takeshiwada1980.github.io/DB-2025/lecture03.html#%E6%BC%94%E7%BF%92-%E6%8E%88%E6%A5%AD%E6%99%82%E9%96%93%E5%A4%96%E5%AD%A6%E7%BF%92">第03回講義</a>TypeScript用の ORM
+      ライブラリ、「SQLAlchemy」は <strong>知能情報実験実習 (IoT)</strong>
+      で使用したようにPython用の ORM ライブラリの名称です。「Pandas」は Python
+      用のデータ分析ライブラリです。</p>
+      <h2 data-number="2.2" id="section-1"><span class="header-section-number">2.2</span> (08)</h2>
+      <p>「ページネーション」もしくは「ページング処理」が正答です。</p>
+      <h2 data-number="2.3" id="section-2"><span class="header-section-number">2.3</span>
+      (10)・(11)</h2>
+      <p>オプショナリティ (Optionality) は「任意<strong>性</strong>」、カーディナリティ
+      (Cardinality) は「多重<strong>度</strong>」と呼ばれるので注意してください。</p>
+      <h2 data-number="2.4" id="section-3"><span class="header-section-number">2.4</span> (20)</h2>
+      <p><code>DATE_PART('year',CURRENT_DATE)</code> もしくは
+      <code>DATE_PART('year',LOCALTIMESTAMP)</code> が正答です。次の SQL で動作を確認できます。</p>
+      <div class="sourceCode" id="cb1" data-caption="現在日時の「年」の取得"><pre class="sourceCode numberSource sql numberLines"><code class="sourceCode sql"><span id="cb1-1"><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#cb1-1"></a><span class="kw">SELECT</span></span>
+<span id="cb1-2"><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#cb1-2"></a>  DATE_PART(<span class="st">'year'</span>, <span class="fu">LOCALTIMESTAMP</span>);</span>
+<span id="cb1-3"><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#cb1-3"></a></span>
+<span id="cb1-4"><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#cb1-4"></a><span class="kw">SELECT</span></span>
+<span id="cb1-5"><a href="https://takeshiwada1980.github.io/DB-2025/lecture08.html#cb1-5"></a>  DATE_PART(<span class="st">'year'</span>, <span class="fu">CURRENT_DATE</span>);</span></code></pre></div>
+      <h1 data-number="3" id="問題2-の解説"><span class="header-section-number">3</span> 問題2
+      の解説</h1>
+      <p>「問題2」の解説と補足です。</p>
+      <h2 data-number="3.1" id="section-4"><span class="header-section-number">3.1</span> (23)</h2>
+      <p>一般に <code>-a</code>
+      のような1文字のオプションを「<strong>ショートオプション</strong>」や「ショートフラグ」と呼びます。また、<code>--all</code>
+      のようなオプションを「<strong>ロングオプション</strong>」や「ロングフラグ」と呼びます。</p>
+      <p>なお、<code>-all</code> や <code>--a</code>
+      といった形式は通常サポートされておらず、多くの場合エラーとなります。使用する際は、それぞれの書式が明確に区別されている点に注意してください。</p>
+      <h2 data-number="3.2" id="section-5"><span class="header-section-number">3.2</span> (25)</h2>
+      <p>Dockerコンテナのカスタマイズや、APIキー (アクセストークン)
+      の設定・管理には、<strong>環境変数</strong> (Environment Variables)
+      を利用するケースが多くあります。Linux および Windows における環境変数の確認方法、設定方法
+      (編集方法)
+      は、実務上の必須知識となるので、あいまいな人は、再度、学び直しておいてください。</p>
+      <p>なお、環境変数に機密情報を格納する際はログ出力や履歴 (history)
+      に残さない運用にも注意してください。</p>
+      <h1 data-number="4" id="問題4-の解説"><span class="header-section-number">4</span> 問題4
+      の解説</h1>
+      <p>「問題4」の解説と補足です。</p>
+      <h2 data-number="4.1" id="非正規形"><span class="header-section-number">4.1</span>
+      非正規形</h2>
+      <p>「問題4」では、次のような非正規形のテーブル (<strong>books</strong>)
+      が与えられています。</p>
+      <p><strong>books</strong> テーブル</p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th style="text-align: center;"><u>id</u></th>
+      <th style="text-align: left;">title</th>
+      <th style="text-align: center;">author1</th>
+      <th style="text-align: center;">author2</th>
+      <th style="text-align: center;">author3</th>
+      <th style="text-align: center;">price</th>
+      <th style="text-align: center;">publisher_name</th>
+      <th style="text-align: center;">publisher_tel</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: left;">Modern COBOL</td>
+      <td style="text-align: center;">Alice</td>
+      <td style="text-align: center;">Steve</td>
+      <td style="text-align: center;"></td>
+      <td style="text-align: center;">2000</td>
+      <td style="text-align: center;">Hoge Inc.</td>
+      <td style="text-align: center;">9696</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">2</td>
+      <td style="text-align: left;">New Fortran</td>
+      <td style="text-align: center;">Dave</td>
+      <td style="text-align: center;"></td>
+      <td style="text-align: center;"></td>
+      <td style="text-align: center;">3800</td>
+      <td style="text-align: center;">Piyo Inc.</td>
+      <td style="text-align: center;">0120</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">3</td>
+      <td style="text-align: left;">Advanced C#</td>
+      <td style="text-align: center;">Ellen</td>
+      <td style="text-align: center;">Carol</td>
+      <td style="text-align: center;"></td>
+      <td style="text-align: center;">2500</td>
+      <td style="text-align: center;">Hoge Inc.</td>
+      <td style="text-align: center;">9696</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: left;">Hello Pascal</td>
+      <td style="text-align: center;">Bob</td>
+      <td style="text-align: center;">Alice</td>
+      <td style="text-align: center;">Dave</td>
+      <td style="text-align: center;">4800</td>
+      <td style="text-align: center;">Piyo Inc.</td>
+      <td style="text-align: center;">0120</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>この books
+      テーブルにおいて、「本」を基準と考えて「<strong>1対多</strong>」または「<strong>多対多</strong>」の関係にある情報を別テーブルに分解していきます。</p>
+      <ul>
+      <li>本を基準として考えるとき、「本」と「タイトル」のように「<strong>1対1</strong>」の関係にあるものは、別テーブルに分解する必要はありません。</li>
+      </ul>
+      <p><u>慣れるまでは (＝問題4が完答できなかった学生は)
+      丁寧に「第1正規化」から「第3正規化」まで手順を踏むこと</u>
+      をお勧めします。また、慣れてきたら脳内で以下のような論理ER図を描いて、一気に第3正規形のテーブルが構成できるようになります。</p>
+      <figure>
+      <img src="./第08回 4I-データベース工学_files/LER-ex4.png" alt="img">
+      <figcaption aria-hidden="true">img</figcaption>
+      </figure>
+      <h2 data-number="4.2" id="第1正規形"><span class="header-section-number">4.2</span>
+      第1正規形</h2>
+      <p>問題文で与えられている非正規形の <strong>books</strong> テーブルから <span class="masked">列方向の繰り返し</span> を排除すると、次のような第1正規形 (1NF)
+      となります。ここでは <strong>author_id</strong> カラムを新たに追加し、<strong>id</strong> と
+      <strong>author_id</strong> を <strong>複合主キー</strong> としています。</p>
+      <p><strong>books</strong> テーブル</p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th style="text-align: center;"><u>id</u></th>
+      <th style="text-align: left;">title</th>
+      <th style="text-align: center;"><u>author_id</u></th>
+      <th style="text-align: center;">author</th>
+      <th style="text-align: center;">author_order</th>
+      <th style="text-align: center;">price</th>
+      <th style="text-align: center;">publisher_name</th>
+      <th style="text-align: center;">publisher_tel</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: left;">Modern COBOL</td>
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">Alice</td>
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">2000</td>
+      <td style="text-align: center;">Hoge Inc.</td>
+      <td style="text-align: center;">9696</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: left;">Modern COBOL</td>
+      <td style="text-align: center;">2</td>
+      <td style="text-align: center;">Steve</td>
+      <td style="text-align: center;">2</td>
+      <td style="text-align: center;">2000</td>
+      <td style="text-align: center;">Hoge Inc.</td>
+      <td style="text-align: center;">9696</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">2</td>
+      <td style="text-align: left;">New Fortran</td>
+      <td style="text-align: center;">3</td>
+      <td style="text-align: center;">Dave</td>
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">3800</td>
+      <td style="text-align: center;">Piyo Inc.</td>
+      <td style="text-align: center;">0120</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">3</td>
+      <td style="text-align: left;">Advanced C#</td>
+      <td style="text-align: center;">4</td>
+      <td style="text-align: center;">Ellen</td>
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">2500</td>
+      <td style="text-align: center;">Hoge Inc.</td>
+      <td style="text-align: center;">9696</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">3</td>
+      <td style="text-align: left;">Advanced C#</td>
+      <td style="text-align: center;">5</td>
+      <td style="text-align: center;">Carol</td>
+      <td style="text-align: center;">2</td>
+      <td style="text-align: center;">2500</td>
+      <td style="text-align: center;">Hoge Inc.</td>
+      <td style="text-align: center;">9696</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: left;">Hello Pascal</td>
+      <td style="text-align: center;">6</td>
+      <td style="text-align: center;">Bob</td>
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">4800</td>
+      <td style="text-align: center;">Piyo Inc.</td>
+      <td style="text-align: center;">0120</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: left;">Hello Pascal</td>
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">Alice</td>
+      <td style="text-align: center;">2</td>
+      <td style="text-align: center;">4800</td>
+      <td style="text-align: center;">Piyo Inc.</td>
+      <td style="text-align: center;">0120</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: left;">Hello Pascal</td>
+      <td style="text-align: center;">3</td>
+      <td style="text-align: center;">Dave</td>
+      <td style="text-align: center;">3</td>
+      <td style="text-align: center;">4800</td>
+      <td style="text-align: center;">Piyo Inc.</td>
+      <td style="text-align: center;">0120</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>現状では、<strong>title</strong> と
+      <strong>price</strong>、<strong>publisher_name</strong>、<strong>publisher_tel</strong>
+      が、<strong>id</strong> (＝複合主キーの一部) に <span class="masked">部分関数従属</span>
+      しています。また、<strong>author</strong> は、<strong>author_id</strong> (＝複合主キーの一部)
+      に <strong>部分関数従属</strong> しています。</p>
+      <ul>
+      <li><a href="https://takeshiwada1980.github.io/DB-2025/lecture07.html#%E9%83%A8%E5%88%86%E9%96%A2%E6%95%B0%E5%BE%93%E5%B1%9E%E3%81%A8%E5%AE%8C%E5%85%A8%E9%96%A2%E6%95%B0%E5%BE%93%E5%B1%9E">部分関数従属とは</a>(第07回講義)</li>
+      </ul>
+      <h2 data-number="4.3" id="第2正規形"><span class="header-section-number">4.3</span>
+      第2正規形</h2>
+      <p>第1正規形について、<u>複合主キーの一部に対する部分関数従属を排除</u>
+      するようにテーブルを分解すると、次のような第2正規形 (2NF) となります。</p>
+      <ul>
+      <li>books テーブルの <strong>id</strong> を <strong>book_id</strong> に変更しています。</li>
+      <li>authors テーブルを作成しました。</li>
+      <li>book_authors テーブルを作成しました。</li>
+      </ul>
+      <p><strong>books</strong> テーブル</p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th style="text-align: center;"><u>book_id</u></th>
+      <th style="text-align: left;">title</th>
+      <th style="text-align: center;">price</th>
+      <th style="text-align: center;">publisher_name</th>
+      <th style="text-align: center;">publisher_tel</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: left;">Modern COBOL</td>
+      <td style="text-align: center;">2000</td>
+      <td style="text-align: center;">Hoge Inc.</td>
+      <td style="text-align: center;">9696</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">2</td>
+      <td style="text-align: left;">New Fortran</td>
+      <td style="text-align: center;">3800</td>
+      <td style="text-align: center;">Piyo Inc.</td>
+      <td style="text-align: center;">0120</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">3</td>
+      <td style="text-align: left;">Advanced C#</td>
+      <td style="text-align: center;">2500</td>
+      <td style="text-align: center;">Hoge Inc.</td>
+      <td style="text-align: center;">9696</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: left;">Hello Pascal</td>
+      <td style="text-align: center;">4800</td>
+      <td style="text-align: center;">Piyo Inc.</td>
+      <td style="text-align: center;">0120</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><strong>authors</strong> テーブル</p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th style="text-align: center;"><u>author_id</u></th>
+      <th style="text-align: left;">name</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: left;">Alice</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">2</td>
+      <td style="text-align: left;">Steve</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">3</td>
+      <td style="text-align: left;">Dave</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: left;">Ellen</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">5</td>
+      <td style="text-align: left;">Carol</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">6</td>
+      <td style="text-align: left;">Bob</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><strong>book_authors</strong> テーブル</p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th style="text-align: center;"><u>book_id</u></th>
+      <th style="text-align: center;"><u>author_id</u></th>
+      <th style="text-align: center;">author_order</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">1</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">2</td>
+      <td style="text-align: center;">2</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">2</td>
+      <td style="text-align: center;">3</td>
+      <td style="text-align: center;">1</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">3</td>
+      <td style="text-align: center;">4</td>
+      <td style="text-align: center;">1</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">3</td>
+      <td style="text-align: center;">5</td>
+      <td style="text-align: center;">2</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: center;">6</td>
+      <td style="text-align: center;">1</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">2</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: center;">3</td>
+      <td style="text-align: center;">3</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>現状では、books テーブルにおいて、<strong>publisher_tel</strong> が <span class="masked">推移的関数従属</span> になっています。つまり、<span class="math inline"><mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" tabindex="0" ctxtmenu_counter="0" style="font-size: 113.1%; position: relative;"><mjx-math class="MJX-TEX" aria-hidden="true"><mjx-mo class="mjx-n"><mjx-c class="mjx-c7B"></mjx-c></mjx-mo></mjx-math><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mo fence="false" stretchy="false">{</mo></math></mjx-assistive-mml></mjx-container></span> <strong>book_id</strong> <span class="math inline"><mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" tabindex="0" ctxtmenu_counter="1" style="font-size: 113.1%; position: relative;"><mjx-math class="MJX-TEX" aria-hidden="true"><mjx-mo class="mjx-n"><mjx-c class="mjx-c7D"></mjx-c></mjx-mo><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c2192"></mjx-c></mjx-mo><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c7B"></mjx-c></mjx-mo></mjx-math><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mo fence="false" stretchy="false">}</mo><mo stretchy="false">→</mo><mo fence="false" stretchy="false">{</mo></math></mjx-assistive-mml></mjx-container></span> <strong>publisher_name</strong> <span class="math inline"><mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" tabindex="0" ctxtmenu_counter="2" style="font-size: 113.1%; position: relative;"><mjx-math class="MJX-TEX" aria-hidden="true"><mjx-mo class="mjx-n"><mjx-c class="mjx-c7D"></mjx-c></mjx-mo><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c2192"></mjx-c></mjx-mo><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c7B"></mjx-c></mjx-mo></mjx-math><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mo fence="false" stretchy="false">}</mo><mo stretchy="false">→</mo><mo fence="false" stretchy="false">{</mo></math></mjx-assistive-mml></mjx-container></span> <strong>publisher_tel</strong> <span class="math inline"><mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" tabindex="0" ctxtmenu_counter="3" style="font-size: 113.1%; position: relative;"><mjx-math class="MJX-TEX" aria-hidden="true"><mjx-mo class="mjx-n"><mjx-c class="mjx-c7D"></mjx-c></mjx-mo></mjx-math><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mo fence="false" stretchy="false">}</mo></math></mjx-assistive-mml></mjx-container></span>
+      のような関係となっています。</p>
+      <ul>
+      <li><a href="https://takeshiwada1980.github.io/DB-2025/lecture07.html#%E6%8E%A8%E7%A7%BB%E7%9A%84%E9%96%A2%E6%95%B0%E5%BE%93%E5%B1%9E">推移的関数従属とは</a>(第07回講義)</li>
+      </ul>
+      <h2 data-number="4.4" id="第3正規形"><span class="header-section-number">4.4</span>
+      第3正規形</h2>
+      <p>第2正規形について、<u>非キー属性同士の推移的関数従属を排除</u> すると、次のような第3正規形
+      (3NF) となります。</p>
+      <p><strong>publishers</strong> テーブル</p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th style="text-align: center;"><u>publisher_id</u></th>
+      <th style="text-align: center;">name</th>
+      <th style="text-align: center;">tel</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">Hoge Inc.</td>
+      <td style="text-align: center;">9696</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">2</td>
+      <td style="text-align: center;">Piyo Inc.</td>
+      <td style="text-align: center;">0120</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><strong>books</strong> テーブル</p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th style="text-align: center;"><u>book_id</u></th>
+      <th style="text-align: left;">title</th>
+      <th style="text-align: center;">price</th>
+      <th style="text-align: center;">publisher_id</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: left;">Modern COBOL</td>
+      <td style="text-align: center;">2000</td>
+      <td style="text-align: center;">1</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">2</td>
+      <td style="text-align: left;">New Fortran</td>
+      <td style="text-align: center;">3800</td>
+      <td style="text-align: center;">2</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">3</td>
+      <td style="text-align: left;">Advanced C#</td>
+      <td style="text-align: center;">2500</td>
+      <td style="text-align: center;">1</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: left;">Hello Pascal</td>
+      <td style="text-align: center;">4800</td>
+      <td style="text-align: center;">2</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><strong>authors</strong> テーブル</p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th style="text-align: center;"><u>author_id</u></th>
+      <th style="text-align: left;">name</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: left;">Alice</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">2</td>
+      <td style="text-align: left;">Steve</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">3</td>
+      <td style="text-align: left;">Dave</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: left;">Ellen</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">5</td>
+      <td style="text-align: left;">Carol</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">6</td>
+      <td style="text-align: left;">Bob</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><strong>book_authors</strong> テーブル</p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th style="text-align: center;"><u>book_id</u></th>
+      <th style="text-align: center;"><u>author_id</u></th>
+      <th style="text-align: center;">author_order</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">1</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">2</td>
+      <td style="text-align: center;">2</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">2</td>
+      <td style="text-align: center;">3</td>
+      <td style="text-align: center;">1</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">3</td>
+      <td style="text-align: center;">4</td>
+      <td style="text-align: center;">1</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">3</td>
+      <td style="text-align: center;">5</td>
+      <td style="text-align: center;">2</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: center;">6</td>
+      <td style="text-align: center;">1</td>
+      </tr>
+      <tr class="odd">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">2</td>
+      </tr>
+      <tr class="even">
+      <td style="text-align: center;">4</td>
+      <td style="text-align: center;">3</td>
+      <td style="text-align: center;">3</td>
+      </tr>
+      </tbody>
+      </table>
+      <h1 data-number="5" id="問題5-の解説"><span class="header-section-number">5</span> 問題5
+      の解説</h1>
+      <p><a href="https://github.com/TakeshiWada1980/DB-2025-PostgreSQL">教材リポジトリ</a>(SQL演習環境)
+      の <code>/from-teacher/08</code> に、「<strong>問題5</strong>」の (32) から (37) の解答例
+      (SQL) を実行可能な形式で配置しています。</p>
+      <ul>
+      <li>Teams
+      で解答例として示した以外にも「別解」があります。正答した学生も、確認しておいてください。</li>
+      </ul>
+      <p><code>/from-teacher/08/p5_init.sql</code> で <strong>user</strong>
+      テーブルを初期化後、各SQLを実行して動作確認が可能です。</p>
+      <!-- ---------------------------------------- -->
+    </main>
+
+    <footer class="markdown-body">
+      <p><a href="https://takeshiwada1980.github.io/DB-2025/">講義資料のIndexに移動</a></p>
+    </footer>
+
+    <script>
+      window.onload = function () {
+        // ナビゲーション関連
+        let openBtn = document.getElementsByClassName("openbtn")[0];
+        let navPnl = document.getElementById("g-nav");
+        openBtn.onclick = () => {
+          openBtn.classList.toggle("active");
+          navPnl.classList.toggle("panelactive");
+        };
+
+        let items = navPnl.getElementsByTagName("a");
+        Array.from(items).forEach((item) => {
+          item.onclick = () => {
+            openBtn.classList.toggle("active");
+            navPnl.classList.toggle("panelactive");
+          };
+        });
+
+        // マスク処理
+        let maskedSpans = document.getElementsByClassName("masked");
+        Array.from(maskedSpans).forEach((span) => {
+          span.onclick = () => {
+            span.classList.toggle("open");
+          };
+        });
+
+        // data-startfrom 属性の行番号カウンタのリセット
+        document.querySelectorAll("div.sourceCode").forEach(function (div) {
+          var startFrom = div.getAttribute("data-startfrom");
+          if (startFrom != null) {
+            div.style.counterReset = "pg-line " + (startFrom - 1);
+          }
+        });
+
+        // 画像にリンクを付与
+        // let images = document.querySelectorAll("figure img");
+        // Array.from(images).forEach((img) => {
+        //   img.onclick = () => {
+        //     location.href = img.getAttribute("src");
+        //   };
+        // });
+      };
+    </script>
+  
+
+</body></html>

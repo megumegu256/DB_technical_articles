@@ -1,0 +1,32 @@
+{
+  "cSpell.words": [
+    "autoincrement",
+    "backline",
+    "dbgate",
+    "debuff",
+    "Elen",
+    "fuga",
+    "Giga",
+    "Gomi",
+    "hameln",
+    "INITDB",
+    "pgdata",
+    "PGOPTIONS",
+    "Prefecturals",
+    "RDBMS",
+    "sslmode",
+    "TRUNC",
+    "Yamato"
+  ],
+  "[sql]": {
+    "editor.defaultFormatter": "ReneSaarsoo.sql-formatter-vsc",
+    "editor.formatOnSave": true
+  },
+  "SQL-Formatter-VSCode.keywordCase": "upper",
+  "SQL-Formatter-VSCode.denseOperators": false,
+  "SQL-Formatter-VSCode.linesBetweenQueries": 1,
+  "SQL-Formatter-VSCode.expressionWidth": 80,
+  "SQL-Formatter-VSCode.functionCase": "upper",
+  "SQL-Formatter-VSCode.logicalOperatorNewline": "after",
+  "SQL-Formatter-VSCode.dialect": "postgresql"
+}
