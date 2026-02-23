@@ -63,6 +63,16 @@
             overflow-x: auto;
             font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
             border: 1px solid var(--border-color);
+            line-height: 1.5;
+        }
+        .terminal-output {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            border: none;
+        }
+        .comment {
+            color: #718096;
+            font-style: italic;
         }
         code {
             background-color: var(--code-bg);
@@ -118,7 +128,7 @@
             データベース工学の講義を通じて、私たちはSQLの基本からテーブル設計まで多くのことを学んできました。しかし、実際のシステム開発においてデータ量が数万、数十万と増えてくると、「正しいSQLを書いているのに、結果が返ってくるまでに何秒もかかる」という問題に直面します。
         </p>
         <p>
-            このパフォーマンス問題を解決する鍵となるのが<strong>インデックス設計</strong>です。本記事では、講義の演習環境を使用し、実際に手を動かしながら以下のゴールを目指します。
+            このパフォーマンス問題を解決する鍵となるのが<strong>インデックス設計</strong>です。本記事では、講義の演習環境を使用し、実際に手を動かしながら以下のゴールを目指します。SQLの構文を少し忘れてしまった方でも大丈夫なように、適宜解説を挟みながら進めます。
         </p>
         <ul>
             <li>インデックス設計の目的と、それに伴うトレードオフを論理的に説明できる</li>
@@ -136,98 +146,21 @@
             <li><strong>DBMS:</strong> PostgreSQL 17</li>
             <li><strong>Docker イメージ:</strong> postgres:17.6</li>
             <li><strong>ポート:</strong> 5432</li>
-            <li><strong>接続方法:</strong> psql</li>
+            <li><strong>接続方法:</strong> psql または 任意のデータベースクライアント</li>
         </ul>
 
         <h3>テーブル定義</h3>
         <p>本記事の実験では、以下のような <code>t_users</code>（ユーザー情報）テーブルを用います。</p>
-<pre><code>CREATE TABLE t_users (
-  id serial PRIMARY KEY,
-  email text NOT NULL,
-  age int NOT NULL,
-  status text NOT NULL,
-  created_at timestamp NOT NULL
+<pre><code><span class="comment">-- ユーザー情報を格納するテーブルの作成</span>
+CREATE TABLE t_users (
+  id serial PRIMARY KEY,          <span class="comment">-- serial: 自動採番される整数型。PRIMARY KEY: 主キー</span>
+  email text NOT NULL,            <span class="comment">-- text: 文字列型。NOT NULL: 空(NULL)を許容しない</span>
+  age int NOT NULL,               <span class="comment">-- int: 整数型</span>
+  status text NOT NULL,           <span class="comment">-- 状態を表す文字列（後ほど active/inactive を入れます）</span>
+  created_at timestamp NOT NULL   <span class="comment">-- timestamp: 日時型（登録日時）</span>
 );</code></pre>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>列名</th>
-                    <th>型</th>
-                    <th>補足</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>id</td>
-                    <td>serial</td>
-                    <td>自動採番の主キー</td>
-                </tr>
-                <tr>
-                    <td>email</td>
-                    <td>text</td>
-                    <td>非NULL制約（検索条件として使用）</td>
-                </tr>
-                <tr>
-                    <td>age</td>
-                    <td>int</td>
-                    <td>非NULL制約</td>
-                </tr>
-                <tr>
-                    <td>status</td>
-                    <td>text</td>
-                    <td>非NULL制約（実験用に 'active' または 'inactive' のみ挿入）</td>
-                </tr>
-                <tr>
-                    <td>created_at</td>
-                    <td>timestamp</td>
-                    <td>非NULL制約（登録日時）</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <p>第6章の実験では、このテーブルに以下のようなダミーデータを<strong>20万件</strong>挿入して検証を行います。</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>id</th>
-                    <th>email</th>
-                    <th>age</th>
-                    <th>status</th>
-                    <th>created_at</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>user1@example.com</td>
-                    <td>42</td>
-                    <td>active</td>
-                    <td>2025-08-10 14:23:01</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>user2@example.com</td>
-                    <td>25</td>
-                    <td>inactive</td>
-                    <td>2025-11-22 09:15:44</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>user3@example.com</td>
-                    <td>58</td>
-                    <td>active</td>
-                    <td>2026-01-05 18:02:11</td>
-                </tr>
-                <tr>
-                    <td>...</td>
-                    <td>...</td>
-                    <td>...</td>
-                    <td>...</td>
-                    <td>...</td>
-                </tr>
-            </tbody>
-        </table>
+        <p>第6章の実験では、このテーブルにダミーデータを<strong>20万件</strong>挿入して検証を行います。</p>
 
         <h2>2. インデックス設計とは何か</h2>
         <p>
@@ -245,7 +178,7 @@
             B-treeは、ルート（根）ノードからブランチ（枝）ノードをたどり、目的のデータ（またはデータへのポインタ）が格納されているリーフ（葉）ノードへ到達する階層的な木構造になっています。最大の特徴は、常にデータがソートされた状態を保つようにバランスが調整される点です。
         </p>
         <p>
-            この構造により、探索にかかる計算コストはおおむね $O(\log n)$ となります。テーブルの先頭から1行ずつ探す全件走査（Seq Scan）のコスト $O(n)$ と比較すると、データ量が膨大になるほど、その性能差は圧倒的なものになります。
+            この構造により、探索にかかる計算コストはおおむね <strong>O(log n)</strong> となります。テーブルの先頭から1行ずつ探す全件走査（Seq Scan）のコスト <strong>O(n)</strong> と比較すると、データ量が膨大になるほど、その性能差は圧倒的なものになります。
         </p>
 
         <h3>2.2 インデックスのコスト（トレードオフ）</h3>
@@ -253,7 +186,7 @@
             「そんなに便利なら、すべての列にインデックスを作ればいいのではないか？」と思うかもしれません。しかし、インデックスには明確な<strong>トレードオフ</strong>が存在します。
         </p>
         <p>
-            インデックスは常にソートされた状態を保つ必要があるため、テーブルに対して <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code> が行われるたびに、インデックス側の木構造も更新・再編成しなければなりません。つまり、<strong>読み取り（SELECT）性能を劇的に上げる代わりに、書き込み性能が低下し、ディスク容量も余分に消費する</strong>ことになります。そのため、インデックスは「本当に必要な列にだけ最小限に作る」のが鉄則です。
+            インデックスは常にソートされた状態を保つ必要があるため、テーブルに対して <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code> が行われるたびに、インデックス側の木構造も更新・再編成しなければなりません。つまり、<strong>読み取り（SELECT）性能を劇的に上げる代わりに、書き込み性能が低下し、ディスク容量も余分に消費する</strong>ことになります。
         </p>
 
         <h2>3. インデックスの種類と特徴（PostgreSQL）</h2>
@@ -266,35 +199,53 @@
         </ul>
 
         <h2>4. インデックス設計の基本原則</h2>
-        <p>実際に設計を行う際の4つの基本原則を紹介します。</p>
         <ol>
-            <li><strong>まずクエリを知る:</strong> インデックスは闇雲に作っても意味がありません。アプリケーションが発行するSQLの <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code> に頻出する列を特定することから始めます。</li>
-            <li><strong>選択度（Selectivity / カーディナリティ）を考える:</strong> その条件で「全体の何％までデータを絞り込めるか」が重要です。例えば「性別」のように2〜3種類しか値がない（カーディナリティが低い）列にインデックスを貼っても、オプティマイザは効果が薄いと判断し、結局全件走査してしまうことが多々あります。</li>
-            <li><strong>複合インデックスの順序:</strong> 複数の列を組み合わせた複合インデックスでは、<code>(列A, 列B)</code> と <code>(列B, 列A)</code> は全く異なる挙動をします。電話帳が「苗字→名前」の順にソートされているように、第一条件（列A）で大きく絞り込める順序にするのが鉄則です。</li>
-            <li><strong>過剰なインデックスを作らない:</strong> 前述のトレードオフを考慮し、推測で作るのではなく、実測で効果を確認してから本番環境に追加します。</li>
+            <li><strong>まずクエリを知る:</strong> アプリケーションが発行するSQLの <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code> に頻出する列を特定することから始めます。</li>
+            <li><strong>選択度（Selectivity / カーディナリティ）を考える:</strong> その条件で「全体の何％までデータを絞り込めるか」が重要です。例えば「性別」のように2〜3種類しか値がない列にインデックスを貼っても効果は薄いです。</li>
+            <li><strong>複合インデックスの順序:</strong> 複数の列を組み合わせた複合インデックスでは、第一条件で大きく絞り込める順序にするのが鉄則です。</li>
+            <li><strong>過剰なインデックスを作らない:</strong> 実測で効果を確認してから追加します。</li>
         </ol>
 
         <h2>5. 実行計画の確認方法（EXPLAIN の見方）</h2>
         <p>
-            実験に入る前に、PostgreSQLのオプティマイザ（SQLの最適な実行手順を考える脳みそ）が、どのようにクエリを実行しようとしているかを確認する <code>EXPLAIN</code> コマンドを押さえておきましょう。
+            実験に入る前に、PostgreSQLがどのようにクエリを実行しようとしているかを確認する <strong>EXPLAIN</strong>（エクスプレイン）コマンドについて解説します。<br>
+            いつもの <code>SELECT</code> 文の先頭に <code>EXPLAIN ANALYZE</code> というキーワードをつけるだけで、ターミナル上に以下のような「実行計画（データベースの作戦内容）」が出力されます。
         </p>
-<pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'test@example.com';</code></pre>
-        <p><code>EXPLAIN ANALYZE</code> を使うと、推定の計画だけでなく、実際にクエリを実行した際の実測時間も表示されます。以下のポイントに注目してください。</p>
+
+        <p><strong>▼ターミナルに表示される実行計画の例</strong></p>
+<pre class="terminal-output"><code># EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'test@example.com';
+
+                                                     QUERY PLAN                                                      
+---------------------------------------------------------------------------------------------------------------------
+ Index Scan using idx_t_users_email on t_users  (cost=0.42..8.44 rows=1 width=45) (actual time=0.031..0.032 rows=1 loops=1)
+   Index Cond: (email = 'test@example.com'::text)
+ Planning Time: 0.150 ms
+ Execution Time: 0.051 ms
+(4 rows)</code></pre>
+
+        <p>この結果画面から、以下のポイントを読み取ります。ここを見比べることで、インデックスが本当に仕事をしているかがわかります。</p>
         <ul>
-            <li><strong>Seq Scan:</strong> シーケンシャルスキャンの略。テーブルを先頭から全件走査しています（インデックスが使われていない証拠です）。</li>
-            <li><strong>Index Scan:</strong> インデックスを使って効率よく検索しています。</li>
-            <li><strong>cost=0.00..xxx:</strong> PostgreSQLが推定した処理コストです（右側の数値が全体の推定コスト）。</li>
-            <li><strong>actual time=xxx..yyy:</strong> 実際の実行時間（ミリ秒単位）。チューニング前後でここがどう減るかに注目します。</li>
+            <li><strong>Seq Scan / Index Scan (左端の文字):</strong> 
+                <ul>
+                    <li><code>Seq Scan</code> と書かれていたら、インデックスが使われず、テーブルを先頭から全件走査している証拠です（遅い）。</li>
+                    <li><code>Index Scan</code> と書かれていたら、無事にインデックスを使って効率よく検索できています（速い）。</li>
+                </ul>
+            </li>
+            <li><strong>cost=0.00..8.44 (カッコ内の数値):</strong> PostgreSQLが内部で計算した「推定の処理コスト」です。右側の数値が全体の推定コストを表します。</li>
+            <li><strong>actual time=0.031..0.032:</strong> <code>ANALYZE</code> を付けた場合のみ表示される、実際の実行時間（ミリ秒単位）です。チューニングによってここが何ミリ秒減ったかを確認します。</li>
         </ul>
 
         <h2>6. 実験: インデックスの挙動と効果を検証する</h2>
-        <p>ここからは、実際にコンテナ環境を用いてハンズオン形式で検証を進めます。</p>
+        <p>ここからは、実際にコンテナ環境を用いて検証を進めます。</p>
 
         <h3>6.1 検証用データセットの作成</h3>
         <p>
             インデックスの様々な挙動を確かめるため、20万件のダミーデータを作成します。ここでポイントとなるのは、<code>status</code> 列に意図的に「activeが90%、inactiveが10%」という偏りを持たせている点です。
         </p>
-<pre><code>DROP TABLE IF EXISTS t_users;
+<pre><code><span class="comment">-- 既にテーブルがあれば削除（何度でも実験をやり直せるようにするため）</span>
+DROP TABLE IF EXISTS t_users;
+
+<span class="comment">-- テーブルの作成</span>
 CREATE TABLE t_users (
     id serial PRIMARY KEY,
     email text NOT NULL,
@@ -303,24 +254,30 @@ CREATE TABLE t_users (
     created_at timestamp NOT NULL
 );
 
--- 20万件のダミーデータを挿入
+<span class="comment">-- 20万件のダミーデータを自動生成して挿入するクエリ</span>
 INSERT INTO t_users (email, age, status, created_at)
 SELECT
+    <span class="comment">-- 例: 'user1@example.com' のように連番付きのアドレスを作る</span>
     'user' || i || '@example.com',
+    <span class="comment">-- random()は0.0〜1.0の小数を返す。それに60を掛けて18を足し、18〜77歳の年齢を生成</span>
     (random() * 60)::int + 18,
-    -- 90%を 'active', 10%を 'inactive' にする
+    <span class="comment">-- 乱数が0.9未満なら 'active'、それ以外なら 'inactive' にする（90%と10%の偏り）</span>
     CASE WHEN random() < 0.9 THEN 'active' ELSE 'inactive' END,
+    <span class="comment">-- 現在時刻(now())から、ランダムな日数（最大365日）を引いて過去の日付を作る</span>
     now() - (random() * interval '365 days')
+<span class="comment">-- generate_series(1, 200000) で 1〜20万 までの連番 'i' を発生させる</span>
 FROM generate_series(1, 200000) AS s(i);</code></pre>
 
         <h3>6.2 実験A: 基本的な Index Scan（等値検索）</h3>
         <p>まずは、特定のメールアドレスを検索してみましょう。</p>
         <p><strong>① インデックス作成前</strong></p>
-<pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'user150000@example.com';</code></pre>
-        <p>結果を見ると <code>Seq Scan on t_users</code> となっており、20万件すべてを舐めていることがわかります。<code>actual time</code> も数ミリ〜十数ミリ秒かかっているはずです。</p>
+<pre><code><span class="comment">-- 実行計画を見るために EXPLAIN ANALYZE をつける</span>
+EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'user150000@example.com';</code></pre>
+        <p>ターミナルの結果を見ると <code>Seq Scan on t_users</code> となっており、20万件すべてを舐めていることがわかります。<code>actual time</code> も数ミリ〜十数ミリ秒かかっているはずです。</p>
 
         <p><strong>② インデックスを作成</strong></p>
-<pre><code>CREATE INDEX idx_t_users_email ON t_users (email);</code></pre>
+<pre><code><span class="comment">-- 構文: CREATE INDEX [インデックス名] ON [テーブル名] (列名);</span>
+CREATE INDEX idx_t_users_email ON t_users (email);</code></pre>
 
         <p><strong>③ 再度検索を実行</strong></p>
 <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'user150000@example.com';</code></pre>
@@ -332,12 +289,14 @@ FROM generate_series(1, 200000) AS s(i);</code></pre>
         <p>B-treeは辞書順にデータが並んでいるため、検索の仕方によってはせっかく作ったインデックスが使えません。</p>
         
         <p><strong>① 前方一致検索（インデックスが効く）</strong></p>
-<pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE 'user15%';</code></pre>
+<pre><code><span class="comment">-- 'user15' から始まるアドレスを検索</span>
+EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE 'user15%';</code></pre>
         
         <p><strong>② 後方一致検索（インデックスが効かない）</strong></p>
-<pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE '%@example.com';</code></pre>
+<pre><code><span class="comment">-- '@example.com' で終わるアドレスを検索</span>
+EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE '%@example.com';</code></pre>
         <div class="note">
-            <strong>【考察】</strong> ②は Seq Scan に戻ってしまいます。電話帳で「末尾が『郎』の人」を探すとき、結局全ページを見なければならないのと同じ理屈です。最初の文字が確定していないと、B-treeの木を適切にたどることはできません。
+            <strong>【考察】</strong> ②は <code>Seq Scan</code> に戻ってしまいます。電話帳で「末尾が『郎』の人」を探すとき、結局全ページを見なければならないのと同じ理屈です。最初の文字が確定していないと、B-treeの木を適切にたどることはできません。
         </div>
 
         <h3>6.4 実験C: インデックスが効かないケース②（選択度の問題）</h3>
@@ -346,26 +305,27 @@ FROM generate_series(1, 200000) AS s(i);</code></pre>
 
         <p><strong>① 少数派（10%）の検索</strong></p>
 <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE status = 'inactive';</code></pre>
-        <p>こちらは高確率で Index Scan または Bitmap Index Scan が選ばれます。</p>
+        <p>こちらは高確率で <code>Index Scan</code>（または Bitmap Index Scan）が選ばれます。</p>
 
         <p><strong>② 多数派（90%）の検索</strong></p>
 <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE status = 'active';</code></pre>
         <div class="note">
-            <strong>【考察】</strong> ②はインデックスが存在するにもかかわらず Seq Scan になります。条件にヒットする件数が多すぎる場合、オプティマイザは「インデックスの木をたどってから実データをチマチマ引きに行くより、最初からテーブル全体をガサッと読み込んだ方がマシ（I/Oコストが低い）」と賢く判断します。
+            <strong>【考察】</strong> ②はインデックスが存在するにもかかわらず <code>Seq Scan</code> になります。条件にヒットする件数が多すぎる場合、オプティマイザは「インデックスの木をたどってから実データをチマチマ引きに行くより、最初からテーブル全体をガサッと読み込んだ方がマシ（I/Oコストが低い）」と賢く判断します。
         </div>
 
         <h3>6.5 実験D: 複合インデックスの順序</h3>
         <p>最後に、複数列に対するインデックスの順序の重要性を確認します。</p>
-<pre><code>CREATE INDEX idx_t_users_age_created ON t_users (age, created_at);</code></pre>
+<pre><code><span class="comment">-- age と created_at の「複合インデックス」を作成</span>
+CREATE INDEX idx_t_users_age_created ON t_users (age, created_at);</code></pre>
 
         <p><strong>① 第1列と第2列の両方で検索</strong></p>
 <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE age = 30 AND created_at > '2024-01-01';</code></pre>
-        <p>Index Scan が見事に効きます。</p>
+        <p><code>Index Scan</code> が見事に効きます。</p>
 
         <p><strong>② 第2列のみで検索</strong></p>
 <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE created_at > '2024-01-01';</code></pre>
         <div class="note">
-            <strong>【考察】</strong> ②は Seq Scan になります。複合インデックスは左側の列（この場合は age）から順にソートされているため、第1列の条件を指定しないと、第2列単独では木をたどることができません。
+            <strong>【考察】</strong> ②は <code>Seq Scan</code> になります。複合インデックスは左側の列（この場合は age）から順にソートされているため、第1列の条件を指定しないと、第2列単独では木をたどることができません。
         </div>
 
         <h2>7. 結果と考察まとめ</h2>
@@ -381,7 +341,8 @@ FROM generate_series(1, 200000) AS s(i);</code></pre>
 
         <h3>問題1：適切な複合インデックスの設計</h3>
         <p>次のクエリを最も効率よく高速化したい場合、どの列に、どのような順序で複合インデックスを作るべきでしょうか？</p>
-<pre><code>SELECT * FROM t_users
+<pre><code><span class="comment">-- LIMIT 50: 検索結果を最大50件だけ取得する</span>
+SELECT * FROM t_users
 WHERE status = 'inactive' AND age = 25
 ORDER BY created_at DESC
 LIMIT 50;</code></pre>
@@ -398,7 +359,8 @@ LIMIT 50;</code></pre>
 
         <h3>問題2：JOINを伴うクエリのインデックス</h3>
         <p>注文情報を管理する <code>orders</code> テーブルがあるとします。次のJOINクエリを高速化するには、どのテーブルのどの列にインデックスを作るべきでしょうか？</p>
-<pre><code>SELECT o.*
+<pre><code><span class="comment">-- ordersテーブルとusersテーブルを、idをキーにして結合(JOIN)する</span>
+SELECT o.*
 FROM orders o
 JOIN users u ON o.user_id = u.id
 WHERE u.email = 'test@example.com';</code></pre>
