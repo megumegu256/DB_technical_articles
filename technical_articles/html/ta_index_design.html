@@ -1,32 +1,316 @@
-<html>
+<!DOCTYPE html>
+<html lang="ja">
 <head>
-    <title>Technical Article: Index Design</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PostgreSQLで学ぶインデックス設計の実践：B-treeから複合インデックスの罠まで</title>
     <style>
+        :root {
+            --primary-color: #3182ce;
+            --bg-color: #f7fafc;
+            --text-color: #2d3748;
+            --code-bg: #edf2f7;
+            --border-color: #e2e8f0;
+        }
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         h1 {
-            color: #333;
+            font-size: 2rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
         }
-        .article-list {
-            list-style-type: none;
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3rem;
+        }
+        h3 {
+            font-size: 1.25rem;
+            margin-top: 2rem;
+            color: #4a5568;
+        }
+        p {
+            margin-bottom: 1.5rem;
+        }
+        ul, ol {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        pre {
+            background-color: var(--code-bg);
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            border: 1px solid var(--border-color);
+        }
+        code {
+            background-color: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.9em;
+            color: #d53f8c;
+        }
+        pre code {
+            background-color: transparent;
             padding: 0;
+            color: inherit;
         }
-        .article-list li {
-            margin-bottom: 10px;
+        .note {
+            background-color: #ebf8ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 4px 4px 0;
         }
-        .article-list a {
-            text-decoration: none;
-            color: #007BFF;
-        }
-        .article-list a:hover {
-            text-decoration: underline;
+        .footer {
+            margin-top: 4rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--border-color);
+            text-align: right;
+            color: #718096;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
-    <h1>Technical Article: Index Design</h1>
-    
+    <div class="container">
+        <h1>PostgreSQLで学ぶインデックス設計の実践：B-treeから複合インデックスの罠まで</h1>
+
+        <h2>0. はじめに（この記事のゴール）</h2>
+        <p>
+            データベース工学の講義を通じて、私たちはSQLの基本からテーブル設計まで多くのことを学んできました。しかし、実際のシステム開発においてデータ量が数万、数十万と増えてくると、「正しいSQLを書いているのに、結果が返ってくるまでに何秒もかかる」という問題に直面します。
+        </p>
+        <p>
+            このパフォーマンス問題を解決する鍵となるのが<strong>インデックス設計</strong>です。本記事では、講義の演習環境（PostgreSQL 17 コンテナ）を使用し、実際に手を動かしながら以下のゴールを目指します。
+        </p>
+        <ul>
+            <li>インデックス設計の目的と、それに伴うトレードオフを論理的に説明できる</li>
+            <li>PostgreSQLの標準であるB-treeインデックスの仕組みと探索コストを理解する</li>
+            <li><code>EXPLAIN / EXPLAIN ANALYZE</code> を使い、クエリの実行計画とインデックスの効果を測定できる</li>
+            <li>単にインデックスを貼るだけでなく、「インデックスが効かないケース」を実験を通じて体感し、実務で通用する適切な設計ができるようになる</li>
+        </ul>
+
+        <h2>1. インデックス設計とは何か</h2>
+        <p>
+            インデックス設計とは、一言で言えば「よく使われるクエリに対して、どのテーブルのどの列に、どのような種類のインデックスを作成するか」を決定する作業です。分厚い技術書から特定のキーワードを探すとき、全ページをめくる（全件走査）のではなく、巻末の「索引（インデックス）」を見るはずです。データベースのインデックスも全く同じ目的、すなわち<strong>検索・結合・並べ替え・集計などの処理コストを劇的に下げること</strong>を目的に作成されます。
+        </p>
+
+        <h3>1.1 インデックスとB-treeの仕組み</h3>
+        <p>
+            PostgreSQLにおいて、明示的に種類を指定せずにインデックスを作成した場合、標準で<strong>B-tree（Balanced Tree）</strong>というデータ構造が採用されます。
+        </p>
+        <p>
+            
+        </p>
+        <p>
+            B-treeは、ルート（根）ノードからブランチ（枝）ノードをたどり、目的のデータ（またはデータへのポインタ）が格納されているリーフ（葉）ノードへ到達する階層的な木構造になっています。最大の特徴は、常にデータがソートされた状態を保つようにバランスが調整される点です。
+        </p>
+        <p>
+            この構造により、探索にかかる計算コストはおおむね $O(\log n)$ となります。テーブルの先頭から1行ずつ探す全件走査（Seq Scan）のコスト $O(n)$ と比較すると、データ量が膨大になるほど、その性能差は圧倒的なものになります。
+        </p>
+
+        <h3>1.2 インデックスのコスト（トレードオフ）</h3>
+        <p>
+            「そんなに便利なら、すべての列にインデックスを作ればいいのではないか？」と思うかもしれません。しかし、インデックスには明確な<strong>トレードオフ</strong>が存在します。
+        </p>
+        <p>
+            インデックスは常にソートされた状態を保つ必要があるため、テーブルに対して <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code> が行われるたびに、インデックス側の木構造も更新・再編成しなければなりません。つまり、<strong>読み取り（SELECT）性能を劇的に上げる代わりに、書き込み性能が低下し、ディスク容量も余分に消費する</strong>ことになります。そのため、インデックスは「本当に必要な列にだけ最小限に作る」のが鉄則です。
+        </p>
+
+        <h2>2. インデックスの種類と特徴（PostgreSQL）</h2>
+        <p>PostgreSQLにはB-tree以外にも用途に応じたインデックスが用意されています。知識として整理しておきましょう。</p>
+        <ul>
+            <li><strong>B-tree:</strong> 等値検索（<code>=</code>）、範囲検索（<code>&lt;</code>, <code>&gt;</code>, <code>BETWEEN</code>）、<code>ORDER BY</code> に強い。実務のインデックスの9割以上はこれを使用します。</li>
+            <li><strong>Hash:</strong> 等値検索のみに対応。B-treeよりサイズが小さくなる場合がありますが、用途が限られます。</li>
+            <li><strong>GiST / GIN:</strong> 全文検索や、JSONB型、配列、位置情報（幾何データ）など、複雑なデータの検索に使用されます。</li>
+            <li><strong>BRIN:</strong> 時系列のログデータなど、物理的な順序と論理的な順序が相関している巨大なテーブルに有効で、非常に省スペースです。</li>
+        </ul>
+
+        <h2>3. インデックス設計の基本原則</h2>
+        <p>実際に設計を行う際の4つの基本原則を紹介します。</p>
+        <ol>
+            <li><strong>まずクエリを知る:</strong> インデックスは闇雲に作っても意味がありません。アプリケーションが発行するSQLの <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code> に頻出する列を特定することから始めます。</li>
+            <li><strong>選択度（Selectivity / カーディナリティ）を考える:</strong> その条件で「全体の何％までデータを絞り込めるか」が重要です。例えば「性別」のように2〜3種類しか値がない（カーディナリティが低い）列にインデックスを貼っても、オプティマイザは効果が薄いと判断し、結局全件走査してしまうことが多々あります。</li>
+            <li><strong>複合インデックスの順序:</strong> 複数の列を組み合わせた複合インデックスでは、<code>(列A, 列B)</code> と <code>(列B, 列A)</code> は全く異なる挙動をします。電話帳が「苗字→名前」の順にソートされているように、第一条件（列A）で大きく絞り込める順序にするのが鉄則です。</li>
+            <li><strong>過剰なインデックスを作らない:</strong> 前述のトレードオフを考慮し、推測で作るのではなく、実測で効果を確認してから本番環境に追加します。</li>
+        </ol>
+
+        <h2>4. 実行計画の確認方法（EXPLAIN の見方）</h2>
+        <p>
+            実験に入る前に、PostgreSQLのオプティマイザ（SQLの最適な実行手順を考える脳みそ）が、どのようにクエリを実行しようとしているかを確認する <code>EXPLAIN</code> コマンドを押さえておきましょう。
+        </p>
+<pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'test@example.com';</code></pre>
+        <p><code>EXPLAIN ANALYZE</code> を使うと、推定の計画だけでなく、実際にクエリを実行した際の実測時間も表示されます。以下のポイントに注目してください。</p>
+        <ul>
+            <li><strong>Seq Scan:</strong> シーケンシャルスキャンの略。テーブルを先頭から全件走査しています（インデックスが使われていない証拠です）。</li>
+            <li><strong>Index Scan:</strong> インデックスを使って効率よく検索しています。</li>
+            <li><strong>cost=0.00..xxx:</strong> PostgreSQLが推定した処理コストです（右側の数値が全体の推定コスト）。</li>
+            <li><strong>actual time=xxx..yyy:</strong> 実際の実行時間（ミリ秒単位）。チューニング前後でここがどう減るかに注目します。</li>
+        </ul>
+
+        <h2>5. 実験: インデックスの挙動と効果を検証する</h2>
+        <p>ここからは、実際に講義のDocker環境（PostgreSQL 17）を用いてハンズオン形式で検証を進めます。</p>
+
+        <h3>5.1 環境と準備</h3>
+        <p>ターミナルを開き、講義指定のコマンド（例: <code>npm run db:up</code>）でコンテナを立ち上げ、psqlやデータベースクライアントから接続してください。</p>
+
+        <h3>5.2 検証用データセットの作成</h3>
+        <p>
+            インデックスの様々な挙動を確かめるため、20万件のダミーデータを作成します。ここでポイントとなるのは、<code>status</code> 列に意図的に「activeが90%、inactiveが10%」という偏りを持たせている点です。
+        </p>
+<pre><code>DROP TABLE IF EXISTS t_users;
+CREATE TABLE t_users (
+    id serial PRIMARY KEY,
+    email text NOT NULL,
+    age int NOT NULL,
+    status text NOT NULL,
+    created_at timestamp NOT NULL
+);
+
+-- 20万件のダミーデータを挿入
+INSERT INTO t_users (email, age, status, created_at)
+SELECT
+    'user' || i || '@example.com',
+    (random() * 60)::int + 18,
+    -- 90%を 'active', 10%を 'inactive' にする
+    CASE WHEN random() < 0.9 THEN 'active' ELSE 'inactive' END,
+    now() - (random() * interval '365 days')
+FROM generate_series(1, 200000) AS s(i);</code></pre>
+
+        <h3>5.3 実験A: 基本的な Index Scan（等値検索）</h3>
+        <p>まずは、特定のメールアドレスを検索してみましょう。</p>
+        <p><strong>① インデックス作成前</strong></p>
+<pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'user150000@example.com';</code></pre>
+        <p>結果を見ると <code>Seq Scan on t_users</code> となっており、20万件すべてを舐めていることがわかります。<code>actual time</code> も数ミリ〜十数ミリ秒かかっているはずです。</p>
+
+        <p><strong>② インデックスを作成</strong></p>
+<pre><code>CREATE INDEX idx_t_users_email ON t_users (email);</code></pre>
+
+        <p><strong>③ 再度検索を実行</strong></p>
+<pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'user150000@example.com';</code></pre>
+        <div class="note">
+            <strong>【確認ポイント】</strong> 結果が <code>Index Scan using idx_t_users_email</code> に変化し、<code>actual time</code> が 0.1ms 以下など劇的に短縮されていることを確認してください。これがインデックスの基本となる威力です。
+        </div>
+
+        <h3>5.4 実験B: インデックスが効かないケース①（LIKE検索）</h3>
+        <p>B-treeは辞書順にデータが並んでいるため、検索の仕方によってはせっかく作ったインデックスが使えません。</p>
+        
+        <p><strong>① 前方一致検索（インデックスが効く）</strong></p>
+<pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE 'user15%';</code></pre>
+        
+        <p><strong>② 後方一致検索（インデックスが効かない）</strong></p>
+<pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE '%@example.com';</code></pre>
+        <div class="note">
+            <strong>【考察】</strong> ②は Seq Scan に戻ってしまいます。電話帳で「末尾が『郎』の人」を探すとき、結局全ページを見なければならないのと同じ理屈です。最初の文字が確定していないと、B-treeの木を適切にたどることはできません。
+        </div>
+
+        <h3>5.5 実験C: インデックスが効かないケース②（選択度の問題）</h3>
+        <p>次に、データに偏りを持たせた <code>status</code> 列にインデックスを貼ってみます。</p>
+<pre><code>CREATE INDEX idx_t_users_status ON t_users (status);</code></pre>
+
+        <p><strong>① 少数派（10%）の検索</strong></p>
+<pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE status = 'inactive';</code></pre>
+        <p>こちらは高確率で Index Scan または Bitmap Index Scan が選ばれます。</p>
+
+        <p><strong>② 多数派（90%）の検索</strong></p>
+<pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE status = 'active';</code></pre>
+        <div class="note">
+            <strong>【考察】</strong> ②はインデックスが存在するにもかかわらず Seq Scan になります。条件にヒットする件数が多すぎる場合、オプティマイザは「インデックスの木をたどってから実データをチマチマ引きに行くより、最初からテーブル全体をガサッと読み込んだ方がマシ（I/Oコストが低い）」と賢く判断します。
+        </div>
+
+        <h3>5.6 実験D: 複合インデックスの順序</h3>
+        <p>最後に、複数列に対するインデックスの順序の重要性を確認します。</p>
+<pre><code>CREATE INDEX idx_t_users_age_created ON t_users (age, created_at);</code></pre>
+
+        <p><strong>① 第1列と第2列の両方で検索</strong></p>
+<pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE age = 30 AND created_at > '2024-01-01';</code></pre>
+        <p>Index Scan が見事に効きます。</p>
+
+        <p><strong>② 第2列のみで検索</strong></p>
+<pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE created_at > '2024-01-01';</code></pre>
+        <div class="note">
+            <strong>【考察】</strong> ②は Seq Scan になります。複合インデックスは左側の列（この場合は age）から順にソートされているため、第1列の条件を指定しないと、第2列単独では木をたどることができません。
+        </div>
+
+        <h2>6. 結果と考察まとめ</h2>
+        <p>ここまでの実験を通じて、以下の重要な知見が得られました。</p>
+        <ul>
+            <li>インデックスは万能魔法ではない。B-treeの構造上、前方一致や完全一致でなければ効果が薄い。</li>
+            <li>条件に合致するデータが多すぎる（選択度が悪い）と、PostgreSQLのオプティマイザはあえてインデックスを無視する。</li>
+            <li>複合インデックスは列の順序が命。<code>WHERE</code> 句で必ず指定され、かつ最も絞り込める列を先頭にする必要がある。</li>
+        </ul>
+
+        <h2>7. 演習課題</h2>
+        <p>理解度を確認するため、以下の問題に挑戦してみてください。解答例を見る前に、手元の環境で <code>EXPLAIN</code> を使って自身の考えが正しいか検証してみましょう。</p>
+
+        <h3>問題1：適切な複合インデックスの設計</h3>
+        <p>次のクエリを最も効率よく高速化したい場合、どの列に、どのような順序で複合インデックスを作るべきでしょうか？</p>
+<pre><code>SELECT * FROM t_users
+WHERE status = 'inactive' AND age = 25
+ORDER BY created_at DESC
+LIMIT 50;</code></pre>
+
+        <details style="margin-bottom: 2rem; background: #f7fafc; padding: 1rem; border: 1px solid #e2e8f0;">
+            <summary style="cursor: pointer; font-weight: bold;">解答例を見る</summary>
+            <p style="margin-top: 1rem;">
+                <strong>解答：</strong> <code>CREATE INDEX idx_users_age_status_created ON t_users (age, status, created_at DESC);</code>
+            </p>
+            <p>
+                <strong>解説：</strong> <code>status</code> よりも <code>age</code> の方が選択度が高い（値の種類が多く、1つの値でより少なく絞り込める）ため、<code>age</code> を先頭にするのがセオリーです。さらに <code>ORDER BY</code> のソート処理（コストの高い処理）をデータベースにスキップさせるために、ソート条件である <code>created_at DESC</code> もインデックスの末尾に含める（カバリングインデックス的なアプローチ）と非常に高速になります。
+            </p>
+        </details>
+
+        <h3>問題2：JOINを伴うクエリのインデックス</h3>
+        <p>注文情報を管理する <code>orders</code> テーブルがあるとします。次のJOINクエリを高速化するには、どのテーブルのどの列にインデックスを作るべきでしょうか？</p>
+<pre><code>SELECT o.*
+FROM orders o
+JOIN users u ON o.user_id = u.id
+WHERE u.email = 'test@example.com';</code></pre>
+
+        <details style="margin-bottom: 2rem; background: #f7fafc; padding: 1rem; border: 1px solid #e2e8f0;">
+            <summary style="cursor: pointer; font-weight: bold;">解答例を見る</summary>
+            <p style="margin-top: 1rem;">
+                <strong>解答：</strong><br>
+                <code>CREATE INDEX idx_users_email ON users (email);</code><br>
+                <code>CREATE INDEX idx_orders_user_id ON orders (user_id);</code>
+            </p>
+            <p>
+                <strong>解説：</strong> まず <code>WHERE</code> 句で絞り込みが行われる <code>users</code> テーブルの <code>email</code> 列にインデックスが必要です。次に、抽出された user の <code>id</code> を使って <code>orders</code> テーブルに結合しに行くため、結合の受け手となる <code>orders</code> テーブルの <code>user_id</code> 列（外部キー）にもインデックスが必須となります。
+            </p>
+        </details>
+
+        <h2>8. まとめ</h2>
+        <p>
+            本記事では、B-treeの構造といった理論から入り、実際にPostgreSQLのオプティマイザがどのようにインデックスを選択（あるいは無視）するのかを実験を通じて確認しました。
+        </p>
+        <p>
+            インデックス設計は「クエリ中心」で考えることが基本です。推測で設定するのではなく、必ず <code>EXPLAIN ANALYZE</code> を用いて「自分の意図通りに Index Scan が使われているか」を検証する癖をつけましょう。そして何より、読み取りを速くする代わりに書き込みコストと容量増という代償を払っていることを常に忘れないでください。
+        </p>
+
+        <div class="footer">
+            本コンテンツの作成時間：約12時間
+        </div>
+    </div>
 </body>
 </html>
