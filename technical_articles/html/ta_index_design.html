@@ -216,9 +216,12 @@ CREATE TABLE t_users (
 
         <p>第6章の実験では、このテーブルにダミーデータを<strong>20万件</strong>挿入して検証を行います。</p>
 
-        <h2>2. インデックス設計とは何か</h2>
+        <h2>2. インデックス（索引）とは何か</h2>
         <p>
-            インデックス設計とは、一言で言えば「よく使われるクエリに対して、どのテーブルのどの列に、どのような種類のインデックスを作成するか」を決定する作業です。分厚い技術書から特定のキーワードを探すとき、全ページをめくる（全件走査）のではなく、巻末の「索引（インデックス）」を見るはずです。データベースのインデックスも全く同じ目的、すなわち<strong>検索・結合・並べ替え・集計などの処理コストを劇的に下げること</strong>を目的に作成されます。
+            データベースにおける<strong>インデックス</strong>とは、テーブル内のデータを高速に検索するための「索引（さくいん）」データ構造のことです。分厚い技術書から特定のキーワードを探すとき、全ページを1枚ずつめくる（全件走査）のは非常に時間がかかります。そこで、巻末の「索引」を見て、そのキーワードが載っているページ番号を特定してから該当ページを開くはずです。データベースのインデックスも全く同じ役割を果たします。
+        </p>
+        <p>
+            そして<strong>インデックス設計</strong>とは、「よく使われるクエリに対して、どのテーブルのどの列に、どのような種類のインデックスを作成するか」を決定する作業です。目的は、検索・結合・並べ替え・集計などの処理コストを劇的に下げることにあります。
         </p>
 
         <h3>2.1 インデックスとB-treeの仕組み</h3>
@@ -227,7 +230,7 @@ CREATE TABLE t_users (
         </p>
         
         <div style="text-align: center; margin: 2rem 0;">
-            <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" style="background:#f7fafc; border:1px solid #e2e8f0; border-radius:8px; width:100%; max-width: 600px; height:auto; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+            <svg viewBox="0 0 650 300" xmlns="http://www.w3.org/2000/svg" style="background:#f7fafc; border:1px solid #e2e8f0; border-radius:8px; width:100%; max-width: 650px; height:auto; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
                 <style>
                     .node { fill: #ffffff; stroke: #3182ce; stroke-width: 2; rx: 6; ry: 6; }
                     .text { font-family: monospace; font-size: 16px; fill: #2d3748; text-anchor: middle; dominant-baseline: middle; font-weight: bold; }
@@ -237,43 +240,58 @@ CREATE TABLE t_users (
                 <text x="20" y="50" class="label">Root Node</text>
                 <text x="20" y="150" class="label">Branch Nodes</text>
                 <text x="20" y="250" class="label">Leaf Nodes (データ)</text>
-                <line x1="300" y1="50" x2="160" y2="150" class="line" />
-                <line x1="300" y1="50" x2="440" y2="150" class="line" />
-                <line x1="160" y1="150" x2="80" y2="250" class="line" />
-                <line x1="160" y1="150" x2="240" y2="250" class="line" />
-                <line x1="440" y1="150" x2="360" y2="250" class="line" />
-                <line x1="440" y1="150" x2="520" y2="250" class="line" />
-                <rect x="250" y="30" width="100" height="40" class="node" />
-                <text x="300" y="50" class="text">50</text>
-                <rect x="110" y="130" width="100" height="40" class="node" />
-                <text x="160" y="150" class="text">20 | 40</text>
-                <rect x="390" y="130" width="100" height="40" class="node" />
-                <text x="440" y="150" class="text">60 | 80</text>
-                <rect x="35" y="230" width="90" height="40" class="node" />
-                <text x="80" y="250" class="text">10 | 15</text>
-                <rect x="195" y="230" width="90" height="40" class="node" />
-                <text x="240" y="250" class="text">25 | 35</text>
-                <rect x="315" y="230" width="90" height="40" class="node" />
-                <text x="360" y="250" class="text">55 | 58</text>
-                <rect x="475" y="230" width="90" height="40" class="node" />
-                <text x="520" y="250" class="text">65 | 90</text>
+                <line x1="350" y1="50" x2="210" y2="150" class="line" />
+                <line x1="350" y1="50" x2="490" y2="150" class="line" />
+                <line x1="210" y1="150" x2="130" y2="250" class="line" />
+                <line x1="210" y1="150" x2="290" y2="250" class="line" />
+                <line x1="490" y1="150" x2="410" y2="250" class="line" />
+                <line x1="490" y1="150" x2="570" y2="250" class="line" />
+                <rect x="300" y="30" width="100" height="40" class="node" />
+                <text x="350" y="50" class="text">50</text>
+                
+                <rect x="160" y="130" width="100" height="40" class="node" />
+                <text x="210" y="150" class="text">20 | 40</text>
+                
+                <rect x="440" y="130" width="100" height="40" class="node" />
+                <text x="490" y="150" class="text">60 | 80</text>
+                
+                <rect x="85" y="230" width="90" height="40" class="node" />
+                <text x="130" y="250" class="text">10 | 15</text>
+                
+                <rect x="245" y="230" width="90" height="40" class="node" />
+                <text x="290" y="250" class="text">25 | 35</text>
+                
+                <rect x="365" y="230" width="90" height="40" class="node" />
+                <text x="410" y="250" class="text">55 | 58</text>
+                
+                <rect x="525" y="230" width="90" height="40" class="node" />
+                <text x="570" y="250" class="text">65 | 90</text>
             </svg>
-            <p style="font-size: 0.85rem; color: #718096; margin-top: 0.5rem;">図: B-treeの基本構造（常にソートされ、木が浅く保たれる）</p>
+            <p style="font-size: 0.85rem; color: #718096; margin-top: 0.5rem;">図: B-treeの基本構造（木が浅く保たれ、データへのアクセス経路が整理されている）</p>
         </div>
 
         <p>
-            B-treeは、ルート（根）ノードからブランチ（枝）ノードをたどり、目的のデータ（またはデータへのポインタ）が格納されているリーフ（葉）ノードへ到達する階層的な木構造になっています。最大の特徴は、常にデータがソートされた状態を保つようにバランスが調整される点です。
-        </p>
-        <p>
-            この構造により、探索にかかる計算コストはおおむね <span class="math">O(log n)</span> となります。テーブルの先頭から1行ずつ探す全件走査（Seq Scan）のコスト <span class="math">O(n)</span> と比較すると、データ量が膨大になるほど、その性能差は圧倒的なものになります。
+            B-treeは、ルート（根）ノードからブランチ（枝）ノードをたどり、目的のデータ（またはデータへのポインタ）が格納されているリーフ（葉）ノードへ到達する階層的な木構造になっています。
         </p>
 
-        <h3>2.2 インデックスのコスト（トレードオフ）</h3>
+        <h3>2.2 B-treeインデックスの強力な性質</h3>
         <p>
-            「そんなに便利なら、すべての列にインデックスを作ればいいのではないか？」と思うかもしれません。しかし、インデックスには明確な<strong>トレードオフ</strong>が存在します。
+            B-treeには、リレーショナルデータベースで標準採用されるだけの強力な性質がいくつかあります。
+        </p>
+        <ul>
+            <li><strong>常にバランスが保たれる（平衡性）：</strong> B-treeの「B」は Balanced（平衡）を意味します。データが追加・削除されても、木が自動的に再構築され、RootからすべてのLeafまでの深さ（距離）が常に一定に保たれます。これにより、どのデータを探す場合でも安定した検索速度（おおむね <span class="math">O(log n)</span> ）で結果を返すことができます。</li>
+            <li><strong>範囲検索（Range Scan）に非常に強い：</strong> Leaf Nodeのデータは常にソート（昇順または降順）された状態で格納されており、かつ隣り合うノード同士がリンク（ポインタ）で繋がっています。そのため、「<code>id = 30</code> のデータ」といった等値検索だけでなく、「<code>id BETWEEN 20 AND 40</code>」のような範囲検索や、<code>ORDER BY</code> のような並べ替え処理を高速化するのにも劇的な効果を発揮します。</li>
+        </ul>
+
+        <h3>2.3 インデックスのコスト（トレードオフ）</h3>
+        <p>
+            「そんなに便利なら、すべての列にインデックスを作ればいいのではないか？」と思うかもしれません。しかし、インデックスには明確な<strong>トレードオフ（一方を追求すると、もう一方が犠牲になる関係）</strong>が存在します。
         </p>
         <p>
-            インデックスは常にソートされた状態を保つ必要があるため、テーブルに対して <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code> が行われるたびに、インデックス側の木構造も更新・再編成しなければなりません。つまり、<strong>読み取り（SELECT）性能を劇的に上げる代わりに、書き込み性能が低下し、ディスク容量も余分に消費する</strong>ことになります。
+            前述の通り、インデックスは常にデータがソートされ、木のバランスが保たれた状態を維持しなければなりません。そのため、テーブルに対して <code>INSERT</code>（追加）, <code>UPDATE</code>（更新）, <code>DELETE</code>（削除）が行われるたびに、データベースは裏側でインデックスの木構造も律儀に並べ替えて更新しています。
+        </p>
+        <p>
+            つまり、<strong>データの読み取り（SELECT）を劇的に高速化する代わりに、データの書き込み処理が遅くなり、さらにインデックス自体を保存するためのディスク容量も余分に消費する</strong>ことになります。これがインデックスを「本当に必要な列にだけ絞って作る」べき最大の理由です。
         </p>
 
         <h2>3. インデックスの種類と特徴（PostgreSQL）</h2>
@@ -291,7 +309,7 @@ CREATE TABLE t_users (
             <li><strong>まずクエリを知る:</strong> アプリケーションが発行するSQLの <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code> に頻出する列を特定することから始めます。</li>
             <li><strong>選択度（Selectivity / カーディナリティ）を考える:</strong> その条件で「全体の何％までデータを絞り込めるか」が重要です。例えば「性別」のように2〜3種類しか値がない列にインデックスを貼っても効果は薄いです。</li>
             <li><strong>複合インデックスの順序:</strong> 複数の列を組み合わせた複合インデックスでは、第一条件で大きく絞り込める順序にするのが鉄則です。</li>
-            <li><strong>過剰なインデックスを作らない:</strong> 実測で効果を確認してから追加します。</li>
+            <li><strong>過剰なインデックスを作らない:</strong> トレードオフを考慮し、実測で効果を確認してから追加します。</li>
         </ol>
 
         <h2>5. 実行計画の確認方法（EXPLAIN の見方）</h2>
@@ -507,10 +525,10 @@ WHERE u.email = 'test@example.com';</code></pre>
 
         <h2>9. まとめ</h2>
         <p>
-            本記事では、B-treeの構造といった理論から入り、実際にPostgreSQLのオプティマイザがどのようにインデックスを選択（あるいは無視）するのかを実験を通じて確認しました。
+            本記事では、インデックス（索引）自体の役割やB-treeの構造といった理論から入り、実際にPostgreSQLのオプティマイザがどのようにインデックスを選択（あるいは無視）するのかを実験を通じて確認しました。
         </p>
         <p>
-            インデックス設計は「クエリ中心」で考えることが基本です。推測で設定するのではなく、必ず <code>EXPLAIN ANALYZE</code> を用いて「自分の意図通りに Index Scan が使われているか」を検証する癖をつけましょう。そして何より、読み取りを速くする代わりに書き込みコストと容量増という代償を払っていることを常に忘れないでください。
+            インデックス設計は「クエリ中心」で考えることが基本です。推測で設定するのではなく、必ず <code>EXPLAIN ANALYZE</code> を用いて「自分の意図通りに Index Scan が使われているか」を検証する癖をつけましょう。そして何より、読み取りを速くする代わりに書き込みコストと容量増という代償（トレードオフ）を払っていることを常に忘れないでください。
         </p>
 
         <div class="footer">
