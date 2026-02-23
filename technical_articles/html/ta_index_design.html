@@ -190,7 +190,16 @@
             <ul>
                 <li>Docker Desktop等のデーモンが起動していることを確認してください。</li>
                 <li>すでにローカルのPCでポート <code>5432</code>（PostgreSQLのデフォルトポート）を使用している別のプロセスがある場合、コンテナの起動に失敗する可能性があります。その場合はポート番号を変更してください。</li>
-                <li>ターミナルから <code>psql -U (ユーザー名) -d (データベース名) -h localhost</code> 等のコマンドで、確実にデータベースに接続できていることを確認してから実験に進んでください。</li>
+                <li>
+                    ターミナルから <code>psql -U (ユーザー名) -d (データベース名) -h localhost</code> 等のコマンドを実行し、確実にデータベースに接続できていることを確認してから実験に進んでください。<br>
+                    <span style="font-size: 0.9em; color: #4a5568;">※接続に成功すると、以下のようにバージョン情報とプロンプト（<code>=&gt;</code> や <code>=#</code>）が表示され、SQLの入力待ち状態になります。</span>
+<pre class="terminal-output" style="margin-top: 0.5rem; padding: 0.8rem; font-size: 0.85rem; border-radius: 4px;"><code>$ psql -U postgres -d postgres -h localhost
+Password for user postgres: (パスワードを入力してEnter)
+psql (17.6)
+Type "help" for help.
+
+postgres=# </code></pre>
+                </li>
             </ul>
         </div>
 
