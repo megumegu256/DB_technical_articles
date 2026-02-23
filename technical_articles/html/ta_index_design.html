@@ -13,6 +13,8 @@
             --border-color: #e2e8f0;
             --alert-bg: #fffaf0;
             --alert-border: #ed8936;
+            --scenario-bg: #f0fff4;
+            --scenario-border: #38a169;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -49,6 +51,11 @@
             color: #4a5568;
             border-left: 5px solid var(--primary-color);
             padding-left: 0.8rem;
+        }
+        h4 {
+            font-size: 1.1rem;
+            margin-top: 1.5rem;
+            color: #2d3748;
         }
         p {
             margin-bottom: 1.5rem;
@@ -126,6 +133,20 @@
             color: #c05621;
             display: block;
             margin-bottom: 0.5rem;
+        }
+        .scenario {
+            background-color: var(--scenario-bg);
+            border: 1px solid var(--scenario-border);
+            border-radius: 6px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .scenario-title {
+            font-weight: bold;
+            color: var(--scenario-border);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
         }
         .step-box {
             background-color: #fcfcfc;
@@ -248,22 +269,16 @@ CREATE TABLE t_users (
                 <line x1="490" y1="150" x2="570" y2="250" class="line" />
                 <rect x="300" y="30" width="100" height="40" class="node" />
                 <text x="350" y="50" class="text">50</text>
-                
                 <rect x="160" y="130" width="100" height="40" class="node" />
                 <text x="210" y="150" class="text">20 | 40</text>
-                
                 <rect x="440" y="130" width="100" height="40" class="node" />
                 <text x="490" y="150" class="text">60 | 80</text>
-                
                 <rect x="85" y="230" width="90" height="40" class="node" />
                 <text x="130" y="250" class="text">10 | 15</text>
-                
                 <rect x="245" y="230" width="90" height="40" class="node" />
                 <text x="290" y="250" class="text">25 | 35</text>
-                
                 <rect x="365" y="230" width="90" height="40" class="node" />
                 <text x="410" y="250" class="text">55 | 58</text>
-                
                 <rect x="525" y="230" width="90" height="40" class="node" />
                 <text x="570" y="250" class="text">65 | 90</text>
             </svg>
@@ -304,12 +319,30 @@ CREATE TABLE t_users (
         </ul>
 
         <h2>4. インデックス設計の基本原則</h2>
-        <p>後述する実験では、以下の4つの基本原則が本当に正しいのかを実証していきます。ここで法則をしっかり頭に入れておいてください。</p>
+        <p>
+            第2章で述べた通り、インデックスには「読み取りが速くなる代わりに、書き込みが遅くなる」という強いトレードオフがあります。そのため、適当な列に手当たり次第インデックスを貼る（オーバーインデックス）と、システム全体のパフォーマンスが逆に悪化してしまいます。<br>
+            そこで、<strong>「どの列にインデックスを作るべきか」を見極めるためのシステム的なアプローチ</strong>が必要になります。実務において必ず意識すべき「4つの基本原則」を以下に示します。後述する実験パートでは、これらの法則が本当に正しいのかを実際に手を動かして検証していきます。
+        </p>
+
         <ol>
-            <li><strong>まずクエリを知る:</strong> アプリケーションが発行するSQLの <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code> に頻出する列を特定することから始めます。</li>
-            <li><strong>選択度（Selectivity / カーディナリティ）を考える:</strong> その条件で「全体の何％までデータを絞り込めるか」が重要です。例えば「性別」のように2〜3種類しか値がない列にインデックスを貼っても効果は薄いです。</li>
-            <li><strong>複合インデックスの順序:</strong> 複数の列を組み合わせた複合インデックスでは、第一条件で大きく絞り込める順序にするのが鉄則です。</li>
-            <li><strong>過剰なインデックスを作らない:</strong> トレードオフを考慮し、実測で効果を確認してから追加します。</li>
+            <li>
+                <strong>まずクエリを知る（推測で作らない）</strong><br>
+                インデックスは「アプリケーションが実際に発行するSQL」に合わせて設計するのが大前提です。テーブル定義書だけを眺めて「この列は検索されそうだ」と推測で作ってはいけません。実際のプログラムやログから、<code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code> 句に頻繁に登場する列を特定することから始めます。
+            </li>
+            <li>
+                <strong>選択度（Selectivity / カーディナリティ）を考える</strong><br>
+                「選択度」とは、ある検索条件を指定したときに「テーブル全体の何％までデータを絞り込めるか」を示す指標です。一般的に、<strong>テーブル全体の 5%〜10% 以下に絞り込める条件</strong>でなければ、インデックスは効果を発揮しません。<br>
+                例えば「ユーザーID」や「メールアドレス」のように値がバラバラな列（カーディナリティが高い列）は効果絶大ですが、「性別」のように2〜3種類しか値がない列（カーディナリティが低い列）にインデックスを貼っても、テーブルの半分がヒットしてしまうため、多くの場合、PostgreSQLはインデックスを無視して全件走査（Seq Scan）を選んでしまいます。
+            </li>
+            <li>
+                <strong>複合インデックスの順序</strong><br>
+                複数の列を組み合わせた「複合インデックス（Composite Index）」を作る場合、<strong>（列A, 列B）と（列B, 列A）は全く異なる挙動</strong>をします。<br>
+                複合インデックスは、指定された列の「左側から順に」ソートされて木構造を作るため、第一条件で大きく絞り込める順序にするのが鉄則です。電話帳が「苗字→名前」の順に並んでいるのに、「名前が『太郎』の人」を探すのが難しいのと同じ理屈です。
+            </li>
+            <li>
+                <strong>過剰なインデックスを作らない</strong><br>
+                インデックスは「作れば作るほど、書き込み性能とストレージ容量が犠牲になる」というトレードオフを強く意識してください。すべての <code>SELECT</code> をインデックス化するのは不可能です。新しく追加する際は、必ず実測（<code>EXPLAIN ANALYZE</code>等）で効果を確認してから本番環境に適用します。
+            </li>
         </ol>
 
         <h2>5. 実行計画の確認方法（EXPLAIN の見方）</h2>
@@ -379,7 +412,14 @@ SELECT
 FROM generate_series(1, 200000) AS s(i);</code></pre>
 
         <h3>6.2 実験A: 基本的な Index Scan（等値検索）</h3>
-        <p><strong>【基本原則1: まずクエリを知る】</strong>の裏付けとして、頻出する検索条件（メールアドレスの完全一致）に対してインデックスを作成し、効果を測定します。</p>
+        
+        <div class="scenario">
+            <div class="scenario-title">📌 想定シーンと検証の狙い</div>
+            <p>
+                <strong>想定シーン：</strong> Webサービスのログイン画面で、ユーザーが入力したメールアドレスとパスワードから、20万件の会員データベースから該当する1件のユーザー情報を探し出す。<br>
+                <strong>検証の狙い：</strong> インデックスがない場合（Seq Scan）と、インデックスを作成した場合（Index Scan）で、検索速度にどれほどの劇的な差が生まれるかという「基本原則1」の裏付けとなる効果を実測します。
+            </p>
+        </div>
 
         <div class="step-box">
             <div class="step-title">【操作手順】</div>
@@ -404,8 +444,15 @@ FROM generate_series(1, 200000) AS s(i);</code></pre>
         </div>
 
         <h3>6.3 実験B: インデックスが効かないケース①（LIKE検索）</h3>
-        <p>B-treeは辞書順にデータが並んでいるため、検索の仕方によってはせっかく作ったインデックスが使えません。</p>
         
+        <div class="scenario">
+            <div class="scenario-title">📌 想定シーンと検証の狙い</div>
+            <p>
+                <strong>想定シーン：</strong> 管理画面で特定のドメインのメールアドレスを持つユーザーを検索する際、「user15から始まるアドレス（前方一致）」と「@example.comで終わるアドレス（後方一致）」をそれぞれ検索する。<br>
+                <strong>検証の狙い：</strong> B-treeインデックスは辞書順にデータが並んでいるため、最初の文字が確定しない「後方一致検索」ではせっかく作ったインデックスが無効化されてしまうという、実践的な罠を検証します。
+            </p>
+        </div>
+
         <div class="step-box">
             <div class="step-title">【操作手順】</div>
             <ol>
@@ -428,7 +475,14 @@ EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE '%@example.com';</code></
         </div>
 
         <h3>6.4 実験C: インデックスが効かないケース②（選択度の問題）</h3>
-        <p><strong>【基本原則2: 選択度を考える】</strong>の裏付け実験です。データに偏りを持たせた <code>status</code> 列にインデックスを貼り、検索する値によってPostgreSQLの挙動がどう変わるかを見ます。</p>
+
+        <div class="scenario">
+            <div class="scenario-title">📌 想定シーンと検証の狙い</div>
+            <p>
+                <strong>想定シーン：</strong> 分析ダッシュボードにて、「退会済みのユーザー（全体の10%）」と、「現在利用中のユーザー（全体の90%）」の情報をそれぞれ一覧で取得する。<br>
+                <strong>検証の狙い：</strong> 「基本原則2: 選択度を考える」の裏付けです。カーディナリティの低い列（statusなど値の種類が少ない列）にインデックスを貼っても、条件によってPostgreSQLの賢いオプティマイザがあえてインデックスを無視することを確認します。
+            </p>
+        </div>
 
         <div class="step-box">
             <div class="step-title">【操作手順】</div>
@@ -446,12 +500,19 @@ EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE '%@example.com';</code></
                 </li>
             </ol>
             <div class="note">
-                <strong>【考察】</strong> なぜ多数派を検索すると Seq Scan になるのでしょうか？それは、条件にヒットする件数が多すぎる場合、オプティマイザが「インデックスの木をたどってから実データをチマチマ引きに行くより、最初からテーブル全体をガサッと読み込んだ方がマシ（I/Oコストが低い）」と賢く判断するためです。選択度の低い列にインデックスを貼っても無意味であることがこれで実証されました。
+                <strong>【考察】</strong> なぜ多数派を検索すると Seq Scan になるのでしょうか？それは、条件にヒットする件数が多すぎる場合、オプティマイザが「インデックスの木をたどってから実データをチマチマ引きに行くより、最初からテーブル全体をガサッと読み込んだ方がマシ（I/Oコストが低い）」と賢く判断するためです。選択度の低い列に単独でインデックスを貼っても、多くの場合において無意味であることがこれで実証されました。
             </div>
         </div>
 
         <h3>6.5 実験D: 複合インデックスの順序</h3>
-        <p><strong>【基本原則3: 複合インデックスの順序】</strong>の裏付け実験です。複数列に対するインデックスの順序がどれほど重要かを確認します。</p>
+
+        <div class="scenario">
+            <div class="scenario-title">📌 想定シーンと検証の狙い</div>
+            <p>
+                <strong>想定シーン：</strong> カスタマーサポートの画面で、「年齢が30歳 かつ 2024年以降に登録したユーザー」を探し出す。そのために <code>age</code> と <code>created_at</code> の複合インデックスを作成する。<br>
+                <strong>検証の狙い：</strong> 「基本原則3: 複合インデックスの順序」の裏付けです。複合インデックスは左側の列から順にソートされるため、第1列（ここではage）の条件を指定しないと、せっかくの複合インデックスが使えないという重要な特性を検証します。
+            </p>
+        </div>
 
         <div class="step-box">
             <div class="step-title">【操作手順】</div>
