@@ -52,11 +52,6 @@
             border-left: 5px solid var(--primary-color);
             padding-left: 0.8rem;
         }
-        h4 {
-            font-size: 1.1rem;
-            margin-top: 1.5rem;
-            color: #2d3748;
-        }
         p {
             margin-bottom: 1.5rem;
         }
@@ -367,7 +362,7 @@ CREATE TABLE t_users (
             <li><strong>Seq Scan / Index Scan (左端の文字):</strong> 
                 <ul>
                     <li><code>Seq Scan</code> と書かれていたら、インデックスが使われず、テーブルを先頭から全件走査している証拠です（遅い）。</li>
-                    <li><code>Index Scan</code> と書かれていたら、無事にインデックスを使って効率よく検索できています（速い）。</li>
+                    <li><code>Index Scan</code> または <code>Bitmap Index Scan</code> と書かれていたら、無事にインデックスを使って効率よく検索できています（速い）。</li>
                 </ul>
             </li>
             <li><strong>cost=0.00..8.44 (カッコ内の数値):</strong> PostgreSQLが内部で計算した「推定の処理コスト」です。右側の数値が全体の推定コストを表します。</li>
@@ -416,61 +411,74 @@ FROM generate_series(1, 200000) AS s(i);</code></pre>
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
             <p>
-                <strong>想定シーン：</strong> Webサービスのログイン画面で、ユーザーが入力したメールアドレスとパスワードから、20万件の会員データベースから該当する1件のユーザー情報を探し出す。<br>
-                <strong>検証の狙い：</strong> インデックスがない場合（Seq Scan）と、インデックスを作成した場合（Index Scan）で、検索速度にどれほどの劇的な差が生まれるかという「基本原則1」の裏付けとなる効果を実測します。
+                <strong>想定シーン：</strong> Webサービスのログイン画面で、ユーザーが入力したメールアドレスをもとに、20万件の会員データベースから該当する1件のユーザー情報を探し出す。<br>
+                <strong>検証の狙い：</strong> インデックスがない場合（Seq Scan）と、作成した場合（Index Scan）で、検索速度にどれほどの劇的な差が生まれるかという「基本原則1」の裏付けとなる効果を実証します。
             </p>
         </div>
 
         <div class="step-box">
-            <div class="step-title">【操作手順】</div>
+            <div class="step-title">【操作手順と検証】</div>
             <ol>
                 <li><strong>インデックス作成前の状態を確認する</strong>
-                    <p>以下のクエリを実行し、<code>Seq Scan</code>になっていることと、<code>actual time</code>（実行時間）をメモしてください。</p>
                     <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'user150000@example.com';</code></pre>
-                    <p class="comment">※筆者の環境での実測値： 約 (ここにミリ秒を記載) ms</p>
+                    <p class="comment">※筆者の環境での実測値： 約 15.9 ms （Seq Scan）</p>
+                    <p>実行計画を見ると <code>Rows Removed by Filter: 199999</code> と出力されます。これは「目的の1件を見つけるために、関係ない19万9999件ものデータを無駄に読み込んで捨てた」ことを意味し、全件走査の非効率さが明確に現れています。</p>
                 </li>
                 <li><strong>インデックスを作成する</strong>
                     <pre><code>CREATE INDEX idx_t_users_email ON t_users (email);</code></pre>
                 </li>
                 <li><strong>再度検索を実行し、比較する</strong>
-                    <p>もう一度 1. と同じクエリを実行します。</p>
                     <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'user150000@example.com';</code></pre>
-                    <p class="comment">※筆者の環境での実測値： 約 (ここにミリ秒を記載) ms</p>
+                    <p class="comment">※筆者の環境での実測値： 約 0.09 ms （Index Scan）</p>
                 </li>
             </ol>
             <div class="note">
-                <strong>【確認ポイント】</strong> 結果が <code>Index Scan using idx_t_users_email</code> に変化し、実行時間が劇的に短縮されているはずです。これがインデックスの基本となる威力です。
+                <strong>【結論】</strong> 結果が <code>Index Scan using idx_t_users_email</code> に変化し、実行時間は約15.9msから約0.09msへと<strong>約177倍も高速化</strong>されました。これがインデックスの基本となる圧倒的な威力です。
             </div>
         </div>
 
-        <h3>6.3 実験B: インデックスが効かないケース①（LIKE検索）</h3>
+        <h3>6.3 実験B: インデックスが効かないケース①（LIKE検索）と環境の罠</h3>
         
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
             <p>
-                <strong>想定シーン：</strong> 管理画面で特定のドメインのメールアドレスを持つユーザーを検索する際、「user15から始まるアドレス（前方一致）」と「@example.comで終わるアドレス（後方一致）」をそれぞれ検索する。<br>
-                <strong>検証の狙い：</strong> B-treeインデックスは辞書順にデータが並んでいるため、最初の文字が確定しない「後方一致検索」ではせっかく作ったインデックスが無効化されてしまうという、実践的な罠を検証します。
+                <strong>想定シーン：</strong> 管理画面で特定の文字列を含むメールアドレスを持つユーザーを検索する際、「user15から始まるアドレス（前方一致）」と、「@example.comで終わるアドレス（後方一致）」をそれぞれ検索する。<br>
+                <strong>検証の狙い：</strong> B-treeインデックスは辞書順にデータが並んでいるため、「前方一致」ならインデックスが効き、「後方一致」では効かないことを実証します。さらに、本講義のコンテナ環境（日本語ロケール）特有の「罠」とその解決策も提示します。
             </p>
         </div>
 
         <div class="step-box">
-            <div class="step-title">【操作手順】</div>
+            <div class="step-title">【操作手順と検証】</div>
             <ol>
-                <li><strong>前方一致検索を実行する</strong>
-                    <p>最初の文字がわかっている状態での検索です。</p>
+                <li><strong>通常のインデックスで前方一致検索を実行する（罠の発見）</strong>
+                    <p>実験Aで作成したインデックスがある状態で、前方一致検索を実行してみます。</p>
                     <pre><code><span class="comment">-- 'user15' から始まるアドレスを検索</span>
 EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE 'user15%';</code></pre>
-                    <p>結果は <code>Index Scan</code>（または Bitmap Index Scan）になり、インデックスが有効に働いていることがわかります。</p>
+                    <p class="comment">※筆者の環境での実測値： 約 19.3 ms （Seq Scan）</p>
+                    <p><strong>【罠の解説】</strong> B-treeは前方一致に強いはずなのに、なぜか <code>Seq Scan</code> になってしまいました。実は、PostgreSQLのデータベース言語設定（ロケール）が日本語環境などの場合、文字の並び順ルールが複雑になるため、通常の <code>CREATE INDEX</code> では <code>LIKE</code> 検索にインデックスが使われません。</p>
+                </li>
+                <li><strong>LIKE検索に対応したインデックスを作り直す</strong>
+                    <p>この罠を回避するため、<code>text_pattern_ops</code> という特殊なオプションを指定してインデックスを再作成します。</p>
+                    <pre><code><span class="comment">-- 既存のインデックスを削除</span>
+DROP INDEX idx_t_users_email;
+<span class="comment">-- LIKE検索用の演算子クラスを指定して作成</span>
+CREATE INDEX idx_t_users_email_pattern ON t_users (email text_pattern_ops);</code></pre>
+                </li>
+                <li><strong>再度、前方一致検索を実行する</strong>
+                    <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE 'user15%';</code></pre>
+                    <p class="comment">※筆者の環境での実測値： 約 3.7 ms （Bitmap Index Scan）</p>
+                    <p>実行計画を見ると、条件が <code>(email ~&gt;=~ 'user15') AND (email ~&lt;~ 'user16')</code> のように「user15以上、user16未満」という範囲検索にPostgreSQLの内部で自動翻訳され、見事にインデックスが効いて高速化されたことがわかります。</p>
                 </li>
                 <li><strong>後方一致検索を実行する</strong>
-                    <p>末尾の文字しかわからない状態での検索です。</p>
+                    <p>では、末尾の文字しかわからない状態での検索はどうでしょうか。</p>
                     <pre><code><span class="comment">-- '@example.com' で終わるアドレスを検索</span>
 EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE '%@example.com';</code></pre>
-                    <p>結果を確認すると、せっかくインデックスを作ったのに <code>Seq Scan</code> に戻ってしまっています。</p>
+                    <p class="comment">※筆者の環境での実測値： 約 29.9 ms （Seq Scan）</p>
+                    <p>結果を確認すると、せっかく専用のインデックスを作ったのに <code>Seq Scan</code> に戻ってしまいました。</p>
                 </li>
             </ol>
             <div class="note">
-                <strong>【考察】</strong> 後方一致検索ではインデックスが効きません。電話帳で「末尾が『郎』の人」を探すとき、結局全ページを見なければならないのと同じ理屈です。最初の文字が確定していないと、B-treeの木を適切にたどることはできないのです。
+                <strong>【結論】</strong> 後方一致検索ではインデックスが絶対に効きません。電話帳で「末尾が『郎』の人」を探すとき、結局全ページを見なければならないのと同じ理屈です。最初の文字が確定していないと、B-treeの木を適切にたどることはできないのです。
             </div>
         </div>
 
@@ -479,28 +487,30 @@ EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE '%@example.com';</code></
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
             <p>
-                <strong>想定シーン：</strong> 分析ダッシュボードにて、「退会済みのユーザー（全体の10%）」と、「現在利用中のユーザー（全体の90%）」の情報をそれぞれ一覧で取得する。<br>
+                <strong>想定シーン：</strong> 分析ダッシュボードにて、「退会済みのユーザー（全体の約10%）」と、「現在利用中のユーザー（全体の約90%）」の情報をそれぞれ一覧で取得する。<br>
                 <strong>検証の狙い：</strong> 「基本原則2: 選択度を考える」の裏付けです。カーディナリティの低い列（statusなど値の種類が少ない列）にインデックスを貼っても、条件によってPostgreSQLの賢いオプティマイザがあえてインデックスを無視することを確認します。
             </p>
         </div>
 
         <div class="step-box">
-            <div class="step-title">【操作手順】</div>
+            <div class="step-title">【操作手順と検証】</div>
             <ol>
                 <li><strong>status列にインデックスを作成する</strong>
                     <pre><code>CREATE INDEX idx_t_users_status ON t_users (status);</code></pre>
                 </li>
-                <li><strong>少数派（全体の10%）を検索する</strong>
+                <li><strong>少数派（全体の約10%）を検索する</strong>
                     <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE status = 'inactive';</code></pre>
-                    <p>こちらは高確率でインデックスを使った検索（Bitmap Index Scan等）が選ばれます。</p>
+                    <p class="comment">※筆者の環境での実測値： 約 5.9 ms （Bitmap Index Scan）</p>
+                    <p>少数派への検索では、高確率でインデックスを使った検索が選ばれます。</p>
                 </li>
-                <li><strong>多数派（全体の90%）を検索する</strong>
+                <li><strong>多数派（全体の約90%）を検索する</strong>
                     <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE status = 'active';</code></pre>
-                    <p>結果を確認すると、インデックスが存在するのに <code>Seq Scan</code> が選ばれているはずです。</p>
+                    <p class="comment">※筆者の環境での実測値： 約 28.9 ms （Seq Scan）</p>
+                    <p>結果を確認すると、インデックスが存在するのに <code>Seq Scan</code> に逆戻りしました。</p>
                 </li>
             </ol>
             <div class="note">
-                <strong>【考察】</strong> なぜ多数派を検索すると Seq Scan になるのでしょうか？それは、条件にヒットする件数が多すぎる場合、オプティマイザが「インデックスの木をたどってから実データをチマチマ引きに行くより、最初からテーブル全体をガサッと読み込んだ方がマシ（I/Oコストが低い）」と賢く判断するためです。選択度の低い列に単独でインデックスを貼っても、多くの場合において無意味であることがこれで実証されました。
+                <strong>【結論】</strong> なぜ多数派を検索すると Seq Scan になるのでしょうか？それは、条件にヒットする件数が多すぎる場合、オプティマイザが「インデックスをたどってから実データをバラバラに拾いに行く（ランダムアクセス）より、最初からテーブル全体を先頭から一気に舐めた（シーケンシャルアクセス）方が、ディスクI/Oのコストが安く済むぞ」と瞬時に計算して判断するためです。選択度の低い列に単独でインデックスを貼っても、多くの場合において無意味であることがこれで実証されました。
             </div>
         </div>
 
@@ -515,7 +525,7 @@ EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE '%@example.com';</code></
         </div>
 
         <div class="step-box">
-            <div class="step-title">【操作手順】</div>
+            <div class="step-title">【操作手順と検証】</div>
             <ol>
                 <li><strong>複合インデックスを作成する</strong>
                     <pre><code><span class="comment">-- age を第1条件、created_at を第2条件として作成</span>
@@ -523,15 +533,17 @@ CREATE INDEX idx_t_users_age_created ON t_users (age, created_at);</code></pre>
                 </li>
                 <li><strong>第1列と第2列の両方を使って検索する</strong>
                     <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE age = 30 AND created_at > '2024-01-01';</code></pre>
-                    <p>結果は <code>Index Scan</code>（または Bitmap Index Scan）になり、複合インデックスが完璧に機能します。</p>
+                    <p class="comment">※筆者の環境での実測値： 約 2.9 ms （Bitmap Index Scan）</p>
+                    <p>結果は Index Scan 系になり、複合インデックスが完璧に機能して高速化されました。</p>
                 </li>
                 <li><strong>第2列のみを使って検索する</strong>
                     <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE created_at > '2024-01-01';</code></pre>
-                    <p>結果は <code>Seq Scan</code> になってしまいます。</p>
+                    <p class="comment">※筆者の環境での実測値： 約 26.7 ms （Seq Scan）</p>
+                    <p>複合インデックスを作ったにも関わらず、結果は <code>Seq Scan</code> になってしまいました。</p>
                 </li>
             </ol>
             <div class="note">
-                <strong>【考察】</strong> 複合インデックスは左側の列（この場合は age）から順にソートされて木構造を作ります。そのため、第1列（大分類）の条件を指定してあげないと、第2列（小分類）単独では木をたどることができません。複合インデックスを作る際は「WHERE句で必ず指定され、かつ最も絞り込める列」を先頭に持ってくるのが鉄則です。
+                <strong>【結論】</strong> 複合インデックスは左側の列（この場合は age）から順にソートされて木構造を作ります。そのため、第1列（大分類）の条件を指定してあげないと、第2列（小分類）単独では木をたどることができません。複合インデックスを作る際は「WHERE句で必ず指定され、かつ最も絞り込める列」を先頭に持ってくるのが鉄則です。
             </div>
         </div>
 
