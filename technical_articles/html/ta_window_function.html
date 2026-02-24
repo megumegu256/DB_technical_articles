@@ -1,32 +1,517 @@
-<html>
+<!DOCTYPE html>
+<html lang="ja">
 <head>
-    <title>Technical Article: Window Function</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PostgreSQLで学ぶ「ウィンドウ関数」の実践：集計と分析クエリを極める</title>
     <style>
+        :root {
+            --primary-color: #3182ce;
+            --bg-color: #f7fafc;
+            --text-color: #2d3748;
+            --code-bg: #edf2f7;
+            --border-color: #e2e8f0;
+            --alert-bg: #fffaf0;
+            --alert-border: #ed8936;
+            --scenario-bg: #f0fff4;
+            --scenario-border: #38a169;
+        }
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         h1 {
-            color: #333;
+            font-size: 2rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
         }
-        .article-list {
-            list-style-type: none;
-            padding: 0;
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3rem;
         }
-        .article-list li {
-            margin-bottom: 10px;
+        h3 {
+            font-size: 1.25rem;
+            margin-top: 2rem;
+            color: #4a5568;
+            border-left: 5px solid var(--primary-color);
+            padding-left: 0.8rem;
         }
-        .article-list a {
-            text-decoration: none;
-            color: #007BFF;
+        p {
+            margin-bottom: 1.5rem;
         }
-        .article-list a:hover {
-            text-decoration: underline;
+        ul, ol {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        pre {
+            background-color: var(--code-bg);
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            border: 1px solid var(--border-color);
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+        .terminal-output {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            border: none;
+        }
+        .comment {
+            color: #718096;
+            font-style: italic;
+        }
+        code {
+            background-color: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.9em;
+            color: #d53f8c;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background-color: var(--code-bg);
+            font-weight: bold;
+            color: #4a5568;
+        }
+        .note {
+            background-color: #ebf8ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .alert {
+            background-color: var(--alert-bg);
+            border: 1px solid var(--alert-border);
+            border-left: 6px solid var(--alert-border);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        .alert strong {
+            color: #c05621;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .scenario {
+            background-color: var(--scenario-bg);
+            border: 1px solid var(--scenario-border);
+            border-radius: 6px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .scenario-title {
+            font-weight: bold;
+            color: var(--scenario-border);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .step-box {
+            background-color: #fcfcfc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .step-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        .footer {
+            margin-top: 4rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--border-color);
+            text-align: right;
+            color: #718096;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
-    <h1>Technical Article: Window Function</h1>
-    
+    <div class="container">
+        <h1>PostgreSQLで学ぶ「ウィンドウ関数」の実践：集計と分析クエリを極める</h1>
+
+        <h2>0. はじめに（この記事のゴール）</h2>
+        <p>
+            データベースで「各部門の平均売上」や「合計点」を出す際、私たちは <code>GROUP BY</code> を使ってきました。しかし、「個人の売上データはそのまま表示しつつ、横に部門の平均売上も並べたい」や、「売上の高い順にランキング（順位）をつけたい」といった要望が出たとき、通常の <code>GROUP BY</code> やサブクエリだけではSQLが非常に複雑になってしまいます。
+        </p>
+        <p>
+            これを美しく、かつ高速に解決するのが<strong>「ウィンドウ関数（Window Functions）」</strong>です。本記事では、講義の演習環境（PostgreSQL 17 コンテナ）を用いて以下のゴールを目指します。
+        </p>
+        <ul>
+            <li><code>GROUP BY</code> とウィンドウ関数の決定的な違いを理解する</li>
+            <li><code>RANK</code>, <code>ROW_NUMBER</code> を用いたランキング処理を実装できる</li>
+            <li><code>PARTITION BY</code> を使って「グループごとの集計・順位付け」ができる</li>
+            <li><code>LAG / LEAD</code> やフレーム指定を用いた「累計」や「前月比」などの高度な分析クエリを書けるようになる</li>
+        </ul>
+
+        <h2>1. 実行環境とテーブル定義</h2>
+        <p>本記事の SQL は、以下の環境で動作確認を行っています。読者の皆さんも、自身の環境で実際に手を動かしながら読み進めてください。</p>
+
+        <h3>実行環境</h3>
+        <ul>
+            <li><strong>ホスト OS:</strong> Windows 11 (WSL2) または macOS</li>
+            <li><strong>DBMS:</strong> PostgreSQL 17</li>
+            <li><strong>Docker イメージ:</strong> postgres:17.6</li>
+            <li><strong>ポート:</strong> 5432</li>
+        </ul>
+
+        <div class="alert">
+            <strong>⚠️ 環境構築に関する確認事項</strong>
+            <ul>
+                <li>ターミナルから <code>psql -U postgres -d postgres -h localhost</code> 等のコマンドを実行し、確実にデータベースに接続できていることを確認してから実験に進んでください。</li>
+            </ul>
+        </div>
+
+        <h3>テーブル定義（検証用データ）</h3>
+        <p>ウィンドウ関数の挙動を確認するため、営業担当者の売上データを管理する <code>sales_records</code> テーブルを作成します。</p>
+<pre><code><span class="comment">-- 売上管理テーブルの作成</span>
+DROP TABLE IF EXISTS sales_records;
+CREATE TABLE sales_records (
+    id serial PRIMARY KEY,
+    sales_month text NOT NULL,      <span class="comment">-- 売上月 (例: '2024-04')</span>
+    department text NOT NULL,       <span class="comment">-- 部署 (例: '第1営業部')</span>
+    employee_name text NOT NULL,    <span class="comment">-- 社員名</span>
+    amount int NOT NULL             <span class="comment">-- 売上金額（万円）</span>
+);</code></pre>
+
+        <h2>2. ウィンドウ関数とは何か？（GROUP BYとの違い）</h2>
+        <p>
+            ウィンドウ関数を理解する上で最も重要なのは、<strong>「GROUP BY（集約関数）」との違い</strong>です。
+        </p>
+        <ul>
+            <li><strong>GROUP BY:</strong> 複数の行を「1行に圧縮（集約）」してしまいます。個別のデータ（明細）は失われます。</li>
+            <li><strong>ウィンドウ関数:</strong> 行を圧縮せず、「元の行（明細）を残したまま、その横に集計結果や順位をくっつける」ことができます。</li>
+        </ul>
+        <p>
+            この「計算の対象となる行のまとまり」のことを<strong>ウィンドウ（窓）</strong>と呼びます。
+        </p>
+
+        <h3>基本構文</h3>
+<pre><code>SELECT 
+    列名,
+    ウィンドウ関数() OVER (
+        [PARTITION BY グループ化する列] 
+        [ORDER BY 並べ替える列]
+    )
+FROM テーブル名;</code></pre>
+        <p><code>OVER()</code> 句がついているのがウィンドウ関数の目印です。</p>
+
+        <h2>3. 実験: ウィンドウ関数の挙動を検証する</h2>
+        <p>ここからは、実際にコンテナ環境を用いて検証を進めます。</p>
+
+        <h3>3.1 検証用データセットの投入（準備）</h3>
+        <p>まずは以下のSQLを実行し、ダミーデータを挿入してください。今回は挙動を目で見て確認しやすくするため、あえて少量のデータ（15件）を手動で投入します。</p>
+
+        <div class="step-box">
+<pre><code><span class="comment">-- 15件のテストデータを挿入</span>
+INSERT INTO sales_records (sales_month, department, employee_name, amount) VALUES
+('2024-04', '第1営業部', '佐藤', 500),
+('2024-04', '第1営業部', '鈴木', 800),
+('2024-04', '第1営業部', '高橋', 800),
+('2024-04', '第2営業部', '田中', 450),
+('2024-04', '第2営業部', '伊藤', 700),
+('2024-05', '第1営業部', '佐藤', 600),
+('2024-05', '第1営業部', '鈴木', 900),
+('2024-05', '第1営業部', '高橋', 850),
+('2024-05', '第2営業部', '田中', 500),
+('2024-05', '第2営業部', '伊藤', 750),
+('2024-06', '第1営業部', '佐藤', 550),
+('2024-06', '第1営業部', '鈴木', 850),
+('2024-06', '第1営業部', '高橋', 900),
+('2024-06', '第2営業部', '田中', 600),
+('2024-06', '第2営業部', '伊藤', 800);</code></pre>
+        </div>
+
+        <h3>3.2 実験A: 基本のランキング関数（RANK / DENSE_RANK / ROW_NUMBER）</h3>
+        
+        <div class="scenario">
+            <div class="scenario-title">📌 想定シーンと検証の狙い</div>
+            <p>
+                <strong>想定シーン：</strong> 2024年4月の売上データにおいて、売上が高い順に社員のランキング表を作成したい。<br>
+                <strong>検証の狙い：</strong> 順位をつける3つの代表的なウィンドウ関数（<code>RANK</code>, <code>DENSE_RANK</code>, <code>ROW_NUMBER</code>）の挙動の違い（特に同率順位が出た場合の処理）を比較します。
+            </p>
+        </div>
+
+        <div class="step-box">
+            <div class="step-title">【操作手順と検証】</div>
+            <ol>
+                <li><strong>3つの関数を同時に実行して比較する</strong>
+                    <pre><code>SELECT 
+    employee_name, 
+    amount,
+    RANK() OVER (ORDER BY amount DESC) AS "rank",
+    DENSE_RANK() OVER (ORDER BY amount DESC) AS "dense_rank",
+    ROW_NUMBER() OVER (ORDER BY amount DESC) AS "row_number"
+FROM sales_records
+WHERE sales_month = '2024-04';</code></pre>
+                </li>
+            </ol>
+            <p><strong>▼ターミナル出力結果（※後で実測結果のスクリーンショットに差し替えます）</strong></p>
+            <pre class="terminal-output"><code>(ここに実行結果のテーブルがテキストで表示されます)</code></pre>
+
+            <div class="note">
+                <strong>【結果の考察】</strong><br>
+                鈴木さんと高橋さんが同額（800）である点に注目してください。<br>
+                ・<strong>RANK()：</strong> 1位, 1位 の次は「3位」になります（同着の分だけ順位が飛ぶ）。<br>
+                ・<strong>DENSE_RANK()：</strong> 1位, 1位 の次は「2位」になります（順位が飛ばない）。<br>
+                ・<strong>ROW_NUMBER()：</strong> 同額でも無理やり 1, 2, 3... と一意の連番を振ります。用途に合わせて使い分けることが重要です。
+            </div>
+        </div>
+
+        <h3>3.3 実験B: グループごとの処理（PARTITION BY）</h3>
+
+        <div class="scenario">
+            <div class="scenario-title">📌 想定シーンと検証の狙い</div>
+            <p>
+                <strong>想定シーン：</strong> 全体ではなく、「部署ごとに」売上トップは誰か？を集計したい。<br>
+                <strong>検証の狙い：</strong> <code>OVER()</code> 句の中に <code>PARTITION BY</code> を追加することで、ウィンドウ（計算対象の枠）をグループごとに分割できることを確認します。
+            </p>
+        </div>
+
+        <div class="step-box">
+            <div class="step-title">【操作手順と検証】</div>
+            <ol>
+                <li><strong>部署ごとに順位をリセットして計算する</strong>
+                    <pre><code>SELECT 
+    department,
+    employee_name, 
+    amount,
+    RANK() OVER (PARTITION BY department ORDER BY amount DESC) AS dept_rank
+FROM sales_records
+WHERE sales_month = '2024-05';</code></pre>
+                </li>
+            </ol>
+            <p><strong>▼ターミナル出力結果（※後で実測結果のスクリーンショットに差し替えます）</strong></p>
+            <pre class="terminal-output"><code>(ここに実行結果のテーブルがテキストで表示されます)</code></pre>
+
+            <div class="note">
+                <strong>【結果の考察】</strong><br>
+                <code>department</code>（部署）が変わるたびに、<code>dept_rank</code> が「1」から再スタートしていることが確認できます。<code>PARTITION BY</code> は、ウィンドウ関数における <code>GROUP BY</code> のような役割を果たします。
+            </div>
+        </div>
+
+        <h3>3.4 実験C: 集約関数をウィンドウ関数として使う（売上構成比の計算）</h3>
+
+        <div class="scenario">
+            <div class="scenario-title">📌 想定シーンと検証の狙い</div>
+            <p>
+                <strong>想定シーン：</strong> 各社員の売上が、部署全体の売上の「何パーセント（構成比）」を占めているかを計算したい。<br>
+                <strong>検証の狙い：</strong> <code>SUM()</code> などの通常の集約関数も、<code>OVER()</code> をつけることでウィンドウ関数として機能し、「明細行を残したまま全体合計を取得できる」という強みを検証します。
+            </p>
+        </div>
+
+        <div class="step-box">
+            <div class="step-title">【操作手順と検証】</div>
+            <ol>
+                <li><strong>個人の売上と、部署の合計売上を横に並べる</strong>
+                    <pre><code>SELECT 
+    department,
+    employee_name, 
+    amount AS personal_amount,
+    -- 部署内の合計売上を計算（ORDER BYがない点に注意）
+    SUM(amount) OVER (PARTITION BY department) AS dept_total,
+    -- 構成比の計算（個人売上 ÷ 部署合計 × 100）
+    ROUND(amount * 100.0 / SUM(amount) OVER (PARTITION BY department), 1) AS ratio_pct
+FROM sales_records
+WHERE sales_month = '2024-06'
+ORDER BY department, amount DESC;</code></pre>
+                </li>
+            </ol>
+            <p><strong>▼ターミナル出力結果（※後で実測結果のスクリーンショットに差し替えます）</strong></p>
+            <pre class="terminal-output"><code>(ここに実行結果のテーブルがテキストで表示されます)</code></pre>
+
+            <div class="note">
+                <strong>【結果の考察】</strong><br>
+                通常の <code>GROUP BY</code> では社員名（明細）が消えてしまいますが、ウィンドウ関数を使うことで「個人の売上」と「部署の合計売上」を同じ行に持ってくることができ、その行の中で割り算（構成比の計算）が簡単に実現できました。
+            </div>
+        </div>
+
+        <h3>3.5 実験D: LAG / LEAD関数による「前月比」の計算</h3>
+
+        <div class="scenario">
+            <div class="scenario-title">📌 想定シーンと検証の狙い</div>
+            <p>
+                <strong>想定シーン：</strong> 各社員の月ごとの売上推移を追い、「先月の売上」と比較してどれくらい成長したか（前月比）を出したい。<br>
+                <strong>検証の狙い：</strong> 行と行をまたいだ比較ができる <code>LAG()</code>（前の行を取得）および <code>LEAD()</code>（次の行を取得）関数の威力を体感します。
+            </p>
+        </div>
+
+        <div class="step-box">
+            <div class="step-title">【操作手順と検証】</div>
+            <ol>
+                <li><strong>社員ごとに時系列で並べ、1つ前の行の値を取得する</strong>
+                    <pre><code>SELECT 
+    employee_name,
+    sales_month,
+    amount AS current_amount,
+    -- PARTITION BY で社員ごとに分割し、sales_month 順に並べた際の「1つ前の行」を取得
+    LAG(amount) OVER (PARTITION BY employee_name ORDER BY sales_month) AS prev_amount,
+    -- 前月との差額
+    amount - LAG(amount) OVER (PARTITION BY employee_name ORDER BY sales_month) AS diff
+FROM sales_records
+WHERE employee_name = '佐藤' OR employee_name = '伊藤'
+ORDER BY employee_name, sales_month;</code></pre>
+                </li>
+            </ol>
+            <p><strong>▼ターミナル出力結果（※後で実測結果のスクリーンショットに差し替えます）</strong></p>
+            <pre class="terminal-output"><code>(ここに実行結果のテーブルがテキストで表示されます)</code></pre>
+
+            <div class="note">
+                <strong>【結果の考察】</strong><br>
+                4月の <code>prev_amount</code> は前の月が存在しないため <code>NULL</code> になります。5月、6月はそれぞれ前の月の売上が同じ行に取得できており、自己結合（SELF JOIN）などの複雑なSQLを書かなくても、前月比や前年同月比が恐ろしく簡単に計算できることがわかります。
+            </div>
+        </div>
+
+        <h2>4. 実行計画の確認（EXPLAIN）とパフォーマンス</h2>
+        <p>ウィンドウ関数は便利ですが、内部的にはどのように処理されているのでしょうか？実験Aのランキングクエリに <code>EXPLAIN</code> をつけて実行してみます。</p>
+        
+<pre class="terminal-output"><code># EXPLAIN SELECT employee_name, RANK() OVER (ORDER BY amount DESC) FROM sales_records;
+
+                            QUERY PLAN                             
+-------------------------------------------------------------------
+ WindowAgg  (cost=1.17..1.43 rows=15 width=40)
+   ->  Sort  (cost=1.17..1.20 rows=15 width=36)
+         Sort Key: amount DESC
+         ->  Seq Scan on sales_records  (cost=0.00..1.15 rows=15 width=36)
+(4 rows)</code></pre>
+
+        <p>
+            実行計画を見ると、<strong><code>Sort</code>（並べ替え）</strong>処理が行われた直後に、<strong><code>WindowAgg</code>（ウィンドウ集計）</strong>という専用のノードが実行されていることがわかります。<br>
+            ウィンドウ関数は <code>ORDER BY</code> や <code>PARTITION BY</code> を多用するため、内部的に大量の<strong>ソート処理</strong>が発生します。そのため、データ量が膨大な場合は、前回の記事で学んだ「インデックス設計（ソート処理のスキップ）」と組み合わせることが、パフォーマンスチューニングの鍵となります。
+        </p>
+
+        <h2>5. 演習課題</h2>
+        <p>ウィンドウ関数の威力を理解したところで、以下の5つの実践問題に挑戦してみましょう。実務のデータ分析で必ず求められるレベルのクエリです。</p>
+
+        <h3>問題1：シンプルな累計（Running Total）の計算（難易度：⭐⭐）</h3>
+        <p>
+            <strong>【問題】</strong><br>
+            「田中」さんの月ごとの売上と、その月までの「累計売上（cumulative_sum）」を計算するクエリを書いてください。
+        </p>
+
+        <details style="margin-bottom: 2.5rem; background: #f7fafc; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <summary style="cursor: pointer; font-weight: bold; color: var(--primary-color);">解答例と解説を見る</summary>
+            <p style="margin-top: 1rem;">
+                <strong>解答例：</strong>
+            </p>
+<pre><code>SELECT 
+    sales_month,
+    amount,
+    SUM(amount) OVER (ORDER BY sales_month) AS cumulative_sum
+FROM sales_records
+WHERE employee_name = '田中'
+ORDER BY sales_month;</code></pre>
+            <p>
+                <strong>解説：</strong> 集約関数の <code>SUM()</code> をウィンドウ関数として使いますが、実験Cのように <code>PARTITION BY</code> のみを使うと「全体の合計」になります。しかし、<code>OVER()</code> の中に <strong><code>ORDER BY</code> を指定すると、デフォルトで「最初の行から現在の行までの範囲」を集計する（＝累計になる）</strong>という非常に重要な特性があります。
+            </p>
+        </details>
+
+        <h3>問題2：上位N件の抽出（難易度：⭐⭐⭐）</h3>
+        <p>
+            <strong>【問題】</strong><br>
+            2024年6月のデータで、「各部署」ごとに売上が上位1名の社員だけを抽出するクエリを記述してください。（同率1位はいないものとします）。<br>
+            ヒント：ウィンドウ関数を含む列は、そのまま <code>WHERE</code> 句には書けないため、サブクエリ（またはCTE：WITH句）を使う必要があります。
+        </p>
+
+        <details style="margin-bottom: 2.5rem; background: #f7fafc; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <summary style="cursor: pointer; font-weight: bold; color: var(--primary-color);">解答例と解説を見る</summary>
+            <p style="margin-top: 1rem;">
+                <strong>解答例：</strong>
+            </p>
+<pre><code>WITH RankedSales AS (
+    SELECT 
+        department,
+        employee_name,
+        amount,
+        ROW_NUMBER() OVER (PARTITION BY department ORDER BY amount DESC) as rnk
+    FROM sales_records
+    WHERE sales_month = '2024-06'
+)
+SELECT department, employee_name, amount
+FROM RankedSales
+WHERE rnk = 1;</code></pre>
+            <p>
+                <strong>解説：</strong> SQLの実行順序（WHERE句はSELECT句より先に評価される）の制約上、<code>WHERE rank() OVER(...) = 1</code> と直接書くことはできません。そのため、WITH句（CTE）を使って一度ランキング付きの仮想テーブルを作成し、メインクエリで <code>rnk = 1</code> を絞り込むのが王道パターンです。
+            </p>
+        </details>
+
+        <h3>問題3：移動平均の計算（難易度：⭐⭐⭐⭐）</h3>
+        <p>
+            <strong>【問題】</strong><br>
+            「佐藤」さんの売上について、当月と「直近の過去1ヶ月」を含めた「2ヶ月移動平均」を求めるクエリを記述してください。ウィンドウフレーム指定（<code>ROWS BETWEEN</code>）を利用します。
+        </p>
+
+        <details style="margin-bottom: 2.5rem; background: #f7fafc; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <summary style="cursor: pointer; font-weight: bold; color: var(--primary-color);">解答例と解説を見る</summary>
+            <p style="margin-top: 1rem;">
+                <strong>解答例：</strong>
+            </p>
+<pre><code>SELECT 
+    sales_month,
+    amount,
+    AVG(amount) OVER (
+        ORDER BY sales_month 
+        ROWS BETWEEN 1 PRECEDING AND CURRENT ROW
+    ) AS moving_avg
+FROM sales_records
+WHERE employee_name = '佐藤'
+ORDER BY sales_month;</code></pre>
+            <p>
+                <strong>解説：</strong> <code>ROWS BETWEEN X PRECEDING AND CURRENT ROW</code>（X行前から現在の行まで）というフレーム指定を行うことで、柔軟な移動平均や範囲集計が可能になります。株式チャートの「25日移動平均線」なども、この仕組みで簡単に計算できます。
+            </p>
+        </details>
+
+        <h2>6. まとめ</h2>
+        <p>
+            本記事では、SQLの表現力を飛躍的に高める「ウィンドウ関数」について学習しました。
+        </p>
+        <ul>
+            <li><code>GROUP BY</code> と違い、明細行を保持したまま集計や順位付けができる。</li>
+            <li><code>RANK</code> や <code>ROW_NUMBER</code> で柔軟なランキングが作れる。</li>
+            <li><code>LAG</code> や累計計算により、複雑なプログラムを書かずともSQLだけで高度な時系列分析が可能になる。</li>
+        </ul>
+        <p>
+            データ分析やバックエンド開発の実務において、ウィンドウ関数を使いこなせるかどうかで、コードのシンプルさとシステムのパフォーマンスが劇的に変わります。演習環境のダミーデータをいろいろと書き換えて、ぜひ様々なパターンの分析クエリを試してみてください。
+        </p>
+
+        <div class="footer">
+            本コンテンツの作成時間：約10時間
+        </div>
+    </div>
 </body>
 </html>
