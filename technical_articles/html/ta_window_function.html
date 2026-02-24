@@ -108,10 +108,15 @@
             font-weight: bold;
             color: #4a5568;
         }
-        .data-table th {
-            text-align: center;
+        /* ▼ここから下の .data-table に関する部分を書き換えます */
+        .data-table {
+            width: 70%;             /* 横幅を70%に縮小 */
+            margin: 0 auto 2rem auto; /* 中央寄せにして、下の余白を確保 */
+            font-size: 0.85rem;     /* 文字サイズを少し小さく */
         }
+        .data-table th, 
         .data-table td {
+            padding: 0.25rem 0.5rem; /* 上下の余白(padding)を減らして高さを半分以下に */
             text-align: center;
         }
         .note {
