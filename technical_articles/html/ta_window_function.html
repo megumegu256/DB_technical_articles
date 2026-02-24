@@ -18,6 +18,7 @@
             --column-bg: #e6fffa;
             --column-border: #319795;
             --table-header-bg: #edf2f7;
+            --summary-bg: #f8fafc;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -179,8 +180,8 @@
             font-size: 1.1rem;
         }
         .toc {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
+            background-color: var(--summary-bg);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 2rem;
@@ -245,6 +246,27 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin: 1rem 0;
             display: block;
+        }
+        .terminal-summary {
+            background-color: var(--summary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            color: #4a5568;
+        }
+        .terminal-summary strong {
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .terminal-summary ul {
+            margin-bottom: 0;
+            padding-left: 1.2rem;
+        }
+        .terminal-summary li {
+            margin-bottom: 0.3rem;
         }
         .footer {
             margin-top: 4rem;
@@ -553,13 +575,18 @@ WHERE sales_month = '2024-04';</code></pre>
             </ol>
             <p><strong>▼ターミナル出力結果</strong></p>
             <img src="../png/window_a.png" alt="実験Aのターミナル出力" class="terminal-img">
+            <div class="terminal-summary">
+                <strong>【実行結果の重要ポイント】</strong>
+                <p style="margin-top: 0; margin-bottom: 0.5rem; font-size: 0.9rem;">※「鈴木」と「高橋」が同額（800）の場合の順位の違い：</p>
+                <ul>
+                    <li><strong><code>rank</code>列:</strong> 1, 1 と続いた後、次の「伊藤」は <strong>3</strong> に飛ぶ。</li>
+                    <li><strong><code>dense_rank</code>列:</strong> 1, 1 と続いた後、次の「伊藤」は <strong>2</strong> になる。</li>
+                    <li><strong><code>row_number</code>列:</strong> 同額でも <strong>1, 2, 3...</strong> と強制的に連番になる。</li>
+                </ul>
+            </div>
 
             <div class="note">
-                <strong>【結果の考察】</strong><br>
-                鈴木さんと高橋さんが同額（800）である点に着目してください。<br>
-                ・<strong>RANK()：</strong> 1位が2人いるため、次の伊藤さんの順位は「3位」にスキップしています。一般的なスポーツの順位などと同じ挙動です。<br>
-                ・<strong>DENSE_RANK()：</strong> 1位が2人いても、次の伊藤さんは「2位」になります。順位のギャップ（隙間）を作らないという特性があります。<br>
-                ・<strong>ROW_NUMBER()：</strong> 同額であっても無理やり一意の連番（1, 2, 3...）を振ります。「トップ10件だけを必ず取得したい（同率が何人いようが10件で切る）」といった要件で重宝します。
+                <strong>【結論】</strong> 画像とテキストの通り、要件に応じてどのランキング関数を使用すべきかが明確に分かれます。「トップ10件だけを必ず取得したい（同率が何人いようが10件で切る）」といった場合は <code>ROW_NUMBER()</code> が重宝します。
             </div>
         </div>
 
@@ -588,10 +615,15 @@ WHERE sales_month = '2024-05';</code></pre>
             </ol>
             <p><strong>▼ターミナル出力結果</strong></p>
             <img src="../png/window_b.png" alt="実験Bのターミナル出力" class="terminal-img">
+            <div class="terminal-summary">
+                <strong>【実行結果の重要ポイント】</strong>
+                <ul>
+                    <li>「第1営業部」の3人のランキング（1, 2, 3）が終わった後、<code>department</code> が「第2営業部」に切り替わる「伊藤」の行で、<code>dept_rank</code> が <strong>1</strong> から再スタートしている。</li>
+                </ul>
+            </div>
 
             <div class="note">
-                <strong>【結果の考察】</strong><br>
-                結果を見ると、<code>department</code>（部署）が「第1営業部」から「第2営業部」に切り替わったタイミング（伊藤さんの行）で、<code>dept_rank</code> が再び「1」から再スタートしていることが明確にわかります。<code>PARTITION BY</code> が「計算の窓枠を部署ごとに区切っている」という何よりの証拠です。
+                <strong>【結論】</strong> 結果を見ると、部署が切り替わったタイミングで順位が再スタートしています。<code>PARTITION BY</code> が「計算の窓枠を部署ごとに区切っている」という何よりの証拠です。
             </div>
         </div>
 
@@ -624,11 +656,17 @@ ORDER BY department, amount DESC;</code></pre>
             </ol>
             <p><strong>▼ターミナル出力結果</strong></p>
             <img src="../png/window_c.png" alt="実験Cのターミナル出力" class="terminal-img">
+            <div class="terminal-summary">
+                <strong>【実行結果の重要ポイント】</strong>
+                <ul>
+                    <li>行は圧縮されず、<code>employee_name</code>（個人名）がそのまま出力されている。</li>
+                    <li><code>dept_total</code>（部署合計）の列には、その部署の合計値（第1営業部なら <strong>2300</strong>、第2営業部なら <strong>1400</strong>）がすべての行に正しく付与されている。</li>
+                    <li>構成比（<code>ratio_pct</code>）は、<code>personal_amount / dept_total</code> で正しく計算されている（例: 高橋 900 / 2300 * 100 = <strong>39.1</strong>）。</li>
+                </ul>
+            </div>
 
             <div class="note">
-                <strong>【結果の考察】</strong><br>
-                通常の <code>GROUP BY</code> では社員名（明細）が消えてしまいますが、出力結果を見ると「高橋」といった個人名がしっかり残っています。それなのに、そのすぐ横の <code>dept_total</code> 列には「第1営業部の合計値（2300）」や「第2営業部の合計値（1400）」が正しく入っています。<br>
-                この「明細」と「全体合計」が1つの行に同居できる特性のおかげで、<code>900 ÷ 2300</code> といった構成比の計算（<code>ratio_pct</code>）がシンプルなSQLで実現できました。
+                <strong>【結論】</strong> 通常の <code>GROUP BY</code> では社員名（明細）が消えてしまいますが、出力結果を見ると個人名がしっかり残っています。この「明細」と「全体合計」が1つの行に同居できる特性のおかげで、構成比の計算がシンプルなSQLで実現できました。
             </div>
         </div>
 
@@ -661,11 +699,17 @@ ORDER BY employee_name, sales_month;</code></pre>
             </ol>
             <p><strong>▼ターミナル出力結果</strong></p>
             <img src="../png/window_d.png" alt="実験Dのターミナル出力" class="terminal-img">
+            <div class="terminal-summary">
+                <strong>【実行結果の重要ポイント】</strong>
+                <ul>
+                    <li>伊藤・佐藤の 2024-04（最初の月）は、前の月が存在しないため <code>prev_amount</code> が正しく <strong><code>NULL</code></strong> になっている。</li>
+                    <li>2024-05の行では、<code>prev_amount</code> に1ヶ月前の売上（伊藤なら <strong>700</strong>、佐藤なら <strong>500</strong>）が入ってきている。</li>
+                    <li>当月と前月の差額（<code>diff</code>）も、行ごとに正しく計算されている（例: 伊藤の5月は 750 - 700 = <strong>50</strong>）。</li>
+                </ul>
+            </div>
 
             <div class="note">
-                <strong>【結果の考察】</strong><br>
-                4月の <code>prev_amount</code> は、比較対象となる「前の月」が存在しないため正しく <code>NULL</code> になっています。一方で5月、6月の行には、見事にその人の「1ヶ月前の売上」がズレて入り込んでおり、差額（<code>diff</code>）も 100 や -50 と正確に計算されています。<br>
-                自己結合（SELF JOIN）などの複雑なSQLを書かなくても、前月比や前年同月比がこれほど簡単に取得できるのは、<code>LAG()</code> や <code>LEAD()</code> ならではの強力なメリットです。
+                <strong>【結論】</strong> 5月、6月の行には、見事にその人の「1ヶ月前の売上」がズレて入り込んでいます。自己結合（SELF JOIN）などの複雑なSQLを書かなくても、前月比や前年同月比がこれほど簡単に取得できるのは、<code>LAG()</code> や <code>LEAD()</code> ならではの強力なメリットです。
             </div>
         </div>
 
@@ -697,11 +741,16 @@ ORDER BY sales_month, department;</code></pre>
             </ol>
             <p><strong>▼ターミナル出力結果</strong></p>
             <img src="../png/window_e.png" alt="実験Eのターミナル出力" class="terminal-img">
+            <div class="terminal-summary">
+                <strong>【実行結果の重要ポイント】</strong>
+                <ul>
+                    <li><strong>小計行:</strong> 各月の終わりに <code>department</code> が空白（NULL）の行が生成され、その月の小計（例: 2024-04は <strong>3250</strong>）が表示されている。この行の <code>is_dept_total</code> フラグは <strong>1</strong> になっている。</li>
+                    <li><strong>総合計行:</strong> 一番下に <code>sales_month</code> と <code>department</code> の両方が空白の行が生成され、全社の総合計（<strong>10550</strong>）が表示されている。この行は両方のフラグが <strong>1</strong> になっている。</li>
+                </ul>
+            </div>
 
             <div class="note">
-                <strong>【結果の考察】</strong><br>
-                <code>GROUP BY ROLLUP(sales_month, department)</code> と指定したことで、出力結果の中に「月と部署の組み合わせ」「各月の小計（departmentが空白）」「全社の総合計（月も部署も空白）」の3パターンが一度のクエリで生成されています。<br>
-                注目すべきは、小計や総合計の行における <code>is_month_total</code> と <code>is_dept_total</code> のフラグです。これらが「1」になっていることで、その空白（NULL）が「ROLLUPによって作られた集計用の枠である」と明確に判別できています。このフラグを後述の演習問題5で活用します。
+                <strong>【結論】</strong> <code>GROUP BY ROLLUP</code> を使うことで、「月と部署の集計」「月の小計」「全社の総合計」の3パターンが一度のクエリで生成されました。<code>GROUPING()</code> 関数のフラグ（1か0か）を見れば、そのNULLが「ROLLUPで作られた集計用の枠である」と明確に判別できます。
             </div>
         </div>
 

@@ -18,6 +18,7 @@
             --column-bg: #e6fffa;
             --column-border: #319795;
             --table-header-bg: #edf2f7;
+            --summary-bg: #f8fafc;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -179,8 +180,8 @@
             font-size: 1.1rem;
         }
         .toc {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
+            background-color: var(--summary-bg);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 2rem;
@@ -245,6 +246,27 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin: 1rem 0;
             display: block;
+        }
+        .terminal-summary {
+            background-color: var(--summary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            color: #4a5568;
+        }
+        .terminal-summary strong {
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .terminal-summary ul {
+            margin-bottom: 0;
+            padding-left: 1.2rem;
+        }
+        .terminal-summary li {
+            margin-bottom: 0.3rem;
         }
         .footer {
             margin-top: 4rem;
@@ -554,8 +576,16 @@ EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'user150000@example.com';</c
             </ol>
             <p><strong>▼実際のターミナル出力結果</strong></p>
             <img src="../png/index_a.png" alt="実験Aのターミナル出力" class="terminal-img">
+            <div class="terminal-summary">
+                <strong>【実行結果の重要ポイント】</strong>
+                <ul>
+                    <li><strong>インデックス作成前:</strong> <code>Seq Scan</code> が選択され、実行時間（Execution Time）は <strong>15.928 ms</strong> でした。関係ない199,999行のデータを無駄にスキャンしています（Rows Removed by Filter）。</li>
+                    <li><strong>インデックス作成後:</strong> <code>Index Scan</code> が選択され、実行時間は <strong>0.090 ms</strong> に短縮されました。約177倍の高速化です。</li>
+                </ul>
+            </div>
+
             <div class="note">
-                <strong>【結論】</strong> 画像の通り、結果が <code>Seq Scan</code> から <code>Index Scan</code> に変化し、実行時間は 15.928 ms から 0.090 ms へと<strong>約177倍も高速化</strong>されました。また、Seq Scan時は <code>Rows Removed by Filter: 199999</code>（関係ない19万件のデータを無駄に読み込んで捨てた）と出力されており、全件走査の非効率さが明確に現れています。
+                <strong>【結論】</strong> 画像とテキストの通り、適切な列にインデックスを作成するだけで、全件走査による無駄なディスクI/Oが回避され、検索速度が劇的に向上することが実証されました。
             </div>
         </div>
 
@@ -578,7 +608,13 @@ EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'user150000@example.com';</c
 EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE 'user15%';</code></pre>
                     <p><strong>▼実際のターミナル出力結果（罠の発生）</strong></p>
                     <img src="../png/index_b_0.png" alt="実験Bの前方一致検索での罠" class="terminal-img">
-                    <p><strong>【罠の解説】</strong> B-treeは前方一致に強いはずなのに、なぜか <code>Seq Scan</code> （19.250 ms）になってしまいました。実は、PostgreSQLのデータベース言語設定（ロケール）が日本語環境などの場合、文字の並び順ルールが複雑になるため、通常の <code>CREATE INDEX</code> では <code>LIKE</code> 検索にインデックスが使われません。</p>
+                    <div class="terminal-summary">
+                        <strong>【実行結果の重要ポイント】</strong>
+                        <ul>
+                            <li><strong>前方一致検索（通常インデックス）:</strong> インデックスがあるにも関わらず <code>Seq Scan</code> となり、実行時間は <strong>19.250 ms</strong> かかっています。</li>
+                        </ul>
+                    </div>
+                    <p><strong>【罠の解説】</strong> B-treeは前方一致に強いはずなのに、なぜか <code>Seq Scan</code> になってしまいました。実は、PostgreSQLのデータベース言語設定（ロケール）が日本語環境などの場合、文字の並び順ルールが複雑になるため、通常の <code>CREATE INDEX</code> では <code>LIKE</code> 検索にインデックスが使われません。</p>
                 </li>
                 <li><strong>LIKE検索に対応したインデックスを作り直す</strong>
                     <p>この罠を回避するため、<code>text_pattern_ops</code> という特殊なオプションを指定してインデックスを再作成し、再度検証します。</p>
@@ -596,9 +632,16 @@ EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE '%@example.com';</code></
             </ol>
             <p><strong>▼実際のターミナル出力結果（解決策と後方一致の限界）</strong></p>
             <img src="../png/index_b_1.png" alt="実験Bの解決策と後方一致の限界" class="terminal-img">
+            <div class="terminal-summary">
+                <strong>【実行結果の重要ポイント】</strong>
+                <ul>
+                    <li><strong>前方一致検索（演算子クラス指定後）:</strong> <code>Bitmap Index Scan</code> が使われるようになり、PostgreSQL内部で範囲検索に翻訳されて高速化されました。</li>
+                    <li><strong>後方一致検索（画像下部）:</strong> インデックスは使われず <code>Seq Scan</code> となり、実行時間は <strong>29.374 ms</strong> かかっています。</li>
+                </ul>
+            </div>
+
             <div class="note">
-                <strong>【結論】</strong> 修正後の前方一致検索は、見事に <code>Bitmap Index Scan</code> に切り替わりました。実行計画を見ると、条件が <code>(email ~&gt;=~ 'user15') AND (email ~&lt;~ 'user16')</code> のように「user15以上、user16未満」という範囲検索にPostgreSQL内部で自動翻訳され高速化されています。<br>
-                一方、後方一致検索（画像下の実行結果）は <code>Seq Scan</code>（29.374 ms）のままでした。電話帳で「末尾が『郎』の人」を探すとき全ページを見なければならないのと同じで、最初の文字が確定していないとB-treeの木はたどれないことが証明されました。
+                <strong>【結論】</strong> 修正後の前方一致検索は、見事にインデックスが効くようになりました。一方、後方一致検索は <code>Seq Scan</code> のままでした。電話帳で「末尾が『郎』の人」を探すとき全ページを見なければならないのと同じで、最初の文字が確定していないとB-treeの木はたどれないことが証明されました。
             </div>
         </div>
 
@@ -627,9 +670,17 @@ EXPLAIN ANALYZE SELECT * FROM t_users WHERE status = 'active';</code></pre>
             </ol>
             <p><strong>▼実際のターミナル出力結果</strong></p>
             <img src="../png/index_c.png" alt="実験Cのターミナル出力" class="terminal-img">
+            <div class="terminal-summary">
+                <strong>【実行結果の重要ポイント】</strong>
+                <ul>
+                    <li><strong>少数派（inactive）の検索:</strong> <code>Bitmap Index Scan</code> が選択され、実行時間は <strong>5.908 ms</strong> となりました。</li>
+                    <li><strong>多数派（active）の検索:</strong> （画像にはありませんが）手元で実行すると <code>Seq Scan</code> が選択されます。</li>
+                </ul>
+            </div>
+
             <div class="note">
-                <strong>【結論】</strong> 画像の通り、少数派の検索では <code>Bitmap Index Scan</code>（5.908 ms）が使われましたが、多数派の検索ではインデックスが存在するのに <code>Seq Scan</code> に逆戻りしました。<br>
-                条件にヒットする件数が多すぎる場合、オプティマイザは「インデックスをたどってから実データをバラバラに拾いに行くより、最初からテーブル全体を先頭から一気に舐めた方が、ディスクI/Oのコストが安く済む」と計算して判断します。選択度の低い列に単独でインデックスを貼っても無意味であることが実証されました。
+                <strong>【結論】</strong> 画像の通り、少数派の検索ではインデックスが使われましたが、多数派の検索ではインデックスが存在するのに <code>Seq Scan</code> に逆戻りしました。<br>
+                条件にヒットする件数が多すぎる場合、オプティマイザは「インデックスをたどってから実データを拾いに行くより、最初からテーブル全体を先頭から一気に舐めた方がディスクI/Oのコストが安く済む」と判断します。選択度の低い列へのインデックス付与が無意味であることが実証されました。
             </div>
         </div>
 
@@ -659,8 +710,16 @@ EXPLAIN ANALYZE SELECT * FROM t_users WHERE created_at > '2024-01-01';</code></p
             </ol>
             <p><strong>▼実際のターミナル出力結果</strong></p>
             <img src="../png/index_d.png" alt="実験Dのターミナル出力" class="terminal-img">
+            <div class="terminal-summary">
+                <strong>【実行結果の重要ポイント】</strong>
+                <ul>
+                    <li><strong>第1列と第2列の両方を指定した検索（画像上部）:</strong> <code>Bitmap Index Scan</code> が機能し、実行時間は <strong>2.924 ms</strong> でした。</li>
+                    <li><strong>第2列のみを指定した検索（画像下部）:</strong> 複合インデックスは使われず <code>Seq Scan</code> となり、実行時間は <strong>26.710 ms</strong> かかっています。</li>
+                </ul>
+            </div>
+
             <div class="note">
-                <strong>【結論】</strong> 画像上部の通り、両方の列を指定した検索は <code>Bitmap Index Scan</code>（2.924 ms）となり完璧に機能しました。しかし画像下部の通り、第2列単独での検索は <code>Seq Scan</code>（26.710 ms）となってしまいました。<br>
+                <strong>【結論】</strong> 画像の通り、第2列単独での検索では複合インデックスが全く役に立たないことが確認できました。<br>
                 複合インデックスを作る際は「WHERE句で必ず指定され、かつ最も絞り込める列」を先頭に持ってくるのが絶対の鉄則です。
             </div>
         </div>
