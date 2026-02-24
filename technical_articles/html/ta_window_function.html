@@ -108,15 +108,14 @@
             font-weight: bold;
             color: #4a5568;
         }
-        /* ▼ここから下の .data-table に関する部分を書き換えます */
         .data-table {
-            width: 70%;             /* 横幅を70%に縮小 */
-            margin: 0 auto 2rem auto; /* 中央寄せにして、下の余白を確保 */
-            font-size: 0.85rem;     /* 文字サイズを少し小さく */
+            width: 70%;
+            margin: 0 auto 2rem auto;
+            font-size: 0.85rem;
         }
         .data-table th, 
         .data-table td {
-            padding: 0.25rem 0.5rem; /* 上下の余白(padding)を減らして高さを半分以下に */
+            padding: 0.25rem 0.5rem;
             text-align: center;
         }
         .note {
@@ -268,9 +267,10 @@
                 <li><a href="#ch1">1. 実行環境とテーブル定義</a></li>
                 <li><a href="#ch2">2. ウィンドウ関数とは何か？（GROUP BYとの決定的な違い）</a></li>
                 <li><a href="#ch3">3. 高度な集約：GROUPING機能とは？</a></li>
-                <li><a href="#ch4">4. 実験: 挙動と効果を検証する（ハンズオン）</a></li>
-                <li><a href="#ch5">5. 演習課題（全5問）</a></li>
-                <li><a href="#ch6">6. まとめ</a></li>
+                <li><a href="#ch4">4. ウィンドウ関数の「代償」と実行計画（EXPLAIN）</a></li>
+                <li><a href="#ch5">5. 実験: 挙動と効果を検証する（ハンズオン）</a></li>
+                <li><a href="#ch6">6. 演習課題（全5問）</a></li>
+                <li><a href="#ch7">7. まとめ</a></li>
             </ul>
         </div>
 
@@ -282,13 +282,14 @@
             これらを通常の <code>GROUP BY</code> やサブクエリ（副問合せ）、自己結合（SELF JOIN）だけで解決しようとすると、SQLが非常に長く難解になり、データベースのパフォーマンスも著しく低下してしまいます。
         </p>
         <p>
-            このような複雑な分析要件を美しく、かつ高速に解決するものが<strong>「ウィンドウ関数（Window Functions）」</strong>と高度な<strong>「GROUPING機能」</strong>です。本記事では、講義の演習環境（PostgreSQL 17 コンテナ）を用いて以下のゴールを目指します。
+            このような複雑な分析要件を美しく、かつ高速に解決する銀の弾丸が<strong>「ウィンドウ関数（Window Functions）」</strong>と高度な<strong>「GROUPING機能」</strong>です。本記事では、講義の演習環境（PostgreSQL 17 コンテナ）を用いて以下のゴールを目指します。
         </p>
         <ul>
             <li><code>GROUP BY</code> とウィンドウ関数の決定的な違いを視覚的に理解し、用途を明確に分ける。</li>
             <li><code>RANK</code>, <code>ROW_NUMBER</code> を用いたランキング処理の微妙な挙動の違いを実装レベルで把握する。</li>
             <li><code>LAG / LEAD</code> を用いた「前月比」などの高度な時系列分析クエリを自力で書けるようになる。</li>
             <li><code>ROLLUP</code> と <code>GROUPING()</code> 関数を使いこなし、小計・総合計を一発で出力する技術を習得する。</li>
+            <li>ウィンドウ関数が抱えるパフォーマンス上の「代償」と、その解決策を理解する。</li>
         </ul>
 
         <h2 id="ch1">1. 実行環境とテーブル定義</h2>
@@ -404,7 +405,7 @@ FROM sales_records;</code></pre>
         </table>
 
         <h3>2.3 OVER() 句の中身（ウィンドウの定義）</h3>
-        <p>ウィンドウ関数を使いこなすために重要なのは、<code>OVER()</code> の中で<strong>「どの範囲の行を、どういう順番で計算対象にするか」</strong>を正確に定義することです。主に以下の3要素で構成されます。</p>
+        <p>ウィンドウ関数を使いこなすための最大のキモは、<code>OVER()</code> の中で<strong>「どの範囲の行を、どういう順番で計算対象にするか」</strong>を正確に定義することです。主に以下の3要素で構成されます。</p>
         <ol>
             <li><strong>PARTITION BY（グループ化による窓枠の分割）：</strong> データを指定した列で分割（パーティショニング）します。<code>GROUP BY</code> に似ていますが、前述の通り行は圧縮されません。「部署ごとに順位をつけたい（部署が変わったら1位からやり直す）」場合は <code>PARTITION BY department</code> と指定します。省略した場合は「テーブル全体の行」が1つの巨大なウィンドウとして扱われます。</li>
             <li><strong>ORDER BY（窓枠内での並べ替え）：</strong> ウィンドウ内での行の計算順序を決定します。ランキングを出すための基準になったり、<code>LAG</code>（前の行を取得）を正しく機能させるための前提条件となります。</li>
@@ -439,10 +440,35 @@ FROM sales_records;</code></pre>
             この関数は、<strong>集約によって生成されたNULLであれば <code>1</code> を、それ以外の通常のデータ（本物のNULL含む）なら <code>0</code> を返します。</strong>この性質を利用し、レポートのラベルを「NULL」から「総合計」といった人間に読みやすい文字へ置換する際になくてはならない関数です。
         </p>
 
-        <h2 id="ch4">4. 実験: 挙動と効果を検証する（ハンズオン）</h2>
-        <p>理論を押さえたところで、実際にコンテナ環境を用いて検証を進めます。ご自身のターミナルで結果を確かめながら進めてください。</p>
+        <h2 id="ch4">4. ウィンドウ関数の「代償」と実行計画（EXPLAIN）</h2>
+        <p>
+            非常に便利なウィンドウ関数ですが、インデックス設計の記事で学んだように、便利な機能には必ず<strong>パフォーマンス上の代償（トレードオフ）</strong>が伴います。<br>
+            ウィンドウ関数において最も注意すべきなのは、<code>PARTITION BY</code> や <code>ORDER BY</code> を処理するために、データベース内部で<strong>「極めて重いソート（並べ替え）処理」が大量に発生する</strong>という点です。
+        </p>
 
-        <h3>4.1 検証用データセットの投入（準備）</h3>
+        <p>実際に <code>EXPLAIN</code>（実行計画）を確認すると、以下のような特徴が現れます。</p>
+<pre class="terminal-output"><code># EXPLAIN SELECT employee_name, RANK() OVER (ORDER BY amount DESC) FROM sales_records;
+
+                            QUERY PLAN                             
+-------------------------------------------------------------------
+ WindowAgg  (cost=1.17..1.43 rows=15 width=40)
+   ->  Sort  (cost=1.17..1.20 rows=15 width=36)
+         Sort Key: amount DESC
+         ->  Seq Scan on sales_records  (cost=0.00..1.15 rows=15 width=36)
+(4 rows)</code></pre>
+        <ul>
+            <li><strong><code>Sort</code> ノード：</strong> ウィンドウ関数の <code>ORDER BY</code> を満たすために、メモリ上でデータを並べ替えています。データ量が数百万件になると、メモリに乗り切らず一時ファイル（ディスク）が作成され、クエリが激重になります。</li>
+            <li><strong><code>WindowAgg</code> ノード：</strong> 並べ替え終わったデータに対して、順位や累計を計算して横にくっつける処理です。</li>
+        </ul>
+        <div class="note">
+            <strong>【パフォーマンスチューニングのヒント】</strong><br>
+            ウィンドウ関数のソート処理を軽くするためには、「インデックス設計」の知識がそのまま活きます。<code>ORDER BY</code> や <code>PARTITION BY</code> で指定する列にあらかじめB-treeインデックス（または複合インデックス）を貼っておくことで、重い <code>Sort</code> 処理をスキップさせ、劇的に高速化させることができます。2つの知識は密接にリンクしているのです。
+        </div>
+
+        <h2 id="ch5">5. 実験: 挙動と効果を検証する（ハンズオン）</h2>
+        <p>理論と代償を押さえたところで、実際にコンテナ環境を用いて検証を進めます。ご自身のターミナルで結果を確かめながら進めてください。</p>
+
+        <h3>5.1 検証用データセットの投入（準備）</h3>
         <div class="alert">
             <strong>⚠️ テーブル作成の確認</strong>
             <p>本実験を進める前に、第1章で紹介した <code>sales_records</code> テーブルの作成（<code>CREATE TABLE</code>）が完了していることを確認してください。</p>
@@ -501,7 +527,7 @@ INSERT INTO sales_records (sales_month, department, employee_name, amount) VALUE
             </tbody>
         </table>
 
-        <h3>4.2 実験A: 基本のランキング関数（RANK / DENSE_RANK / ROW_NUMBER）</h3>
+        <h3>5.2 実験A: 基本のランキング関数（RANK / DENSE_RANK / ROW_NUMBER）</h3>
         
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
@@ -537,7 +563,7 @@ WHERE sales_month = '2024-04';</code></pre>
             </div>
         </div>
 
-        <h3>4.3 実験B: グループごとの処理（PARTITION BY）</h3>
+        <h3>5.3 実験B: グループごとの処理（PARTITION BY）</h3>
 
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
@@ -569,7 +595,7 @@ WHERE sales_month = '2024-05';</code></pre>
             </div>
         </div>
 
-        <h3>4.4 実験C: 集約関数をウィンドウ関数として使う（売上構成比の計算）</h3>
+        <h3>5.4 実験C: 集約関数をウィンドウ関数として使う（売上構成比の計算）</h3>
 
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
@@ -606,7 +632,7 @@ ORDER BY department, amount DESC;</code></pre>
             </div>
         </div>
 
-        <h3>4.5 実験D: LAG / LEAD関数による「前月比」の計算</h3>
+        <h3>5.5 実験D: LAG / LEAD関数による「前月比」の計算</h3>
 
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
@@ -643,7 +669,7 @@ ORDER BY employee_name, sales_month;</code></pre>
             </div>
         </div>
 
-        <h3>4.6 実験E: GROUPINGとROLLUPによる小計・総合計の算出</h3>
+        <h3>5.6 実験E: GROUPINGとROLLUPによる小計・総合計の算出</h3>
 
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
@@ -679,7 +705,7 @@ ORDER BY sales_month, department;</code></pre>
             </div>
         </div>
 
-        <h2 id="ch5">5. 演習課題（全5問）</h2>
+        <h2 id="ch6">6. 演習課題（全5問）</h2>
         <p>ウィンドウ関数とGROUPINGの威力を理解したところで、以下の5つの実践問題に挑戦してみましょう。実務のデータ分析で必ず求められるレベルのクエリです。</p>
 
         <h3>問題1：シンプルな累計（Running Total）の計算（難易度：⭐⭐）</h3>
@@ -821,7 +847,7 @@ ORDER BY sales_month, department;</code></pre>
         </details>
 
 
-        <h2 id="ch6">6. まとめ</h2>
+        <h2 id="ch7">7. まとめ</h2>
         <p>
             本記事では、SQLの表現力を飛躍的に高める「ウィンドウ関数」と「GROUPING機能」について学習しました。
         </p>
@@ -836,7 +862,7 @@ ORDER BY sales_month, department;</code></pre>
         </p>
 
         <div class="footer">
-            本コンテンツの作成時間：約10時間
+            本コンテンツの作成時間：約13時間
         </div>
     </div>
 </body>
