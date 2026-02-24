@@ -52,6 +52,11 @@
             border-left: 5px solid var(--primary-color);
             padding-left: 0.8rem;
         }
+        h4 {
+            font-size: 1.1rem;
+            margin-top: 1.5rem;
+            color: #2d3748;
+        }
         p {
             margin-bottom: 1.5rem;
         }
@@ -160,6 +165,15 @@
             font-family: "Times New Roman", Times, serif;
             font-style: italic;
             font-size: 1.1em;
+        }
+        .terminal-img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 1rem 0;
+            display: block;
         }
         .footer {
             margin-top: 4rem;
@@ -419,21 +433,22 @@ FROM generate_series(1, 200000) AS s(i);</code></pre>
         <div class="step-box">
             <div class="step-title">【操作手順と検証】</div>
             <ol>
-                <li><strong>インデックス作成前の状態を確認する</strong>
-                    <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'user150000@example.com';</code></pre>
-                    <p class="comment">※筆者の環境での実測値： 約 15.9 ms （Seq Scan）</p>
-                    <p>実行計画を見ると <code>Rows Removed by Filter: 199999</code> と出力されます。これは「目的の1件を見つけるために、関係ない19万9999件ものデータを無駄に読み込んで捨てた」ことを意味し、全件走査の非効率さが明確に現れています。</p>
-                </li>
-                <li><strong>インデックスを作成する</strong>
-                    <pre><code>CREATE INDEX idx_t_users_email ON t_users (email);</code></pre>
-                </li>
-                <li><strong>再度検索を実行し、比較する</strong>
-                    <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'user150000@example.com';</code></pre>
-                    <p class="comment">※筆者の環境での実測値： 約 0.09 ms （Index Scan）</p>
+                <li><strong>インデックス作成前後の状態を比較する</strong>
+                    <p>以下のクエリを実行し、インデックス作成前後で <code>Seq Scan</code> から <code>Index Scan</code> にどう変化したかを確認します。</p>
+                    <pre><code><span class="comment">-- ① インデックス作成前の検索</span>
+EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'user150000@example.com';
+
+<span class="comment">-- ② インデックスの作成</span>
+CREATE INDEX idx_t_users_email ON t_users (email);
+
+<span class="comment">-- ③ インデックス作成後の検索</span>
+EXPLAIN ANALYZE SELECT * FROM t_users WHERE email = 'user150000@example.com';</code></pre>
                 </li>
             </ol>
+            <p><strong>▼実際のターミナル出力結果</strong></p>
+            <img src="../png/index_a.png" alt="実験Aのターミナル出力" class="terminal-img">
             <div class="note">
-                <strong>【結論】</strong> 結果が <code>Index Scan using idx_t_users_email</code> に変化し、実行時間は約15.9msから約0.09msへと<strong>約177倍も高速化</strong>されました。これがインデックスの基本となる圧倒的な威力です。
+                <strong>【結論】</strong> 画像の通り、結果が <code>Seq Scan</code> から <code>Index Scan</code> に変化し、実行時間は 15.928 ms から 0.090 ms へと<strong>約177倍も高速化</strong>されました。また、Seq Scan時は <code>Rows Removed by Filter: 199999</code>（関係ない19万件のデータを無駄に読み込んで捨てた）と出力されており、全件走査の非効率さが明確に現れています。
             </div>
         </div>
 
@@ -454,31 +469,29 @@ FROM generate_series(1, 200000) AS s(i);</code></pre>
                     <p>実験Aで作成したインデックスがある状態で、前方一致検索を実行してみます。</p>
                     <pre><code><span class="comment">-- 'user15' から始まるアドレスを検索</span>
 EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE 'user15%';</code></pre>
-                    <p class="comment">※筆者の環境での実測値： 約 19.3 ms （Seq Scan）</p>
-                    <p><strong>【罠の解説】</strong> B-treeは前方一致に強いはずなのに、なぜか <code>Seq Scan</code> になってしまいました。実は、PostgreSQLのデータベース言語設定（ロケール）が日本語環境などの場合、文字の並び順ルールが複雑になるため、通常の <code>CREATE INDEX</code> では <code>LIKE</code> 検索にインデックスが使われません。</p>
+                    <p><strong>▼実際のターミナル出力結果（罠の発生）</strong></p>
+                    <img src="../png/index_b_0.png" alt="実験Bの前方一致検索での罠" class="terminal-img">
+                    <p><strong>【罠の解説】</strong> B-treeは前方一致に強いはずなのに、なぜか <code>Seq Scan</code> （19.250 ms）になってしまいました。実は、PostgreSQLのデータベース言語設定（ロケール）が日本語環境などの場合、文字の並び順ルールが複雑になるため、通常の <code>CREATE INDEX</code> では <code>LIKE</code> 検索にインデックスが使われません。</p>
                 </li>
                 <li><strong>LIKE検索に対応したインデックスを作り直す</strong>
-                    <p>この罠を回避するため、<code>text_pattern_ops</code> という特殊なオプションを指定してインデックスを再作成します。</p>
+                    <p>この罠を回避するため、<code>text_pattern_ops</code> という特殊なオプションを指定してインデックスを再作成し、再度検証します。</p>
                     <pre><code><span class="comment">-- 既存のインデックスを削除</span>
 DROP INDEX idx_t_users_email;
 <span class="comment">-- LIKE検索用の演算子クラスを指定して作成</span>
-CREATE INDEX idx_t_users_email_pattern ON t_users (email text_pattern_ops);</code></pre>
-                </li>
-                <li><strong>再度、前方一致検索を実行する</strong>
-                    <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE 'user15%';</code></pre>
-                    <p class="comment">※筆者の環境での実測値： 約 3.7 ms （Bitmap Index Scan）</p>
-                    <p>実行計画を見ると、条件が <code>(email ~&gt;=~ 'user15') AND (email ~&lt;~ 'user16')</code> のように「user15以上、user16未満」という範囲検索にPostgreSQLの内部で自動翻訳され、見事にインデックスが効いて高速化されたことがわかります。</p>
-                </li>
-                <li><strong>後方一致検索を実行する</strong>
-                    <p>では、末尾の文字しかわからない状態での検索はどうでしょうか。</p>
-                    <pre><code><span class="comment">-- '@example.com' で終わるアドレスを検索</span>
+CREATE INDEX idx_t_users_email_pattern ON t_users (email text_pattern_ops);
+
+<span class="comment">-- ① 再度、前方一致検索を実行する</span>
+EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE 'user15%';
+
+<span class="comment">-- ② 後方一致検索も実行してみる</span>
 EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE '%@example.com';</code></pre>
-                    <p class="comment">※筆者の環境での実測値： 約 29.9 ms （Seq Scan）</p>
-                    <p>結果を確認すると、せっかく専用のインデックスを作ったのに <code>Seq Scan</code> に戻ってしまいました。</p>
                 </li>
             </ol>
+            <p><strong>▼実際のターミナル出力結果（解決策と後方一致の限界）</strong></p>
+            <img src="../png/index_b_1.png" alt="実験Bの解決策と後方一致の限界" class="terminal-img">
             <div class="note">
-                <strong>【結論】</strong> 後方一致検索ではインデックスが絶対に効きません。電話帳で「末尾が『郎』の人」を探すとき、結局全ページを見なければならないのと同じ理屈です。最初の文字が確定していないと、B-treeの木を適切にたどることはできないのです。
+                <strong>【結論】</strong> 修正後の前方一致検索は、見事に <code>Bitmap Index Scan</code> に切り替わりました。実行計画を見ると、条件が <code>(email ~&gt;=~ 'user15') AND (email ~&lt;~ 'user16')</code> のように「user15以上、user16未満」という範囲検索にPostgreSQL内部で自動翻訳され高速化されています。<br>
+                一方、後方一致検索（画像下の実行結果）は <code>Seq Scan</code>（29.374 ms）のままでした。電話帳で「末尾が『郎』の人」を探すとき全ページを見なければならないのと同じで、最初の文字が確定していないとB-treeの木はたどれないことが証明されました。
             </div>
         </div>
 
@@ -495,22 +508,21 @@ EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE '%@example.com';</code></
         <div class="step-box">
             <div class="step-title">【操作手順と検証】</div>
             <ol>
-                <li><strong>status列にインデックスを作成する</strong>
-                    <pre><code>CREATE INDEX idx_t_users_status ON t_users (status);</code></pre>
-                </li>
-                <li><strong>少数派（全体の約10%）を検索する</strong>
-                    <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE status = 'inactive';</code></pre>
-                    <p class="comment">※筆者の環境での実測値： 約 5.9 ms （Bitmap Index Scan）</p>
-                    <p>少数派への検索では、高確率でインデックスを使った検索が選ばれます。</p>
-                </li>
-                <li><strong>多数派（全体の約90%）を検索する</strong>
-                    <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE status = 'active';</code></pre>
-                    <p class="comment">※筆者の環境での実測値： 約 28.9 ms （Seq Scan）</p>
-                    <p>結果を確認すると、インデックスが存在するのに <code>Seq Scan</code> に逆戻りしました。</p>
+                <li><strong>status列にインデックスを作成し、それぞれ検索する</strong>
+                    <pre><code>CREATE INDEX idx_t_users_status ON t_users (status);
+
+<span class="comment">-- 少数派（全体の約10%）を検索</span>
+EXPLAIN ANALYZE SELECT * FROM t_users WHERE status = 'inactive';
+
+<span class="comment">-- 多数派（全体の約90%）を検索</span>
+EXPLAIN ANALYZE SELECT * FROM t_users WHERE status = 'active';</code></pre>
                 </li>
             </ol>
+            <p><strong>▼実際のターミナル出力結果</strong></p>
+            <img src="../png/index_c.png" alt="実験Cのターミナル出力" class="terminal-img">
             <div class="note">
-                <strong>【結論】</strong> なぜ多数派を検索すると Seq Scan になるのでしょうか？それは、条件にヒットする件数が多すぎる場合、オプティマイザが「インデックスをたどってから実データをバラバラに拾いに行く（ランダムアクセス）より、最初からテーブル全体を先頭から一気に舐めた（シーケンシャルアクセス）方が、ディスクI/Oのコストが安く済むぞ」と瞬時に計算して判断するためです。選択度の低い列に単独でインデックスを貼っても、多くの場合において無意味であることがこれで実証されました。
+                <strong>【結論】</strong> 画像の通り、少数派の検索では <code>Bitmap Index Scan</code>（5.908 ms）が使われましたが、多数派の検索ではインデックスが存在するのに <code>Seq Scan</code> に逆戻りしました。<br>
+                条件にヒットする件数が多すぎる場合、オプティマイザは「インデックスをたどってから実データをバラバラに拾いに行くより、最初からテーブル全体を先頭から一気に舐めた方が、ディスクI/Oのコストが安く済む」と計算して判断します。選択度の低い列に単独でインデックスを貼っても無意味であることが実証されました。
             </div>
         </div>
 
@@ -527,23 +539,22 @@ EXPLAIN ANALYZE SELECT * FROM t_users WHERE email LIKE '%@example.com';</code></
         <div class="step-box">
             <div class="step-title">【操作手順と検証】</div>
             <ol>
-                <li><strong>複合インデックスを作成する</strong>
+                <li><strong>複合インデックスを作成し、条件を変えて検索する</strong>
                     <pre><code><span class="comment">-- age を第1条件、created_at を第2条件として作成</span>
-CREATE INDEX idx_t_users_age_created ON t_users (age, created_at);</code></pre>
-                </li>
-                <li><strong>第1列と第2列の両方を使って検索する</strong>
-                    <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE age = 30 AND created_at > '2024-01-01';</code></pre>
-                    <p class="comment">※筆者の環境での実測値： 約 2.9 ms （Bitmap Index Scan）</p>
-                    <p>結果は Index Scan 系になり、複合インデックスが完璧に機能して高速化されました。</p>
-                </li>
-                <li><strong>第2列のみを使って検索する</strong>
-                    <pre><code>EXPLAIN ANALYZE SELECT * FROM t_users WHERE created_at > '2024-01-01';</code></pre>
-                    <p class="comment">※筆者の環境での実測値： 約 26.7 ms （Seq Scan）</p>
-                    <p>複合インデックスを作ったにも関わらず、結果は <code>Seq Scan</code> になってしまいました。</p>
+CREATE INDEX idx_t_users_age_created ON t_users (age, created_at);
+
+<span class="comment">-- ① 第1列と第2列の両方を使って検索</span>
+EXPLAIN ANALYZE SELECT * FROM t_users WHERE age = 30 AND created_at > '2024-01-01';
+
+<span class="comment">-- ② 第2列のみを使って検索</span>
+EXPLAIN ANALYZE SELECT * FROM t_users WHERE created_at > '2024-01-01';</code></pre>
                 </li>
             </ol>
+            <p><strong>▼実際のターミナル出力結果</strong></p>
+            <img src="../png/index_d.png" alt="実験Dのターミナル出力" class="terminal-img">
             <div class="note">
-                <strong>【結論】</strong> 複合インデックスは左側の列（この場合は age）から順にソートされて木構造を作ります。そのため、第1列（大分類）の条件を指定してあげないと、第2列（小分類）単独では木をたどることができません。複合インデックスを作る際は「WHERE句で必ず指定され、かつ最も絞り込める列」を先頭に持ってくるのが鉄則です。
+                <strong>【結論】</strong> 画像上部の通り、両方の列を指定した検索は <code>Bitmap Index Scan</code>（2.924 ms）となり完璧に機能しました。しかし画像下部の通り、第2列単独での検索は <code>Seq Scan</code>（26.710 ms）となってしまいました。<br>
+                複合インデックスを作る際は「WHERE句で必ず指定され、かつ最も絞り込める列」を先頭に持ってくるのが絶対の鉄則です。
             </div>
         </div>
 
@@ -689,7 +700,7 @@ WHERE assignee_id = 123
         </p>
 
         <div class="footer">
-            本コンテンツの作成時間：約18時間
+            本コンテンツの作成時間：約12時間
         </div>
     </div>
 </body>
