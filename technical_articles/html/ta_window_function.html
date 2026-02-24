@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PostgreSQLで学ぶ「ウィンドウ関数」の実践：集計と分析クエリを極める</title>
+    <title>PostgreSQLで学ぶ「ウィンドウ関数とGROUPING」の実践：高度な集計・分析クエリを極める</title>
     <style>
         :root {
             --primary-color: #3182ce;
@@ -163,20 +163,21 @@
 </head>
 <body>
     <div class="container">
-        <h1>PostgreSQLで学ぶ「ウィンドウ関数」の実践：集計と分析クエリを極める</h1>
+        <h1>PostgreSQLで学ぶ「ウィンドウ関数とGROUPING」の実践：高度な集計・分析クエリを極める</h1>
 
         <h2>0. はじめに（この記事のゴール）</h2>
         <p>
-            データベースで「各部門の平均売上」や「合計点」を出す際、私たちは <code>GROUP BY</code> を使ってきました。しかし、「個人の売上データはそのまま表示しつつ、横に部門の平均売上も並べたい」や、「売上の高い順にランキング（順位）をつけたい」といった要望が出たとき、通常の <code>GROUP BY</code> やサブクエリだけではSQLが非常に複雑になってしまいます。
+            データベースで「各部門の平均売上」や「合計点」を出す際、私たちは <code>GROUP BY</code> を使ってきました。しかし、「個人の売上データはそのまま表示しつつ、横に部門の平均売上も並べたい」や、「売上の高い順にランキング（順位）をつけたい」、さらには「部門ごとの小計と全体の総合計を一度のクエリで出したい」といった要望が出たとき、通常の <code>GROUP BY</code> やサブクエリだけではSQLが非常に複雑になり、パフォーマンスも低下してしまいます。
         </p>
         <p>
-            これを美しく、かつ高速に解決するのが<strong>「ウィンドウ関数（Window Functions）」</strong>です。本記事では、講義の演習環境（PostgreSQL 17 コンテナ）を用いて以下のゴールを目指します。
+            これらを美しく、かつ高速に解決するのが<strong>「ウィンドウ関数（Window Functions）」</strong>と高度な<strong>「GROUPING機能」</strong>です。本記事では、講義の演習環境（PostgreSQL 17 コンテナ）を用いて以下のゴールを目指します。
         </p>
         <ul>
             <li><code>GROUP BY</code> とウィンドウ関数の決定的な違いを理解する</li>
             <li><code>RANK</code>, <code>ROW_NUMBER</code> を用いたランキング処理を実装できる</li>
             <li><code>PARTITION BY</code> を使って「グループごとの集計・順位付け」ができる</li>
-            <li><code>LAG / LEAD</code> やフレーム指定を用いた「累計」や「前月比」などの高度な分析クエリを書けるようになる</li>
+            <li><code>LAG / LEAD</code> を用いた「前月比」などの高度な分析クエリを書けるようになる</li>
+            <li><code>ROLLUP</code> と <code>GROUPING</code> を使いこなし、小計・総合計を一発で出力できる</li>
         </ul>
 
         <h2>1. 実行環境とテーブル定義</h2>
@@ -214,7 +215,7 @@ CREATE TABLE sales_records (
             ウィンドウ関数を理解する上で最も重要なのは、<strong>「GROUP BY（集約関数）」との違い</strong>です。
         </p>
         <ul>
-            <li><strong>GROUP BY:</strong> 複数の行を「1行に圧縮（集約）」してしまいます。個別のデータ（明細）は失われます。</li>
+            <li><strong>GROUP BY:</strong> 複数の行を「1行に圧縮（集約）」してしまいます。個別のデータ（明細行）は失われます。</li>
             <li><strong>ウィンドウ関数:</strong> 行を圧縮せず、「元の行（明細）を残したまま、その横に集計結果や順位をくっつける」ことができます。</li>
         </ul>
         <p>
@@ -231,7 +232,7 @@ CREATE TABLE sales_records (
 FROM テーブル名;</code></pre>
         <p><code>OVER()</code> 句がついているのがウィンドウ関数の目印です。</p>
 
-        <h2>3. 実験: ウィンドウ関数の挙動を検証する</h2>
+        <h2>3. 実験: ウィンドウ関数とGROUPINGの挙動を検証する</h2>
         <p>ここからは、実際にコンテナ環境を用いて検証を進めます。</p>
 
         <h3>3.1 検証用データセットの投入（準備）</h3>
@@ -257,13 +258,13 @@ INSERT INTO sales_records (sales_month, department, employee_name, amount) VALUE
 ('2024-06', '第2営業部', '伊藤', 800);</code></pre>
         </div>
 
-        <h3>3.2 実験A: 基本のランキング関数（RANK / DENSE_RANK / ROW_NUMBER）</h3>
+        <h3>3.2 実験A: 基本のランキング関数（RANK / ROW_NUMBER）</h3>
         
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
             <p>
                 <strong>想定シーン：</strong> 2024年4月の売上データにおいて、売上が高い順に社員のランキング表を作成したい。<br>
-                <strong>検証の狙い：</strong> 順位をつける3つの代表的なウィンドウ関数（<code>RANK</code>, <code>DENSE_RANK</code>, <code>ROW_NUMBER</code>）の挙動の違い（特に同率順位が出た場合の処理）を比較します。
+                <strong>検証の狙い：</strong> 順位をつける代表的なウィンドウ関数（<code>RANK</code>, <code>DENSE_RANK</code>, <code>ROW_NUMBER</code>）の挙動の違い（特に同率順位が出た場合の処理）を比較します。
             </p>
         </div>
 
@@ -281,8 +282,8 @@ FROM sales_records
 WHERE sales_month = '2024-04';</code></pre>
                 </li>
             </ol>
-            <p><strong>▼ターミナル出力結果（※後で実測結果のスクリーンショットに差し替えます）</strong></p>
-            <pre class="terminal-output"><code>(ここに実行結果のテーブルがテキストで表示されます)</code></pre>
+            <p><strong>▼ターミナル出力結果</strong></p>
+            <pre class="terminal-output"><code>(※ここで手元のターミナルで実行し、出力結果を確認してください)</code></pre>
 
             <div class="note">
                 <strong>【結果の考察】</strong><br>
@@ -316,8 +317,8 @@ FROM sales_records
 WHERE sales_month = '2024-05';</code></pre>
                 </li>
             </ol>
-            <p><strong>▼ターミナル出力結果（※後で実測結果のスクリーンショットに差し替えます）</strong></p>
-            <pre class="terminal-output"><code>(ここに実行結果のテーブルがテキストで表示されます)</code></pre>
+            <p><strong>▼ターミナル出力結果</strong></p>
+            <pre class="terminal-output"><code>(※ここで手元のターミナルで実行し、出力結果を確認してください)</code></pre>
 
             <div class="note">
                 <strong>【結果の考察】</strong><br>
@@ -352,8 +353,8 @@ WHERE sales_month = '2024-06'
 ORDER BY department, amount DESC;</code></pre>
                 </li>
             </ol>
-            <p><strong>▼ターミナル出力結果（※後で実測結果のスクリーンショットに差し替えます）</strong></p>
-            <pre class="terminal-output"><code>(ここに実行結果のテーブルがテキストで表示されます)</code></pre>
+            <p><strong>▼ターミナル出力結果</strong></p>
+            <pre class="terminal-output"><code>(※ここで手元のターミナルで実行し、出力結果を確認してください)</code></pre>
 
             <div class="note">
                 <strong>【結果の考察】</strong><br>
@@ -366,7 +367,7 @@ ORDER BY department, amount DESC;</code></pre>
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
             <p>
-                <strong>想定シーン：</strong> 各社員の月ごとの売上推移を追い、「先月の売上」と比較してどれくらい成長したか（前月比）を出したい。<br>
+                <strong>想定シーン：</strong> 各社員の月ごとの売上推移を追い、「先月の売上」と比較してどれくらい成長したか（前月差額）を出したい。<br>
                 <strong>検証の狙い：</strong> 行と行をまたいだ比較ができる <code>LAG()</code>（前の行を取得）および <code>LEAD()</code>（次の行を取得）関数の威力を体感します。
             </p>
         </div>
@@ -388,8 +389,8 @@ WHERE employee_name = '佐藤' OR employee_name = '伊藤'
 ORDER BY employee_name, sales_month;</code></pre>
                 </li>
             </ol>
-            <p><strong>▼ターミナル出力結果（※後で実測結果のスクリーンショットに差し替えます）</strong></p>
-            <pre class="terminal-output"><code>(ここに実行結果のテーブルがテキストで表示されます)</code></pre>
+            <p><strong>▼ターミナル出力結果</strong></p>
+            <pre class="terminal-output"><code>(※ここで手元のターミナルで実行し、出力結果を確認してください)</code></pre>
 
             <div class="note">
                 <strong>【結果の考察】</strong><br>
@@ -397,26 +398,44 @@ ORDER BY employee_name, sales_month;</code></pre>
             </div>
         </div>
 
-        <h2>4. 実行計画の確認（EXPLAIN）とパフォーマンス</h2>
-        <p>ウィンドウ関数は便利ですが、内部的にはどのように処理されているのでしょうか？実験Aのランキングクエリに <code>EXPLAIN</code> をつけて実行してみます。</p>
-        
-<pre class="terminal-output"><code># EXPLAIN SELECT employee_name, RANK() OVER (ORDER BY amount DESC) FROM sales_records;
+        <h3>3.6 実験E: GROUPINGとROLLUPによる小計・総合計の算出</h3>
 
-                            QUERY PLAN                             
--------------------------------------------------------------------
- WindowAgg  (cost=1.17..1.43 rows=15 width=40)
-   ->  Sort  (cost=1.17..1.20 rows=15 width=36)
-         Sort Key: amount DESC
-         ->  Seq Scan on sales_records  (cost=0.00..1.15 rows=15 width=36)
-(4 rows)</code></pre>
+        <div class="scenario">
+            <div class="scenario-title">📌 想定シーンと検証の狙い</div>
+            <p>
+                <strong>想定シーン：</strong> 売上レポートを作成するために、「各部署ごとの売上合計（小計）」と、「全社の売上合計（総合計）」を1つのクエリで同時に出力したい。<br>
+                <strong>検証の狙い：</strong> 単純な <code>GROUP BY</code> を拡張する <code>ROLLUP</code> 機能と、集計行（NULL行）を判別する <code>GROUPING()</code> 関数の使い方を学びます。
+            </p>
+        </div>
 
-        <p>
-            実行計画を見ると、<strong><code>Sort</code>（並べ替え）</strong>処理が行われた直後に、<strong><code>WindowAgg</code>（ウィンドウ集計）</strong>という専用のノードが実行されていることがわかります。<br>
-            ウィンドウ関数は <code>ORDER BY</code> や <code>PARTITION BY</code> を多用するため、内部的に大量の<strong>ソート処理</strong>が発生します。そのため、データ量が膨大な場合は、前回の記事で学んだ「インデックス設計（ソート処理のスキップ）」と組み合わせることが、パフォーマンスチューニングの鍵となります。
-        </p>
+        <div class="step-box">
+            <div class="step-title">【操作手順と検証】</div>
+            <ol>
+                <li><strong>ROLLUPを使って小計と総合計を出す</strong>
+                    <pre><code>SELECT 
+    sales_month,
+    department,
+    SUM(amount) AS total_amount,
+    -- GROUPING関数は、その列が集約（ROLLUP等で計算）されてできたNULLなら「1」を返す
+    GROUPING(sales_month) AS is_month_total,
+    GROUPING(department) AS is_dept_total
+FROM sales_records
+GROUP BY ROLLUP(sales_month, department)
+ORDER BY sales_month, department;</code></pre>
+                </li>
+            </ol>
+            <p><strong>▼ターミナル出力結果</strong></p>
+            <pre class="terminal-output"><code>(※ここで手元のターミナルで実行し、出力結果を確認してください)</code></pre>
 
-        <h2>5. 演習課題</h2>
-        <p>ウィンドウ関数の威力を理解したところで、以下の5つの実践問題に挑戦してみましょう。実務のデータ分析で必ず求められるレベルのクエリです。</p>
+            <div class="note">
+                <strong>【結果の考察】</strong><br>
+                <code>GROUP BY ROLLUP(A, B)</code> と書くことで、「AとBの組み合わせの集計」「Aだけの集計（小計）」「全体の集計（総合計）」の3パターンが一度に生成されます。<br>
+                小計や総合計の行では集約キーが <code>NULL</code> になりますが、本当にデータがNULLなのか集計行のNULLなのかを判別するために <code>GROUPING()</code> 関数が役立ちます（集計行なら1が返ります）。
+            </div>
+        </div>
+
+        <h2>4. 演習課題</h2>
+        <p>ウィンドウ関数とGROUPINGの威力を理解したところで、以下の5つの実践問題に挑戦してみましょう。実務のデータ分析で必ず求められるレベルのクエリです。</p>
 
         <h3>問題1：シンプルな累計（Running Total）の計算（難易度：⭐⭐）</h3>
         <p>
@@ -496,17 +515,79 @@ ORDER BY sales_month;</code></pre>
             </p>
         </details>
 
-        <h2>6. まとめ</h2>
+        <h3>問題4：前月比（％）の算出（難易度：⭐⭐⭐⭐）</h3>
         <p>
-            本記事では、SQLの表現力を飛躍的に高める「ウィンドウ関数」について学習しました。
+            <strong>【問題】</strong><br>
+            「第1営業部」の月ごとの合計売上を算出し、さらに「前月と比較して何パーセント成長したか（前月比）」を計算するクエリを記述してください。（例: 前月500、当月600なら120%）。
+        </p>
+
+        <details style="margin-bottom: 2.5rem; background: #f7fafc; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <summary style="cursor: pointer; font-weight: bold; color: var(--primary-color);">解答例と解説を見る</summary>
+            <p style="margin-top: 1rem;">
+                <strong>解答例：</strong>
+            </p>
+<pre><code>WITH MonthlySales AS (
+    SELECT 
+        sales_month,
+        SUM(amount) AS total_amount
+    FROM sales_records
+    WHERE department = '第1営業部'
+    GROUP BY sales_month
+)
+SELECT 
+    sales_month,
+    total_amount,
+    LAG(total_amount) OVER (ORDER BY sales_month) AS prev_amount,
+    ROUND(total_amount * 100.0 / LAG(total_amount) OVER (ORDER BY sales_month), 1) AS growth_pct
+FROM MonthlySales;</code></pre>
+            <p>
+                <strong>解説：</strong> まず通常の <code>GROUP BY</code> を使ったCTE（WITH句）で「月ごとの合計売上」を出します。次に、その集計結果に対して <code>LAG()</code> 関数を適用して前月データを持ってきて割り算します。「GROUP BYの集計結果に対して、さらにウィンドウ関数をかける」という実務で頻出するコンボ技です。
+            </p>
+        </details>
+
+        <h3>問題5：GROUPING と COALESCE による美しい集計表（難易度：⭐⭐⭐⭐⭐）</h3>
+        <p>
+            <strong>【問題】</strong><br>
+            実験Eで使用した <code>ROLLUP</code> のクエリを応用し、<code>GROUPING()</code> が「1」を返した場合（つまり小計や総合計の行の場合）は、<code>NULL</code> と表示するのではなく、文字列として「総合計」や「小計」という文字を出力するような、見やすい集計レポートを出力するクエリを記述してください。<br>
+            ヒント：<code>CASE</code> 文を使います。
+        </p>
+
+        <details style="margin-bottom: 2.5rem; background: #f7fafc; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <summary style="cursor: pointer; font-weight: bold; color: var(--primary-color);">解答例と解説を見る</summary>
+            <p style="margin-top: 1rem;">
+                <strong>解答例：</strong>
+            </p>
+<pre><code>SELECT 
+    CASE 
+        WHEN GROUPING(sales_month) = 1 THEN '【総合計】' 
+        ELSE sales_month 
+    END AS sales_month,
+    CASE 
+        WHEN GROUPING(department) = 1 AND GROUPING(sales_month) = 0 THEN '【小計】' 
+        ELSE COALESCE(department, '') 
+    END AS department,
+    SUM(amount) AS total_amount
+FROM sales_records
+GROUP BY ROLLUP(sales_month, department)
+ORDER BY sales_month, department;</code></pre>
+            <p>
+                <strong>解説：</strong> <code>GROUPING()</code> 関数は、まさにこのように「レポートの見た目を整える」ために存在しています。<code>CASE</code> 文と組み合わせることで、「月も部署もNULL（＝全体集計）なら総合計」「部署だけがNULL（＝月次集計）なら小計」といった柔軟なラベル付けが可能になり、アプリケーション側で加工する手間が省けます。
+            </p>
+        </details>
+
+
+        <h2>5. まとめ</h2>
+        <p>
+            本記事では、SQLの表現力を飛躍的に高める「ウィンドウ関数」と「GROUPING機能」について学習しました。
         </p>
         <ul>
             <li><code>GROUP BY</code> と違い、明細行を保持したまま集計や順位付けができる。</li>
             <li><code>RANK</code> や <code>ROW_NUMBER</code> で柔軟なランキングが作れる。</li>
             <li><code>LAG</code> や累計計算により、複雑なプログラムを書かずともSQLだけで高度な時系列分析が可能になる。</li>
+            <li><code>ROLLUP</code> と <code>GROUPING</code> を使えば、一発で小計・総合計を含む美しいレポートデータが生成できる。</li>
         </ul>
         <p>
-            データ分析やバックエンド開発の実務において、ウィンドウ関数を使いこなせるかどうかで、コードのシンプルさとシステムのパフォーマンスが劇的に変わります。演習環境のダミーデータをいろいろと書き換えて、ぜひ様々なパターンの分析クエリを試してみてください。
+            データ分析やバックエンド開発の実務において、これらの関数を使いこなせるかどうかで、コードのシンプルさとシステムのパフォーマンスが劇的に変わります。演習環境のダミーデータをいろいろと書き換えて、ぜひ様々なパターンの分析クエリを試してみてください。
         </p>
 
         <div class="footer">
