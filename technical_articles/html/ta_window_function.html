@@ -15,6 +15,8 @@
             --alert-border: #ed8936;
             --scenario-bg: #f0fff4;
             --scenario-border: #38a169;
+            --column-bg: #e6fffa;
+            --column-border: #319795;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -138,6 +140,19 @@
             display: flex;
             align-items: center;
         }
+        .column {
+            background-color: var(--column-bg);
+            border: 1px solid var(--column-border);
+            border-radius: 6px;
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+        }
+        .column-title {
+            font-weight: bold;
+            color: var(--column-border);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
         .step-box {
             background-color: #fcfcfc;
             border: 1px solid #e2e8f0;
@@ -150,6 +165,65 @@
             color: var(--primary-color);
             margin-bottom: 1rem;
             font-size: 1.1rem;
+        }
+        .toc {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+        .toc li {
+            margin-bottom: 0.5rem;
+        }
+        .toc a {
+            text-decoration: none;
+            color: var(--primary-color);
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        .visual-compare {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .visual-box {
+            flex: 1;
+            background: #fff;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+        }
+        .visual-box h4 {
+            margin-top: 0;
+            color: #2d3748;
+            font-size: 1rem;
+            border-bottom: 2px solid #cbd5e0;
+            padding-bottom: 0.5rem;
+        }
+        .visual-data {
+            font-family: monospace;
+            background: #edf2f7;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .arrow {
+            color: #a0aec0;
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+        }
+        .highlight-data {
+            background: #feebc8;
+            border: 1px solid #d69e2e;
         }
         .terminal-img {
             max-width: 100%;
@@ -174,7 +248,20 @@
     <div class="container">
         <h1>PostgreSQLで学ぶ「ウィンドウ関数とGROUPING」の実践：高度な集計・分析クエリを極める</h1>
 
-        <h2>0. はじめに（この記事のゴール）</h2>
+        <div class="toc">
+            <strong>目次</strong>
+            <ul>
+                <li><a href="#ch0">0. はじめに（この記事のゴール）</a></li>
+                <li><a href="#ch1">1. 実行環境とテーブル定義</a></li>
+                <li><a href="#ch2">2. ウィンドウ関数とは何か？（GROUP BYとの違い）</a></li>
+                <li><a href="#ch3">3. 高度な集約：GROUPING機能とは？</a></li>
+                <li><a href="#ch4">4. 実験: 挙動と効果を検証する（ハンズオン）</a></li>
+                <li><a href="#ch5">5. 演習課題（全5問）</a></li>
+                <li><a href="#ch6">6. まとめ</a></li>
+            </ul>
+        </div>
+
+        <h2 id="ch0">0. はじめに（この記事のゴール）</h2>
         <p>
             データベースで「各部門の平均売上」や「合計点」を出す際、私たちは <code>GROUP BY</code> を使ってきました。しかし、「個人の売上データはそのまま表示しつつ、横に部門の平均売上も並べたい」や、「売上の高い順にランキング（順位）をつけたい」、さらには「部門ごとの小計と全体の総合計を一度のクエリで出したい」といった要望が出たとき、通常の <code>GROUP BY</code> やサブクエリだけではSQLが非常に複雑になり、パフォーマンスも低下してしまいます。
         </p>
@@ -182,14 +269,13 @@
             これらを美しく、かつ高速に解決するのが<strong>「ウィンドウ関数（Window Functions）」</strong>と高度な<strong>「GROUPING機能」</strong>です。本記事では、講義の演習環境（PostgreSQL 17 コンテナ）を用いて以下のゴールを目指します。
         </p>
         <ul>
-            <li><code>GROUP BY</code> とウィンドウ関数の決定的な違いを理解する</li>
+            <li><code>GROUP BY</code> とウィンドウ関数の決定的な違いを視覚的に理解する</li>
             <li><code>RANK</code>, <code>ROW_NUMBER</code> を用いたランキング処理を実装できる</li>
-            <li><code>PARTITION BY</code> を使って「グループごとの集計・順位付け」ができる</li>
-            <li><code>LAG / LEAD</code> を用いた「前月比」などの高度な分析クエリを書けるようになる</li>
-            <li><code>ROLLUP</code> と <code>GROUPING</code> を使いこなし、小計・総合計を一発で出力できる</li>
+            <li><code>LAG / LEAD</code> を用いた「前月比」などの高度な時系列分析クエリを書ける</li>
+            <li><code>ROLLUP</code> と <code>GROUPING()</code> 関数を使いこなし、小計・総合計を一発で出力できる</li>
         </ul>
 
-        <h2>1. 実行環境とテーブル定義</h2>
+        <h2 id="ch1">1. 実行環境とテーブル定義</h2>
         <p>本記事の SQL は、以下の環境で動作確認を行っています。読者の皆さんも、自身の環境で実際に手を動かしながら読み進めてください。</p>
 
         <h3>実行環境</h3>
@@ -208,7 +294,7 @@
         </div>
 
         <h3>テーブル定義（検証用データ）</h3>
-        <p>ウィンドウ関数の挙動を確認するため、営業担当者の売上データを管理する <code>sales_records</code> テーブルを作成します。</p>
+        <p>ウィンドウ関数とGROUPINGの挙動を確認するため、営業担当者の売上データを管理する <code>sales_records</code> テーブルを作成します。</p>
 <pre><code><span class="comment">-- 売上管理テーブルの作成</span>
 DROP TABLE IF EXISTS sales_records;
 CREATE TABLE sales_records (
@@ -219,16 +305,33 @@ CREATE TABLE sales_records (
     amount int NOT NULL             <span class="comment">-- 売上金額（万円）</span>
 );</code></pre>
 
-        <h2>2. ウィンドウ関数とは何か？（詳細解説）</h2>
+        <h2 id="ch2">2. ウィンドウ関数とは何か？（GROUP BYとの違い）</h2>
         <p>
             ウィンドウ関数を理解する上で最も重要なのは、<strong>通常の「GROUP BY（集約処理）」との違い</strong>です。
         </p>
-        <ul>
-            <li><strong>GROUP BY:</strong> 複数の行を「1行に圧縮（集約）」してしまいます。部門の平均売上は出せますが、その部門に所属する「社員名」などの個別の明細データは表示できなくなります。</li>
-            <li><strong>ウィンドウ関数:</strong> 行を圧縮せず、「元の行（明細）を残したまま、その横に集計結果や順位をくっつける」ことができます。</li>
-        </ul>
+        
+        <div class="visual-compare">
+            <div class="visual-box">
+                <h4>GROUP BY のイメージ</h4>
+                <div class="visual-data">[第1営業部, 佐藤, 500]</div>
+                <div class="visual-data">[第1営業部, 鈴木, 800]</div>
+                <div class="arrow">↓ 行を圧縮（集約）</div>
+                <div class="visual-data highlight-data">[第1営業部, 1300]</div>
+                <p style="font-size: 0.85rem; text-align: left; margin-top: 1rem;">部署の合計は出せますが、佐藤さん・鈴木さんという<strong>個別の明細データは失われます。</strong></p>
+            </div>
+            <div class="visual-box">
+                <h4>ウィンドウ関数のイメージ</h4>
+                <div class="visual-data">[第1営業部, 佐藤, 500]</div>
+                <div class="visual-data">[第1営業部, 鈴木, 800]</div>
+                <div class="arrow">↓ 行を残したまま横に付与</div>
+                <div class="visual-data highlight-data">[第1営業部, 佐藤, 500, <b>1300</b>]</div>
+                <div class="visual-data highlight-data">[第1営業部, 鈴木, 800, <b>1300</b>]</div>
+                <p style="font-size: 0.85rem; text-align: left; margin-top: 1rem;">行を圧縮せず、<strong>元の行（明細）を残したまま、その横に集計結果や順位をくっつける</strong>ことができます。</p>
+            </div>
+        </div>
+
         <p>
-            この「計算の対象となる行のまとまり」のことを<strong>ウィンドウ（窓）</strong>と呼びます。
+            この「計算の対象となる行のまとまり（上の例では『第1営業部』のくくり）」のことを<strong>ウィンドウ（窓）</strong>と呼びます。
         </p>
 
         <h3>2.1 基本構文</h3>
@@ -243,7 +346,6 @@ FROM テーブル名;</code></pre>
         <p><code>OVER()</code> 句がついているのが、ウィンドウ関数を使っている目印です。</p>
 
         <h3>2.2 代表的なウィンドウ関数の種類</h3>
-        <p>ウィンドウ関数として使える関数は、大きく以下の3つのグループに分けられます。本記事の実験でもこれらを順番に使っていきます。</p>
         <table>
             <thead>
                 <tr>
@@ -256,39 +358,51 @@ FROM テーブル名;</code></pre>
                 <tr>
                     <td><strong>順序付け関数</strong><br>(ランキング)</td>
                     <td><code>RANK()</code>, <code>DENSE_RANK()</code>, <code>ROW_NUMBER()</code></td>
-                    <td>売上順位や、最新のデータを1件取得する際に使います。同率順位が出た際の「順位の飛び方」に明確な違いがあります。</td>
+                    <td>売上順位などに使います。同率順位が出た際の「順位の飛び方」に明確な違いがあります。</td>
                 </tr>
                 <tr>
                     <td><strong>ナビゲーション関数</strong><br>(オフセット)</td>
-                    <td><code>LAG()</code>, <code>LEAD()</code>, <code>FIRST_VALUE()</code>, <code>LAST_VALUE()</code></td>
-                    <td><code>LAG()</code> は「前の行」、<code>LEAD()</code> は「次の行」の値を取得します。前月比や前年同月比、差分などを計算する際に劇的な威力を発揮します。</td>
+                    <td><code>LAG()</code>, <code>LEAD()</code></td>
+                    <td><code>LAG()</code> は「前の行」、<code>LEAD()</code> は「次の行」の値を取得します。前月比などを計算する際に劇的な威力を発揮します。</td>
                 </tr>
                 <tr>
                     <td><strong>集約関数</strong></td>
-                    <td><code>SUM()</code>, <code>AVG()</code>, <code>MAX()</code>, <code>MIN()</code>, <code>COUNT()</code></td>
-                    <td><code>GROUP BY</code> で使う通常の集約関数も、<code>OVER()</code> をつけることでウィンドウ関数に変身します。全体合計に対する「構成比」や「累計売上」を出す際に重宝します。</td>
+                    <td><code>SUM()</code>, <code>AVG()</code>, <code>COUNT()</code></td>
+                    <td><code>GROUP BY</code> で使う通常の集約関数も、<code>OVER()</code> をつけることでウィンドウ関数に変身します。</td>
                 </tr>
             </tbody>
         </table>
 
-        <h3>2.3 OVER() 句の中身（ウィンドウの定義）</h3>
-        <p>ウィンドウ関数のキモは、<code>OVER()</code> の中で<strong>「どの範囲の行を、どういう順番で計算対象にするか」</strong>を定義することです。主に以下の3つの要素で構成されます。</p>
-        <ol>
-            <li><strong>PARTITION BY（グループ化）：</strong> データを指定した列で分割（パーティショニング）します。<code>GROUP BY</code> に似ていますが、行は圧縮されません。たとえば「部署ごとに順位をつけたい」場合は <code>PARTITION BY department</code> と指定します。指定しない場合は「テーブル全体」が1つのウィンドウになります。</li>
-            <li><strong>ORDER BY（並べ替え）：</strong> ウィンドウ内での行の計算順序を決めます。ランキングを出すための基準になったり、後述するフレーム指定の前提になります。</li>
-            <li><strong>フレーム指定（ROWS BETWEEN）：</strong> <code>ORDER BY</code> で並べた行の中で、「ここからここまで」というさらに細かな計算範囲（フレーム）を指定します。たとえば「直近の過去1ヶ月と現在の月（移動平均）」といった高度な指定が可能です。</li>
-        </ol>
-
-        <div class="note">
-            <strong>【重要】ORDER BY と「累計」の暗黙ルール</strong><br>
-            集約関数（<code>SUM</code>など）をウィンドウ関数として使う際、<code>OVER()</code> の中に <code>ORDER BY</code> を記述すると、自動的に<strong>「最初の行から現在の行まで（<code>ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</code>）」</strong>というフレームが暗黙的に設定されます。<br>
-            これにより、結果が「全体の合計」ではなく「そこまでの累計」に変化するという非常に重要な性質があります（演習問題1でこの性質を利用します）。
+        <div class="column">
+            <div class="column-title">💡 コラム：ORDER BY を書くと「累計」になる暗黙のルール</div>
+            <p>
+                集約関数（<code>SUM</code>など）をウィンドウ関数として使う際、<code>OVER()</code> の中に <code>ORDER BY</code> を記述すると、自動的に<strong>「最初の行から現在の行まで（ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW）」</strong>という計算範囲（フレーム）が暗黙的に設定されます。<br>
+                これにより、結果が「全体の合計」ではなく「そこまでの累計」に変化するという非常に重要な性質があります。
+            </p>
         </div>
 
-        <h2>3. 実験: ウィンドウ関数とGROUPINGの挙動を検証する</h2>
+        <h2 id="ch3">3. 高度な集約：GROUPING機能とは？</h2>
+        <p>
+            ウィンドウ関数は「明細行を残す」機能でしたが、レポート作成などでは「部門ごとの小計行」や「全社の総合計行」といった<strong>集約されたサマリー行</strong>をデータの中に差し込みたい場面が多々あります。<br>
+            これをサブクエリや <code>UNION ALL</code> を使わずに、一発で生成してくれるのが高度な <code>GROUP BY</code> 拡張機能です。
+        </p>
+
+        <ul>
+            <li><strong>ROLLUP (A, B):</strong> 階層的な集計を行います。「AとBの集計」「Aごとの小計」「全体の総合計」を生成します。（日付 > 部署 のような階層データに最適です）。</li>
+            <li><strong>CUBE (A, B):</strong> 指定した列の「すべての組み合わせ」のクロス集計を行います。（Aのみ、Bのみ、AとB、全体の合計）。</li>
+            <li><strong>GROUPING SETS:</strong> 必要な集計の組み合わせだけをピンポイントで指定します。</li>
+        </ul>
+
+        <h3>GROUPING() 関数の役割</h3>
+        <p>
+            <code>ROLLUP</code> 等を使うと、小計や総合計の行には集約キーとして <strong><code>NULL</code></strong> が入ります。<br>
+            しかし、「データとして元々NULLだったのか」、それとも「集計行として生成されたNULLなのか」が見分けられなくなります。そこで <strong><code>GROUPING(列名)</code></strong> 関数を使います。この関数は、<strong>集約によって生成されたNULLであれば <code>1</code> を、それ以外なら <code>0</code> を返す</strong>ため、レポートのラベル付け（「総合計」という文字への置換など）に必須となります。
+        </p>
+
+        <h2 id="ch4">4. 実験: 挙動と効果を検証する（ハンズオン）</h2>
         <p>理論を押さえたところで、実際にコンテナ環境を用いて検証を進めます。</p>
 
-        <h3>3.1 検証用データセットの投入（準備）</h3>
+        <h3>4.1 検証用データセットの投入（準備）</h3>
         <p>まずは以下のSQLを実行し、ダミーデータを挿入してください。今回は挙動を目で見て確認しやすくするため、あえて少量のデータ（15件）を手動で投入します。</p>
 
         <div class="step-box">
@@ -311,7 +425,7 @@ INSERT INTO sales_records (sales_month, department, employee_name, amount) VALUE
 ('2024-06', '第2営業部', '伊藤', 800);</code></pre>
         </div>
 
-        <h3>3.2 実験A: 基本のランキング関数（RANK / ROW_NUMBER）</h3>
+        <h3>4.2 実験A: 基本のランキング関数（RANK / ROW_NUMBER）</h3>
         
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
@@ -347,7 +461,7 @@ WHERE sales_month = '2024-04';</code></pre>
             </div>
         </div>
 
-        <h3>3.3 実験B: グループごとの処理（PARTITION BY）</h3>
+        <h3>4.3 実験B: グループごとの処理（PARTITION BY）</h3>
 
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
@@ -379,7 +493,7 @@ WHERE sales_month = '2024-05';</code></pre>
             </div>
         </div>
 
-        <h3>3.4 実験C: 集約関数をウィンドウ関数として使う（売上構成比の計算）</h3>
+        <h3>4.4 実験C: 集約関数をウィンドウ関数として使う（売上構成比の計算）</h3>
 
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
@@ -415,7 +529,7 @@ ORDER BY department, amount DESC;</code></pre>
             </div>
         </div>
 
-        <h3>3.5 実験D: LAG / LEAD関数による「前月比」の計算</h3>
+        <h3>4.5 実験D: LAG / LEAD関数による「前月比」の計算</h3>
 
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
@@ -451,7 +565,7 @@ ORDER BY employee_name, sales_month;</code></pre>
             </div>
         </div>
 
-        <h3>3.6 実験E: GROUPINGとROLLUPによる小計・総合計の算出</h3>
+        <h3>4.6 実験E: GROUPINGとROLLUPによる小計・総合計の算出</h3>
 
         <div class="scenario">
             <div class="scenario-title">📌 想定シーンと検証の狙い</div>
@@ -487,7 +601,7 @@ ORDER BY sales_month, department;</code></pre>
             </div>
         </div>
 
-        <h2>4. 演習課題</h2>
+        <h2 id="ch5">5. 演習課題（全5問）</h2>
         <p>ウィンドウ関数とGROUPINGの威力を理解したところで、以下の5つの実践問題に挑戦してみましょう。実務のデータ分析で必ず求められるレベルのクエリです。</p>
 
         <h3>問題1：シンプルな累計（Running Total）の計算（難易度：⭐⭐）</h3>
@@ -628,8 +742,7 @@ ORDER BY sales_month, department;</code></pre>
             </p>
         </details>
 
-
-        <h2>5. まとめ</h2>
+        <h2 id="ch6">6. まとめ</h2>
         <p>
             本記事では、SQLの表現力を飛躍的に高める「ウィンドウ関数」と「GROUPING機能」について学習しました。
         </p>
