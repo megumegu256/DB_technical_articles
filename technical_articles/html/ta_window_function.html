@@ -151,6 +151,15 @@
             margin-bottom: 1rem;
             font-size: 1.1rem;
         }
+        .terminal-img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 1rem 0;
+            display: block;
+        }
         .footer {
             margin-top: 4rem;
             padding-top: 1rem;
@@ -210,30 +219,74 @@ CREATE TABLE sales_records (
     amount int NOT NULL             <span class="comment">-- 売上金額（万円）</span>
 );</code></pre>
 
-        <h2>2. ウィンドウ関数とは何か？（GROUP BYとの違い）</h2>
+        <h2>2. ウィンドウ関数とは何か？（詳細解説）</h2>
         <p>
-            ウィンドウ関数を理解する上で最も重要なのは、<strong>「GROUP BY（集約関数）」との違い</strong>です。
+            ウィンドウ関数を理解する上で最も重要なのは、<strong>通常の「GROUP BY（集約処理）」との違い</strong>です。
         </p>
         <ul>
-            <li><strong>GROUP BY:</strong> 複数の行を「1行に圧縮（集約）」してしまいます。個別のデータ（明細行）は失われます。</li>
+            <li><strong>GROUP BY:</strong> 複数の行を「1行に圧縮（集約）」してしまいます。部門の平均売上は出せますが、その部門に所属する「社員名」などの個別の明細データは表示できなくなります。</li>
             <li><strong>ウィンドウ関数:</strong> 行を圧縮せず、「元の行（明細）を残したまま、その横に集計結果や順位をくっつける」ことができます。</li>
         </ul>
         <p>
             この「計算の対象となる行のまとまり」のことを<strong>ウィンドウ（窓）</strong>と呼びます。
         </p>
 
-        <h3>基本構文</h3>
+        <h3>2.1 基本構文</h3>
 <pre><code>SELECT 
     列名,
     ウィンドウ関数() OVER (
         [PARTITION BY グループ化する列] 
         [ORDER BY 並べ替える列]
+        [フレーム指定 (ROWS / RANGE BETWEEN ...)]
     )
 FROM テーブル名;</code></pre>
-        <p><code>OVER()</code> 句がついているのがウィンドウ関数の目印です。</p>
+        <p><code>OVER()</code> 句がついているのが、ウィンドウ関数を使っている目印です。</p>
+
+        <h3>2.2 代表的なウィンドウ関数の種類</h3>
+        <p>ウィンドウ関数として使える関数は、大きく以下の3つのグループに分けられます。本記事の実験でもこれらを順番に使っていきます。</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>種類</th>
+                    <th>代表的な関数</th>
+                    <th>用途・特徴</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>順序付け関数</strong><br>(ランキング)</td>
+                    <td><code>RANK()</code>, <code>DENSE_RANK()</code>, <code>ROW_NUMBER()</code></td>
+                    <td>売上順位や、最新のデータを1件取得する際に使います。同率順位が出た際の「順位の飛び方」に明確な違いがあります。</td>
+                </tr>
+                <tr>
+                    <td><strong>ナビゲーション関数</strong><br>(オフセット)</td>
+                    <td><code>LAG()</code>, <code>LEAD()</code>, <code>FIRST_VALUE()</code>, <code>LAST_VALUE()</code></td>
+                    <td><code>LAG()</code> は「前の行」、<code>LEAD()</code> は「次の行」の値を取得します。前月比や前年同月比、差分などを計算する際に劇的な威力を発揮します。</td>
+                </tr>
+                <tr>
+                    <td><strong>集約関数</strong></td>
+                    <td><code>SUM()</code>, <code>AVG()</code>, <code>MAX()</code>, <code>MIN()</code>, <code>COUNT()</code></td>
+                    <td><code>GROUP BY</code> で使う通常の集約関数も、<code>OVER()</code> をつけることでウィンドウ関数に変身します。全体合計に対する「構成比」や「累計売上」を出す際に重宝します。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>2.3 OVER() 句の中身（ウィンドウの定義）</h3>
+        <p>ウィンドウ関数のキモは、<code>OVER()</code> の中で<strong>「どの範囲の行を、どういう順番で計算対象にするか」</strong>を定義することです。主に以下の3つの要素で構成されます。</p>
+        <ol>
+            <li><strong>PARTITION BY（グループ化）：</strong> データを指定した列で分割（パーティショニング）します。<code>GROUP BY</code> に似ていますが、行は圧縮されません。たとえば「部署ごとに順位をつけたい」場合は <code>PARTITION BY department</code> と指定します。指定しない場合は「テーブル全体」が1つのウィンドウになります。</li>
+            <li><strong>ORDER BY（並べ替え）：</strong> ウィンドウ内での行の計算順序を決めます。ランキングを出すための基準になったり、後述するフレーム指定の前提になります。</li>
+            <li><strong>フレーム指定（ROWS BETWEEN）：</strong> <code>ORDER BY</code> で並べた行の中で、「ここからここまで」というさらに細かな計算範囲（フレーム）を指定します。たとえば「直近の過去1ヶ月と現在の月（移動平均）」といった高度な指定が可能です。</li>
+        </ol>
+
+        <div class="note">
+            <strong>【重要】ORDER BY と「累計」の暗黙ルール</strong><br>
+            集約関数（<code>SUM</code>など）をウィンドウ関数として使う際、<code>OVER()</code> の中に <code>ORDER BY</code> を記述すると、自動的に<strong>「最初の行から現在の行まで（<code>ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</code>）」</strong>というフレームが暗黙的に設定されます。<br>
+            これにより、結果が「全体の合計」ではなく「そこまでの累計」に変化するという非常に重要な性質があります（演習問題1でこの性質を利用します）。
+        </div>
 
         <h2>3. 実験: ウィンドウ関数とGROUPINGの挙動を検証する</h2>
-        <p>ここからは、実際にコンテナ環境を用いて検証を進めます。</p>
+        <p>理論を押さえたところで、実際にコンテナ環境を用いて検証を進めます。</p>
 
         <h3>3.1 検証用データセットの投入（準備）</h3>
         <p>まずは以下のSQLを実行し、ダミーデータを挿入してください。今回は挙動を目で見て確認しやすくするため、あえて少量のデータ（15件）を手動で投入します。</p>
