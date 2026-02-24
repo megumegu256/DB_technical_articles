@@ -548,60 +548,144 @@ CREATE INDEX idx_t_users_age_created ON t_users (age, created_at);</code></pre>
         </div>
 
         <h2>7. 結果と考察まとめ</h2>
-        <p>ここまでの実験を通じて、以下の重要な知見が実証されました。</p>
+        <p>ここまでの実験を通じて、インデックス設計における4つの基本原則が実証されました。</p>
         <ul>
-            <li>インデックスは万能魔法ではない。B-treeの構造上、前方一致や完全一致でなければ効果が薄い。</li>
-            <li>条件に合致するデータが多すぎる（選択度が悪い）と、PostgreSQLのオプティマイザはあえてインデックスを無視する。</li>
-            <li>複合インデックスは列の順序が命。<code>WHERE</code> 句で必ず指定され、かつ最も絞り込める列を先頭にする必要がある。</li>
+            <li><strong>インデックスの基本となる威力（実験A）：</strong> 適切な列にインデックスを貼ることで、全件走査（Seq Scan）から解放され、実行時間が劇的に（今回の実験では170倍以上）高速化される。</li>
+            <li><strong>検索手法とロケールの罠（実験B）：</strong> B-treeは前方一致に強いが、後方一致では効果がない。また、日本語ロケール環境では <code>text_pattern_ops</code> を指定しないと <code>LIKE</code> 検索にインデックスが使われないという実務的な罠がある。</li>
+            <li><strong>選択度の重要性（実験C）：</strong> 条件に合致するデータが多すぎる（選択度が悪い）と、PostgreSQLのオプティマイザはディスクI/Oのコストを計算し、あえてインデックスを無視して Seq Scan を選択する。</li>
+            <li><strong>複合インデックスの順序（実験D）：</strong> 複合インデックスは指定した列の左側から順に木構造を作るため、<code>WHERE</code> 句で第一条件として指定される列を先頭にしなければ効果を発揮しない。</li>
         </ul>
 
         <h2>8. 演習課題</h2>
-        <p>理解度を確認するため、以下の問題に挑戦してみてください。解答例を見る前に、手元の環境で <code>EXPLAIN</code> を使って自身の考えが正しいか検証してみましょう。</p>
+        <p>ここまでの内容の定着度を確認するため、5つの実践的な問題に挑戦してみてください。難易度は徐々に上がっていきます。<br>
+        実務の開発現場で「なぜそのクエリが遅いのか？」を突き止めるつもりで、解答例を開く前にぜひ自身の考えをまとめてみてください。</p>
 
-        <h3>問題1：適切な複合インデックスの設計</h3>
-        <p>次のクエリを最も効率よく高速化したい場合、どの列に、どのような順序で複合インデックスを作るべきでしょうか？</p>
-<pre><code><span class="comment">-- LIMIT 50: 検索結果を最大50件だけ取得する</span>
-SELECT * FROM t_users
+        <h3>問題1：適切な複合インデックスの設計（難易度：⭐）</h3>
+        <p>
+            <strong>【場面・背景】</strong><br>
+            社内の会員管理システムで、「退会済みの25歳のユーザー」を抽出し、登録日の新しい順に50件だけ一覧画面に表示する機能を追加することになりました。本記事の <code>t_users</code> テーブルに対して、以下のクエリが発行されます。
+        </p>
+<pre><code>SELECT * FROM t_users
 WHERE status = 'inactive' AND age = 25
 ORDER BY created_at DESC
 LIMIT 50;</code></pre>
+        <p>このクエリを最も効率よく高速化したい場合、どの列に、どのような順序で複合インデックスを作るべきでしょうか？</p>
 
-        <details style="margin-bottom: 2rem; background: #f7fafc; padding: 1rem; border: 1px solid #e2e8f0;">
-            <summary style="cursor: pointer; font-weight: bold;">解答例を見る</summary>
+        <details style="margin-bottom: 2.5rem; background: #f7fafc; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <summary style="cursor: pointer; font-weight: bold; color: var(--primary-color);">解答例と解説を見る</summary>
             <p style="margin-top: 1rem;">
-                <strong>解答：</strong> <code>CREATE INDEX idx_users_age_status_created ON t_users (age, status, created_at DESC);</code>
+                <strong>解答：</strong> <code>CREATE INDEX idx_users_age_status_created ON t_users (age, status, created_at DESC);</code><br>
+                <span style="font-size: 0.9em; color: #718096;">※ (status, age, created_at DESC) でも可</span>
             </p>
             <p>
-                <strong>解説：</strong> <code>status</code> よりも <code>age</code> の方が選択度が高い（値の種類が多く、1つの値でより少なく絞り込める）ため、<code>age</code> を先頭にするのがセオリーです。さらに <code>ORDER BY</code> のソート処理（コストの高い処理）をデータベースにスキップさせるために、ソート条件である <code>created_at DESC</code> もインデックスの末尾に含めると非常に高速になります。
+                <strong>解説：</strong> 複合インデックスを設計する際の基本テクニックです。まず、<code>WHERE</code>句の等値検索の対象となっている <code>age</code> と <code>status</code> を先頭に置きます（この2つはどちらが先でも大きな差はありませんが、一般的に値の種類が多い＝選択度が高い <code>age</code> を先にするのがセオリーです）。<br>
+                さらに重要なのが、<code>ORDER BY</code> のソート条件である <code>created_at DESC</code> をインデックスの末尾に含める点です。これにより、データベースは「ソート済みのインデックス」から条件に合うものを上から50件拾うだけで処理が完了するため、非常に重いソート処理を丸ごとスキップでき、クエリが劇的に高速化します。
             </p>
         </details>
 
-        <h3>問題2：JOINを伴うクエリのインデックス</h3>
-        <p>注文情報を管理する <code>orders</code> テーブルがあるとします。次のJOINクエリを高速化するには、どのテーブルのどの列にインデックスを作るべきでしょうか？</p>
+        <h3>問題2：JOINを伴うクエリのインデックス（難易度：⭐⭐）</h3>
+        <p>
+            <strong>【場面・背景】</strong><br>
+            ECサイトのマイページ機能です。ログイン中のユーザーのメールアドレスをキーにして、そのユーザーの過去の注文履歴（<code>orders</code> テーブル）をすべて取得する画面を作っています。
+        </p>
 <pre><code><span class="comment">-- ordersテーブルとusersテーブルを、idをキーにして結合(JOIN)する</span>
 SELECT o.*
 FROM orders o
 JOIN users u ON o.user_id = u.id
 WHERE u.email = 'test@example.com';</code></pre>
+        <p>このJOINクエリを高速化するには、どのテーブルのどの列にインデックスが必要でしょうか？（テーブルは2つあります）</p>
 
-        <details style="margin-bottom: 2rem; background: #f7fafc; padding: 1rem; border: 1px solid #e2e8f0;">
-            <summary style="cursor: pointer; font-weight: bold;">解答例を見る</summary>
+        <details style="margin-bottom: 2.5rem; background: #f7fafc; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <summary style="cursor: pointer; font-weight: bold; color: var(--primary-color);">解答例と解説を見る</summary>
             <p style="margin-top: 1rem;">
                 <strong>解答：</strong><br>
-                <code>CREATE INDEX idx_users_email ON users (email);</code><br>
-                <code>CREATE INDEX idx_orders_user_id ON orders (user_id);</code>
+                1. <code>CREATE INDEX idx_users_email ON users (email);</code><br>
+                2. <code>CREATE INDEX idx_orders_user_id ON orders (user_id);</code>
             </p>
             <p>
-                <strong>解説：</strong> まず <code>WHERE</code> 句で絞り込みが行われる <code>users</code> テーブルの <code>email</code> 列にインデックスが必要です。次に、抽出された user の <code>id</code> を使って <code>orders</code> テーブルに結合しに行くため、結合の受け手となる <code>orders</code> テーブルの <code>user_id</code> 列（外部キー）にもインデックスが必須となります。
+                <strong>解説：</strong> JOINクエリでは「駆動表（先に読み込まれるテーブル）」と「内部表（後から結合されるテーブル）」の2つの側面からインデックスを考えます。<br>
+                まず、<code>WHERE</code> 句で絞り込みが行われる <code>users</code> テーブルの <code>email</code> 列にインデックスが必要です。次に、抽出された user の <code>id</code> を使って <code>orders</code> テーブルに結合しに行くため、結合の受け手（内部表）となる <code>orders</code> テーブルの <code>user_id</code> 列（外部キー）にもインデックスが必須となります。「外部キー制約の列には必ずインデックスを貼る」と覚えておきましょう。
+            </p>
+        </details>
+
+        <h3>問題3：関数を用いた検索の罠（難易度：⭐⭐⭐）</h3>
+        <p>
+            <strong>【場面・背景】</strong><br>
+            グローバル展開しているWebサービスのログイン処理です。ユーザーがメールアドレスを入力する際、大文字・小文字を適当に入力してもログインできるように、SQL側で <code>lower()</code> 関数を使ってすべて小文字に変換してから比較する仕様になっています。<br>
+            ※<code>t_users</code> テーブルの <code>email</code> 列には、すでに単一のインデックスが作成済みです。
+        </p>
+<pre><code>SELECT * FROM t_users 
+WHERE lower(email) = 'alice@example.com';</code></pre>
+        <p>実は、このクエリを実行するとインデックスが一切使われず、<strong>Seq Scan</strong> になってしまいます。なぜインデックスが効かないのでしょうか？また、これを解決するにはどのようなコマンドを実行すべきでしょうか？</p>
+
+        <details style="margin-bottom: 2.5rem; background: #f7fafc; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <summary style="cursor: pointer; font-weight: bold; color: var(--primary-color);">解答例と解説を見る</summary>
+            <p style="margin-top: 1rem;">
+                <strong>解答：</strong><br>
+                列に対して関数や演算（例: <code>email || '@'</code> や <code>age + 1</code> など）を適用すると、元のインデックスの木構造（ソート順）と一致しなくなるため、インデックスは無効化されてしまいます。<br>
+                解決策として、関数の実行結果をあらかじめインデックス化する<strong>「式インデックス（関数インデックス）」</strong>を作成します。<br>
+                <code>CREATE INDEX idx_users_lower_email ON t_users (lower(email));</code>
+            </p>
+            <p>
+                <strong>解説：</strong> 「インデックスを貼った列は裸のまま（関数の引数に入れたり四則演算したりしない）でWHERE句に書く」というのはSQLチューニングの絶対の鉄則です。どうしても関数を通した結果で検索したい場合は、このように式インデックスを活用します。
+            </p>
+        </details>
+
+        <h3>問題4：範囲検索とソートの罠（難易度：⭐⭐⭐⭐）</h3>
+        <p>
+            <strong>【場面・背景】</strong><br>
+            ニュースメディアのシステムです。トップページに「特定のカテゴリ（<code>category_id = 5</code>）に属する記事のうち、<strong>2024年以降に公開されたもの</strong>を、<strong>閲覧数（views）が多い順</strong>に10件表示する」という機能を作ります。
+        </p>
+<pre><code>SELECT * FROM articles 
+WHERE category_id = 5 
+  AND published_at >= '2024-01-01' 
+ORDER BY views DESC 
+LIMIT 10;</code></pre>
+        <p>このクエリを高速化するために複合インデックスを作ります。<code>category_id</code> を先頭にするのは基本ですが、その後ろの列はどういう順番で指定するのが最もパフォーマンスが良いでしょうか？</p>
+
+        <details style="margin-bottom: 2.5rem; background: #f7fafc; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <summary style="cursor: pointer; font-weight: bold; color: var(--primary-color);">解答例と解説を見る</summary>
+            <p style="margin-top: 1rem;">
+                <strong>解答：</strong> <code>CREATE INDEX idx_articles_cat_views ON articles (category_id, views DESC);</code>
+            </p>
+            <p>
+                <strong>解説：</strong> 非常にひっかけになりやすい、高度な問題です。「WHERE句の条件を前に持ってくる」というセオリーに従って <code>(category_id, published_at, views DESC)</code> と作りたくなりますよね。しかし、B-treeインデックスは<strong>範囲検索（<code>&gt;=</code> など）の条件が現れた時点で、それより右側に定義された列によるソート（ORDER BY）をインデックスだけで処理できなくなります</strong>。<br>
+                そのため、範囲検索の列をあえて後回しにし、「等値検索（<code>=</code>）の列 → <code>ORDER BY</code> の列」の順序で作成し、ソート処理をスキップさせるのがこの場合の正解（最もI/Oコストが下がる設計）となります。
+            </p>
+        </details>
+
+        <h3>問題5：巨大テーブルの最適化戦略（難易度：⭐⭐⭐⭐⭐）</h3>
+        <p>
+            <strong>【場面・背景】</strong><br>
+            巨大なタスク管理（To-Do）アプリのデータベースです。<code>tasks</code> テーブルには<strong>1000万件</strong>のタスクが保存されていますが、そのうち99%はすでに「完了（<code>status = 'done'</code>）」しており、検索されることは滅多にありません。<br>
+            アプリケーションで最も頻繁に実行され、かつシステムに負荷をかけているのは、「特定のユーザーの、まだ『未完了（<code>status = 'todo'</code>）』のタスク一覧を取得する」クエリです。
+        </p>
+<pre><code>SELECT * FROM tasks 
+WHERE assignee_id = 123 
+  AND status = 'todo';</code></pre>
+        <p><code>(assignee_id, status)</code> の複合インデックスを作れば高速化できるのは明らかです。しかし、1000万件すべてをインデックス化するのは、ディスク容量の無駄使いであり、タスク完了時の更新コストも跳ね上がってしまいます。<br>
+        このケースにおいて、PostgreSQLの機能を使って<strong>最も効率的で無駄のないインデックスを作成するコマンド</strong>を考えてください。</p>
+
+        <details style="margin-bottom: 2.5rem; background: #f7fafc; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <summary style="cursor: pointer; font-weight: bold; color: var(--primary-color);">解答例と解説を見る</summary>
+            <p style="margin-top: 1rem;">
+                <strong>解答：</strong> <code>CREATE INDEX idx_tasks_todo ON tasks (assignee_id) WHERE status = 'todo';</code>
+            </p>
+            <p>
+                <strong>解説：</strong> PostgreSQLの超強力な機能である<strong>「部分インデックス（Partial Index）」</strong>を活用します。インデックスを作成する際、末尾に <code>WHERE</code> 句をつけることで、<strong>条件を満たす行（今回は全体の1%しかない未完了タスク）だけをインデックスの木構造に登録する</strong>ことができます。<br>
+                これにより、インデックスのサイズが劇的に小さくなり、メモリ（RAM）上にも乗りやすくなるため、検索が超高速になります。さらに、99%を占める「完了タスク」が更新・削除されてもこのインデックスはメンテナンスされないため、更新パフォーマンスの悪化も防ぐことができる、まさに一石二鳥のテクニックです。
             </p>
         </details>
 
         <h2>9. まとめ</h2>
         <p>
-            本記事では、インデックス（索引）自体の役割やB-treeの構造といった理論から入り、実際にPostgreSQLのオプティマイザがどのようにインデックスを選択（あるいは無視）するのかを実験を通じて確認しました。
+            本記事では、インデックス（索引）自体の役割やB-treeの構造といった理論から入り、実際にPostgreSQLのオプティマイザがどのようにインデックスを選択（あるいは無視）するのかを、講義のDocker環境を用いた実験を通じて確認しました。
         </p>
         <p>
-            インデックス設計は「クエリ中心」で考えることが基本です。推測で設定するのではなく、必ず <code>EXPLAIN ANALYZE</code> を用いて「自分の意図通りに Index Scan が使われているか」を検証する癖をつけましょう。そして何より、読み取りを速くする代わりに書き込みコストと容量増という代償（トレードオフ）を払っていることを常に忘れないでください。
+            インデックス設計は「クエリ中心」で考えることが基本です。推測だけで設計するのではなく、必ず <code>EXPLAIN ANALYZE</code> を用いて「自分の意図通りに Index Scan が使われているか」を検証する癖をつけましょう。そして何より、読み取りを速くする代わりに書き込みコストとストレージ容量増という代償（トレードオフ）を払っていることを常に忘れないでください。
+        </p>
+        <p>
+            実務のバックエンド開発やデータベース運用において、この「実行計画を読み解き、適切なインデックスを設計する力」は必ず皆さんの強力な武器になります。この記事が、パフォーマンスチューニングの第一歩となれば幸いです。
         </p>
 
         <div class="footer">
