@@ -455,7 +455,7 @@ WHERE sales_month = '2024-04';</code></pre>
                 </li>
             </ol>
             <p><strong>▼ターミナル出力結果</strong></p>
-            <pre class="terminal-output"><code>(※ここで手元のターミナルで実行し、出力結果を確認してください)</code></pre>
+            <img src="../png/window_a.png" alt="実験Aのターミナル出力" class="terminal-img">
 
             <div class="note">
                 <strong>【結果の考察】</strong><br>
@@ -490,7 +490,7 @@ WHERE sales_month = '2024-05';</code></pre>
                 </li>
             </ol>
             <p><strong>▼ターミナル出力結果</strong></p>
-            <pre class="terminal-output"><code>(※ここで手元のターミナルで実行し、出力結果を確認してください)</code></pre>
+            <img src="../png/window_b.png" alt="実験Bのターミナル出力" class="terminal-img">
 
             <div class="note">
                 <strong>【結果の考察】</strong><br>
@@ -526,7 +526,7 @@ ORDER BY department, amount DESC;</code></pre>
                 </li>
             </ol>
             <p><strong>▼ターミナル出力結果</strong></p>
-            <pre class="terminal-output"><code>(※ここで手元のターミナルで実行し、出力結果を確認してください)</code></pre>
+            <img src="../png/window_c.png" alt="実験Cのターミナル出力" class="terminal-img">
 
             <div class="note">
                 <strong>【結果の考察】</strong><br>
@@ -562,7 +562,7 @@ ORDER BY employee_name, sales_month;</code></pre>
                 </li>
             </ol>
             <p><strong>▼ターミナル出力結果</strong></p>
-            <pre class="terminal-output"><code>(※ここで手元のターミナルで実行し、出力結果を確認してください)</code></pre>
+            <img src="../png/window_d.png" alt="実験Dのターミナル出力" class="terminal-img">
 
             <div class="note">
                 <strong>【結果の考察】</strong><br>
@@ -597,7 +597,7 @@ ORDER BY sales_month, department;</code></pre>
                 </li>
             </ol>
             <p><strong>▼ターミナル出力結果</strong></p>
-            <pre class="terminal-output"><code>(※ここで手元のターミナルで実行し、出力結果を確認してください)</code></pre>
+            <img src="../png/window_e.png" alt="実験Eのターミナル出力" class="terminal-img">
 
             <div class="note">
                 <strong>【結果の考察】</strong><br>
@@ -746,6 +746,7 @@ ORDER BY sales_month, department;</code></pre>
                 <strong>解説：</strong> <code>GROUPING()</code> 関数は、まさにこのように「レポートの見た目を整える」ために存在しています。<code>CASE</code> 文と組み合わせることで、「月も部署もNULL（＝全体集計）なら総合計」「部署だけがNULL（＝月次集計）なら小計」といった柔軟なラベル付けが可能になり、アプリケーション側で加工する手間が省けます。
             </p>
         </details>
+
 
         <h2 id="ch6">6. まとめ</h2>
         <p>
