@@ -345,23 +345,31 @@ pre:hover .copy-btn {
     box-shadow: 0 4px 25px rgba(0,0,0,0.5);
     cursor: zoom-out;
 }
-
-/* 3. 目次の現在地ハイライト */
+/* =========================================
+   3. 目次の現在地ハイライト
+========================================= */
 .toc a {
+    color: #4a5568; /* 修正: 普段の文字色をグレーにして変化を分かりやすく */
+    text-decoration: none;
     transition: all 0.2s ease;
     display: inline-block;
 }
+.toc a:hover {
+    color: var(--primary-color);
+}
 .toc a.active {
     font-weight: bold;
-    color: var(--primary-color);
-    transform: translateX(10px); /* 右に少しズレて現在地をアピール */
+    color: var(--primary-color); /* 現在地だけ青色にする */
+    transform: translateX(10px);
 }
 .toc a.active::before {
     content: "▶ ";
     font-size: 0.8em;
 }
 
-/* 4. フェードインアニメーション */
+/* =========================================
+   4. フェードインアニメーション
+========================================= */
 .fade-in-hidden {
     opacity: 0;
     transform: translateY(20px);
@@ -373,24 +381,47 @@ pre:hover .copy-btn {
 }
 
 /* =========================================
-   5. 目次のサイドバー固定（PC画面用レイアウト）
+   5. 目次のサイドバー固定（絶対に本文と被らないレイアウト）
 ========================================= */
-@media (min-width: 1300px) {
-    /* 画面が広い場合、記事本体を少し左に寄せる */
-    .container {
-        margin: 0 auto 0 10%; 
+@media (min-width: 1050px) {
+    body {
+        /* 画面右側に「目次専用のスペース」を強制的に確保 */
+        padding-right: 300px; 
     }
-    
-    /* 目次を画面の右側に固定（追従）させる */
+    .container {
+        /* 確保したスペース以外の領域で中央寄せにする */
+        margin: 0 auto; 
+    }
     .toc {
         position: fixed;
         top: 3rem;
-        right: 5%;
-        width: 300px;
-        max-height: calc(100vh - 6rem); /* 画面の高さを超えないようにする */
-        overflow-y: auto; /* 長い場合はスクロール可能に */
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        background-color: #ffffff;
-        z-index: 100;
+        right: 1.5rem; 
+        width: 250px;
+        max-height: calc(100vh - 6rem);
+        overflow-y: auto;
+        
+        /* ▼ ここから：邪魔にならないスタイリッシュなデザイン ▼ */
+        background-color: rgba(255, 255, 255, 0.7); /* 背景を少し透明に */
+        backdrop-filter: blur(8px); /* 後ろの要素をぼかす（すりガラス効果） */
+        box-shadow: -2px 4px 15px rgba(0,0,0,0.05);
+        border: none;
+        border-left: 4px solid var(--primary-color);
+        opacity: 0.6; /* 普段は少し薄くしておく */
+        transition: opacity 0.3s ease, background-color 0.3s ease;
+    }
+    
+    /* マウスを目次に乗せたときだけ、くっきりはっきり表示させる */
+    .toc:hover {
+        opacity: 1;
+        background-color: rgba(255, 255, 255, 0.95);
+    }
+
+    /* 目次内のスクロールバーを細くお洒落にする */
+    .toc::-webkit-scrollbar {
+        width: 6px;
+    }
+    .toc::-webkit-scrollbar-thumb {
+        background-color: #cbd5e0;
+        border-radius: 4px;
     }
 }

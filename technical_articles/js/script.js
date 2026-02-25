@@ -58,16 +58,16 @@ document.addEventListener('DOMContentLoaded', () => {
         lightbox.classList.remove('active');
     });
 
-    // ==========================================
+   // ==========================================
     // 3. スクロール時の「目次の現在地ハイライト」
     // ==========================================
     const tocLinks = document.querySelectorAll('.toc a');
     const sections = Array.from(document.querySelectorAll('h2[id]'));
     
-    // 画面の少し上部を判定基準にする
+    // 画面の上半分（0%〜50%）に見出しが来た時に反応するように判定エリアを拡大
     const observerOptions = {
         root: null,
-        rootMargin: '-10% 0px -80% 0px',
+        rootMargin: '0px 0px -50% 0px', 
         threshold: 0
     };
 
