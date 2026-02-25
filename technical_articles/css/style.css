@@ -279,3 +279,118 @@ th {
     color: #718096;
     font-size: 0.9rem;
 }
+
+/* =========================================
+   JavaScript用 追加スタイル (アニメーション等)
+========================================= */
+
+/* 1. コピーボタン */
+.copy-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background-color: #cbd5e0;
+    color: #2d3748;
+    border: none;
+    border-radius: 4px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0; /* 普段は隠しておく */
+}
+pre:hover .copy-btn {
+    opacity: 1; /* コードにホバーした時だけ表示 */
+}
+.copy-btn:hover {
+    background-color: #a0aec0;
+}
+.copy-btn.copied {
+    background-color: var(--scenario-border);
+    color: white;
+    opacity: 1;
+}
+
+/* 2. 画像の拡大 (Lightbox) */
+.terminal-img {
+    cursor: zoom-in;
+    transition: transform 0.2s;
+}
+.terminal-img:hover {
+    transform: scale(1.02); /* ホバーで少しだけ浮き上がる */
+}
+#lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+#lightbox.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+#lightbox img {
+    max-width: 90%;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.5);
+    cursor: zoom-out;
+}
+
+/* 3. 目次の現在地ハイライト */
+.toc a {
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+.toc a.active {
+    font-weight: bold;
+    color: var(--primary-color);
+    transform: translateX(10px); /* 右に少しズレて現在地をアピール */
+}
+.toc a.active::before {
+    content: "▶ ";
+    font-size: 0.8em;
+}
+
+/* 4. フェードインアニメーション */
+.fade-in-hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* =========================================
+   5. 目次のサイドバー固定（PC画面用レイアウト）
+========================================= */
+@media (min-width: 1300px) {
+    /* 画面が広い場合、記事本体を少し左に寄せる */
+    .container {
+        margin: 0 auto 0 10%; 
+    }
+    
+    /* 目次を画面の右側に固定（追従）させる */
+    .toc {
+        position: fixed;
+        top: 3rem;
+        right: 5%;
+        width: 300px;
+        max-height: calc(100vh - 6rem); /* 画面の高さを超えないようにする */
+        overflow-y: auto; /* 長い場合はスクロール可能に */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        background-color: #ffffff;
+        z-index: 100;
+    }
+}
