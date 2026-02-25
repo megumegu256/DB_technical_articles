@@ -1,0 +1,281 @@
+:root {
+    --primary-color: #3182ce;
+    --bg-color: #f7fafc;
+    --text-color: #2d3748;
+    --code-bg: #edf2f7;
+    --border-color: #e2e8f0;
+    --alert-bg: #fffaf0;
+    --alert-border: #ed8936;
+    --scenario-bg: #f0fff4;
+    --scenario-border: #38a169;
+    --column-bg: #e6fffa;
+    --column-border: #319795;
+    --table-header-bg: #edf2f7;
+    --summary-bg: #f8fafc;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.8;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    margin: 0;
+    padding: 2rem;
+}
+.container {
+    max-width: 850px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 3rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+h1 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+    line-height: 1.3;
+}
+h2 {
+    font-size: 1.5rem;
+    margin-top: 2.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.3rem;
+}
+h3 {
+    font-size: 1.25rem;
+    margin-top: 2rem;
+    color: #4a5568;
+    border-left: 5px solid var(--primary-color);
+    padding-left: 0.8rem;
+}
+h4 {
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+    color: #2d3748;
+}
+p {
+    margin-bottom: 1.5rem;
+}
+ul, ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+}
+li {
+    margin-bottom: 0.5rem;
+}
+pre {
+    background-color: var(--code-bg);
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    border: 1px solid var(--border-color);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+.terminal-output {
+    background-color: #2d3748;
+    color: #e2e8f0;
+    border: none;
+}
+.comment {
+    color: #718096;
+    font-style: italic;
+}
+code {
+    background-color: var(--code-bg);
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: #d53f8c;
+}
+pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+th, td {
+    border: 1px solid var(--border-color);
+    padding: 0.75rem;
+    text-align: left;
+}
+th {
+    background-color: var(--table-header-bg);
+    font-weight: bold;
+    color: #4a5568;
+}
+.data-table {
+    width: 70%;
+    margin: 0 auto 2rem auto;
+    font-size: 0.85rem;
+}
+.data-table th, 
+.data-table td {
+    padding: 0.25rem 0.5rem;
+    text-align: center;
+}
+.note {
+    background-color: #ebf8ff;
+    border-left: 4px solid var(--primary-color);
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border-radius: 0 4px 4px 0;
+}
+.alert {
+    background-color: var(--alert-bg);
+    border: 1px solid var(--alert-border);
+    border-left: 6px solid var(--alert-border);
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border-radius: 4px;
+}
+.alert strong {
+    color: #c05621;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+.scenario {
+    background-color: var(--scenario-bg);
+    border: 1px solid var(--scenario-border);
+    border-radius: 6px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.scenario-title {
+    font-weight: bold;
+    color: var(--scenario-border);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+.column {
+    background-color: var(--column-bg);
+    border: 1px solid var(--column-border);
+    border-radius: 6px;
+    padding: 1rem 1.5rem;
+    margin: 2rem 0;
+}
+.column-title {
+    font-weight: bold;
+    color: var(--column-border);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+.step-box {
+    background-color: #fcfcfc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+.step-title {
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+.toc {
+    background-color: var(--summary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+.toc ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+.toc li {
+    margin-bottom: 0.5rem;
+}
+.toc a {
+    text-decoration: none;
+    color: var(--primary-color);
+}
+.toc a:hover {
+    text-decoration: underline;
+}
+.visual-compare {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.visual-box {
+    flex: 1;
+    background: #fff;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    padding: 1rem;
+    text-align: center;
+}
+.visual-box h4 {
+    margin-top: 0;
+    color: #2d3748;
+    font-size: 1rem;
+    border-bottom: 2px solid #cbd5e0;
+    padding-bottom: 0.5rem;
+}
+.visual-data {
+    font-family: monospace;
+    background: #edf2f7;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+.arrow {
+    color: #a0aec0;
+    font-size: 1.5rem;
+    margin: 0.5rem 0;
+}
+.highlight-data {
+    background: #feebc8;
+    border: 1px solid #d69e2e;
+}
+.terminal-img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 1rem 0;
+    display: block;
+}
+.terminal-summary {
+    background-color: var(--summary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    color: #4a5568;
+}
+.terminal-summary strong {
+    color: var(--primary-color);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+.terminal-summary ul {
+    margin-bottom: 0;
+    padding-left: 1.2rem;
+}
+.terminal-summary li {
+    margin-bottom: 0.3rem;
+}
+.footer {
+    margin-top: 4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border-color);
+    text-align: right;
+    color: #718096;
+    font-size: 0.9rem;
+}
